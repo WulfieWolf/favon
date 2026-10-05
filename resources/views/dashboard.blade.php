@@ -88,7 +88,7 @@
                 };
 
                 document.addEventListener('DOMContentLoaded', init, { once: true });
-                window.addEventListener('camperwolf:leaflet-ready', init, { once: true });
+                window.addEventListener('favon:leaflet-ready', init, { once: true });
                 init();
             })();
         </script>

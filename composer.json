@@ -1,14 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "camperwolf/camperwolf",
+    "name": "wulfiewolf/favon",
     "type": "project",
-    "description": "Camperwolf.de community platform for camping, parking and service locations.",
+    "description": "Favon community-maintained place directory and map.",
     "keywords": [
-        "camping",
-        "camper",
-        "motorhome",
-        "community",
-        "places"
+        "favon",
+        "places",
+        "map",
+        "community"
     ],
     "license": "MIT",
     "require": {
