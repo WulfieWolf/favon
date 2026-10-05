@@ -11,7 +11,7 @@ use Illuminate\Support\Number;
 
 class PlaceBrowseFacetService
 {
-    public function analyze(Request $request, Collection $basePlaceIds, array $placeTypeIds = [], ?callable $profileMark = null, ?Builder $basePlaceIdsQuery = null, bool $includePrices = true): array
+    public function analyze(Request $request, Collection $basePlaceIds, array $placeTypeIds = [], ?callable $profileMark = null, ?Builder $basePlaceIdsQuery = null): array
     {
         $mark = fn (string $label) => $profileMark ? $profileMark('Facet · '.$label) : null;
 
@@ -23,13 +23,8 @@ class PlaceBrowseFacetService
         $featureValues = $this->featureValues($basePlaceIds, $definitions, $basePlaceIdsQuery);
         $mark('feature values');
 
-        $priceDefinitions = $includePrices ? $this->priceDefinitions() : [];
-        $mark('price definitions');
-
-        $priceValues = $includePrices
-            ? $this->priceValues($basePlaceIds, $priceDefinitions, $basePlaceIdsQuery)
-            : [];
-        $mark('price values');
+        $priceDefinitions = [];
+        $priceValues = [];
 
         $ratingDefinition = $this->ratingDefinition();
         $ratingValues = $this->ratingValues($basePlaceIds, $basePlaceIdsQuery);
@@ -389,149 +384,6 @@ class PlaceBrowseFacetService
             ->pluck('rating', 'pr.place_id')
             ->map(fn ($value) => round((float) $value, 2))
             ->all();
-    }
-
-    private function priceDefinitions(): array
-    {
-        $vehicleProductIds = DB::table('price_products')
-            ->where('is_active', true)
-            ->where('is_vehicle_base_price', true)
-            ->pluck('id')
-            ->map(fn ($id) => (int) $id)
-            ->values()
-            ->all();
-
-        $overnightProductIds = DB::table('price_products')
-            ->where('is_active', true)
-            ->where('is_overnight_base_price', true)
-            ->pluck('id')
-            ->map(fn ($id) => (int) $id)
-            ->values()
-            ->all();
-
-        if ($vehicleProductIds === [] || $overnightProductIds === []) {
-            return [];
-        }
-
-        return [
-            'price:comparison' => [
-                'key' => 'price:comparison',
-                'source' => 'price',
-                'product_id' => null,
-                'product_slug' => 'comparison',
-                'label' => __('ui.browse.price_from'),
-                'sort_order' => 10,
-                'unit' => '€',
-                'kind' => 'price',
-                'vehicle_product_ids' => $vehicleProductIds,
-                'overnight_product_ids' => $overnightProductIds,
-            ],
-        ];
-    }
-
-    private function priceValues(Collection $placeIds, array $definitions, ?Builder $basePlaceIdsQuery = null): array
-    {
-        if ($placeIds->isEmpty() || $definitions === []) {
-            return [];
-        }
-
-        $definition = $definitions['price:comparison'] ?? null;
-        if (! $definition) {
-            return [];
-        }
-
-        $vehicleProductIds = collect($definition['vehicle_product_ids'])->map(fn ($id) => (int) $id);
-        $overnightProductIds = collect($definition['overnight_product_ids'])->map(fn ($id) => (int) $id);
-        $productIds = $vehicleProductIds->merge($overnightProductIds)->unique()->values();
-
-        $query = DB::table('place_price_offers as ppo')
-            ->join('price_products as pp', 'pp.id', '=', 'ppo.price_product_id')
-            ->join('place_price_periods as ppp', 'ppp.place_price_offer_id', '=', 'ppo.id')
-            ->join('place_price_lines as ppl', 'ppl.place_price_period_id', '=', 'ppp.id')
-            ->leftJoin('units as currency', 'currency.id', '=', 'ppl.currency_unit_id');
-
-        if ($basePlaceIdsQuery) {
-            $query->joinSub(clone $basePlaceIdsQuery, 'base_place', function ($join) {
-                $join->on('base_place.id', '=', 'ppo.place_id');
-            });
-        } else {
-            $query->whereIn('ppo.place_id', $placeIds);
-        }
-
-        $rows = $query
-            ->whereIn('ppo.price_product_id', $productIds)
-            ->where('ppo.is_active', true)
-            ->whereNull('ppo.version_valid_until')
-            ->where('ppp.is_active', true)
-            ->whereNull('ppp.version_valid_until')
-            ->where('ppl.is_active', true)
-            ->whereNull('ppl.version_valid_until')
-            ->whereIn('ppl.price_status', ['fixed', 'from', 'included', 'free'])
-            ->get([
-                'ppo.place_id',
-                'ppo.price_product_id',
-                'pp.is_vehicle_base_price',
-                'pp.is_overnight_base_price',
-                'ppp.is_year_round',
-                'ppp.start_month',
-                'ppp.start_day',
-                'ppp.end_month',
-                'ppp.end_day',
-                'ppl.price_status',
-                'ppl.amount',
-                'ppl.rate_quantity',
-                'currency.unit_key as currency_key',
-            ]);
-
-        $minimums = [];
-
-        foreach ($rows as $row) {
-            if (! $this->periodIsCurrent($row)) {
-                continue;
-            }
-
-            if (in_array($row->price_status, ['included', 'free'], true)) {
-                $amount = 0.0;
-            } else {
-                if ($row->amount === null || ($row->currency_key !== null && strtoupper((string) $row->currency_key) !== 'EUR')) {
-                    continue;
-                }
-
-                $quantity = max(0.001, (float) ($row->rate_quantity ?: 1));
-                $amount = round((float) $row->amount / $quantity, 2);
-            }
-
-            $placeId = (int) $row->place_id;
-
-            if ($row->is_vehicle_base_price) {
-                $current = $minimums[$placeId]['vehicle'] ?? null;
-                if ($current === null || $amount < $current) {
-                    $minimums[$placeId]['vehicle'] = $amount;
-                }
-            }
-
-            if ($row->is_overnight_base_price) {
-                $current = $minimums[$placeId]['overnight'] ?? null;
-                if ($current === null || $amount < $current) {
-                    $minimums[$placeId]['overnight'] = $amount;
-                }
-            }
-        }
-
-        $values = [];
-
-        foreach ($minimums as $placeId => $parts) {
-            if (! array_key_exists('vehicle', $parts) && ! array_key_exists('overnight', $parts)) {
-                continue;
-            }
-
-            $values['price:comparison'][(int) $placeId] = round(
-                (float) ($parts['vehicle'] ?? 0.0) + (float) ($parts['overnight'] ?? 0.0),
-                2,
-            );
-        }
-
-        return $values;
     }
 
     private function selections(Request $request, array $definitions, array $priceDefinitions, array $ratingDefinition): array
