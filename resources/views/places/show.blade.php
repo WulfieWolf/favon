@@ -996,27 +996,6 @@
 
                 </section>
 
-                <section class="rounded-xl border border-zinc-200 bg-white p-3 sm:p-5 dark:border-zinc-800 dark:bg-zinc-900">
-                    <div class="flex items-center justify-between gap-3">
-                        <h2 class="text-base font-semibold">{{ __('place_profile.suitable_for') }}</h2>
-                        @if ($canSuggest)
-                            <a href="{{ route('places.info-suggest.edit', $place->slug) }}" class="cw-profile-edit-action inline-flex size-7 shrink-0 items-center justify-center rounded text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200" title="{{ __('place_profile.edit_vehicle_types') }}" aria-label="{{ __('place_profile.edit_vehicle_types') }}">
-                                <x-tabler-icon name="pencil" class="size-3.5" />
-                            </a>
-                        @endif
-                    </div>
-                    @if ($vehicleTypes->isNotEmpty())
-                        <div class="mt-3 flex flex-wrap gap-2">
-                            @foreach ($vehicleTypes as $vehicle)
-                                <span class="rounded-md bg-zinc-100 px-2.5 py-1.5 text-sm dark:bg-zinc-800">
-                                    {{ $vehicle->label }}@if($vehicle->capacity !== null) ({{ $vehicle->capacity }})@endif
-                                </span>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="mt-3 text-sm italic text-zinc-400">{{ __('place_profile.no_vehicle_types') }}</p>
-                    @endif
-                </section>
             </div>
 
             <section class="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
