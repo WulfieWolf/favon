@@ -4,7 +4,6 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\ChangeRequestController;
 use App\Http\Controllers\Admin\FeatureCatalogController;
-use App\Http\Controllers\Admin\PhotoModerationController;
 use App\Http\Controllers\Admin\PlaceMergeController;
 use App\Http\Controllers\Admin\PlaceDeletionController;
 use App\Http\Controllers\Admin\ReviewReportController;
@@ -20,15 +19,11 @@ use App\Http\Controllers\LegalController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MailPreviewController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PhotoAssetController;
-use App\Http\Controllers\PhotoHelpfulVoteController;
-use App\Http\Controllers\PhotoReportController;
 use App\Http\Controllers\PlaceBrowseController;
 use App\Http\Controllers\PlaceContactController;
 use App\Http\Controllers\PlaceFeatureController;
 use App\Http\Controllers\PlaceInfoSuggestionController;
 use App\Http\Controllers\PlaceOpeningHoursController;
-use App\Http\Controllers\PlacePhotoController;
 use App\Http\Controllers\PlacePriceController;
 use App\Http\Controllers\PlaceProfileController;
 use App\Http\Controllers\PlaceReviewController;
@@ -36,9 +31,6 @@ use App\Http\Controllers\PlaceSuggestionController;
 use App\Http\Controllers\RolePreviewController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SupportTicketController;
-use App\Http\Controllers\UserPhotoLibraryController;
-use App\Http\Controllers\UserProfileController;
-use App\Http\Controllers\UserProfilePhotoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
@@ -47,13 +39,10 @@ Route::get('dashboard', PlaceBrowseController::class)->middleware(['harden-brows
 Route::get('places/{slug}', PlaceProfileController::class)->middleware('throttle:public-read')->name('places.show');
 Route::get('places/{slug}/contact/email', [PlaceContactController::class, 'email'])->middleware('throttle:30,1')->name('places.contact.email');
 Route::get('places/{slug}/reviews/feed', [PlaceReviewController::class, 'feed'])->middleware('throttle:public-read')->name('places.reviews.feed');
-Route::get('photos/{uuid}/{variant}', [PhotoAssetController::class, 'show'])
     ->whereUuid('uuid')
     ->whereIn('variant', ['preview', 'detail'])
     ->name('photos.show');
 Route::get('reviews/{review}/history', [PlaceReviewController::class, 'history'])->middleware('throttle:public-read')->name('reviews.history');
-Route::get('user/{handle}', UserProfileController::class)->middleware('throttle:public-read')->name('users.profile');
-Route::get('user/{handle}/photo', UserProfilePhotoController::class)->name('users.profile.photo');
 Route::post('locale', [LocaleController::class, 'update'])->name('locale.update');
 Route::get('devlog', DevLogController::class)->name('devlog');
 
@@ -91,24 +80,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('places/{slug}/reviews', [PlaceReviewController::class, 'destroy'])->middleware(['permission:reviews.delete_own', 'throttle:community-write'])->name('reviews.destroy');
     Route::delete('reviews/{review}/history/{version}', [PlaceReviewController::class, 'hideVersion'])->middleware(['permission:reviews.delete_own', 'throttle:community-write'])->name('reviews.history.hide');
     Route::post('reviews/{review}/report', [PlaceReviewController::class, 'report'])->middleware(['permission:reports.create', 'throttle:report-create'])->name('reviews.report');
-    Route::post('places/{slug}/review-photos', [PlacePhotoController::class, 'store'])
         ->middleware(['permission:photos.upload', 'throttle:photo-upload'])
         ->name('photos.store');
-    Route::get('my/photos/{uuid}/{variant}', [PhotoAssetController::class, 'owner'])
         ->whereUuid('uuid')
         ->whereIn('variant', ['preview', 'detail'])
         ->name('photos.owner');
-    Route::get('my/photos', UserPhotoLibraryController::class)->name('my.photos.index');
-    Route::delete('photos/{photo}', [PlacePhotoController::class, 'destroy'])
         ->middleware(['permission:photos.delete_own', 'throttle:community-write'])
         ->name('photos.destroy');
-    Route::post('photos/{photo}/helpful', [PhotoHelpfulVoteController::class, 'store'])
         ->middleware(['permission:reviews.vote_helpful', 'throttle:engagement-write'])
         ->name('photos.helpful.store');
-    Route::delete('photos/{photo}/helpful', [PhotoHelpfulVoteController::class, 'destroy'])
         ->middleware(['permission:reviews.remove_own_helpful_vote', 'throttle:engagement-write'])
         ->name('photos.helpful.destroy');
-    Route::post('photos/{photo}/report', [PhotoReportController::class, 'store'])
         ->middleware(['permission:reports.create', 'throttle:report-create'])
         ->name('photos.report');
     Route::put('places/{slug}/features/category/{category}', [PlaceFeatureController::class, 'updateCategory'])->middleware('throttle:community-write')->name('places.features.category.update');
@@ -158,26 +140,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('role-preview', [RolePreviewController::class, 'update'])->name('role-preview.update');
 
-    Route::prefix('admin/photos')
-        ->name('admin.photos.')
-        ->group(function () {
-            Route::get('/', [PhotoModerationController::class, 'index'])->middleware('permission:photos.view_pending')->name('index');
-            Route::get('/library', [PhotoModerationController::class, 'library'])->middleware('permission:photos.view_pending')->name('library');
-            Route::get('/asset/{uuid}/{variant}', [PhotoAssetController::class, 'moderation'])
-                ->middleware('permission:photos.view_pending')
-                ->whereUuid('uuid')
-                ->whereIn('variant', ['preview', 'detail'])
-                ->name('asset');
-            Route::post('/{photo}/approve', [PhotoModerationController::class, 'approve'])->middleware('permission:photos.moderate')->name('approve');
-            Route::post('/{photo}/reject', [PhotoModerationController::class, 'reject'])->middleware('permission:photos.moderate')->name('reject');
-            Route::post('/{photo}/remove', [PhotoModerationController::class, 'remove'])->middleware('permission:photos.delete_any')->name('remove');
-            Route::post('/reports/{report}/dismiss', [PhotoModerationController::class, 'dismissReport'])->middleware('permission:photos.moderate')->name('reports.dismiss');
-            Route::post('/{photo}/cover', [PhotoModerationController::class, 'setCover'])->middleware('permission:photos.set_cover')->name('cover.set');
-            Route::delete('/places/{place}/cover', [PhotoModerationController::class, 'clearCover'])->middleware('permission:photos.set_cover')->name('cover.clear');
-            Route::post('/{photo}/exclude-thumbnail', [PhotoModerationController::class, 'excludeThumbnail'])->middleware('permission:photos.set_cover')->name('thumbnail.exclude');
-            Route::post('/{photo}/include-thumbnail', [PhotoModerationController::class, 'includeThumbnail'])->middleware('permission:photos.set_cover')->name('thumbnail.include');
-        });
-
     Route::prefix('admin')
         ->name('admin.')
         ->middleware('permission:admin.access')
@@ -190,7 +152,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/system/data-scores/rebuild', [SystemToolsController::class, 'rebuildDataScores'])->name('system.data-scores.rebuild');
             Route::get('/users', [AdminController::class, 'users'])->middleware('permission:users.view')->name('users.index');
             Route::get('/users/{user}', [AdminController::class, 'user'])->middleware('permission:users.view_details')->name('users.show');
-            Route::get('/users/{user}/photo', [AdminController::class, 'userPhoto'])->middleware('permission:users.view')->name('users.photo');
             Route::put('/users/{user}/account', [AdminController::class, 'updateAccount'])->middleware('permission:users.edit_profile')->name('users.account.update');
             Route::post('/users/{user}/verify-email', [AdminController::class, 'verifyEmail'])->middleware('permission:users.verify_email')->name('users.email.verify');
             Route::post('/users/{user}/suspend', [AdminController::class, 'suspend'])->middleware('permission:users.suspend')->name('users.suspend');
@@ -202,8 +163,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/users/{user}/roles', [AdminController::class, 'assignRole'])->middleware('permission:users.assign_roles')->name('users.roles.assign');
             Route::delete('/users/{user}/roles', [AdminController::class, 'removeRole'])->middleware('permission:users.assign_roles')->name('users.roles.remove');
             Route::put('/users/{user}/permission-overrides', [AdminController::class, 'setOverride'])->middleware('permission:users.override_permissions')->name('users.permissions.override');
-            Route::post('/users/{user}/badges', [AdminController::class, 'grantBadge'])->middleware('permission:users.manage_badges')->name('users.badges.grant');
-            Route::delete('/users/{user}/badges/{badge}', [AdminController::class, 'revokeBadge'])->middleware('permission:users.manage_badges')->name('users.badges.revoke');
 
             Route::middleware('permission:features.manage_catalog')->group(function () {
                 Route::get('/features', [FeatureCatalogController::class, 'index'])->name('features.index');
