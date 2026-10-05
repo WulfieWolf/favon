@@ -10,11 +10,6 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('locale', 10)->default('de')->after('email');
-            $table->foreignId('profile_photo_id')
-                ->nullable()
-                ->after('locale')
-                ->constrained('photos')
-                ->nullOnDelete();
         });
 
         Schema::create('user_settings', function (Blueprint $table) {
@@ -50,7 +45,6 @@ return new class extends Migration
         Schema::dropIfExists('user_settings');
 
         Schema::table('users', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('profile_photo_id');
             $table->dropColumn('locale');
         });
     }
