@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\AccountDeletionService;
-use App\Services\BadgeService;
 use App\Services\PermissionService;
 use App\Services\PublicHandleService;
 use App\Services\RolePermissionService;
@@ -167,28 +166,6 @@ class AdminController extends Controller
             })
             ->values();
 
-        $manualBadges = DB::table('badge_definitions')
-            ->where('type', 'manual')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
-
-        $manualBadgeUnlocks = DB::table('user_badge_unlocks as ubu')
-            ->join('badge_definitions as bd', 'bd.id', '=', 'ubu.badge_id')
-            ->where('ubu.user_id', $user->id)
-            ->where('bd.type', 'manual')
-            ->whereNull('ubu.revoked_at')
-            ->orderByDesc('ubu.unlocked_at')
-            ->get([
-                'ubu.id',
-                'ubu.badge_id',
-                'ubu.award_comment',
-                'ubu.unlocked_at',
-                'bd.name',
-                'bd.description',
-                'bd.xp_reward',
-            ])
-            ->keyBy('badge_id');
 
         return view('admin.users.show', [
             'targetUser' => $user,
@@ -199,9 +176,6 @@ class AdminController extends Controller
             'actorIsOwner' => $actorIsOwner,
             'actorCanAssignRoles' => $actorCanAssignRoles,
             'actorCanOverridePermissions' => $actorCanOverridePermissions,
-            'actorCanManageBadges' => $permissions->can($actor, 'users.manage_badges'),
-            'manualBadges' => $manualBadges,
-            'manualBadgeUnlocks' => $manualBadgeUnlocks,
             'profile' => $user->profile,
             'statistics' => app(AccountDeletionService::class)->statistics((int) $user->id),
             'actorCanEditProfile' => $permissions->can($actor, 'users.edit_profile'),
@@ -322,34 +296,6 @@ class AdminController extends Controller
         }
 
         return back()->with('ui_toast', __('admin.users.status_role_removed'));
-    }
-
-    public function grantBadge(Request $request, User $user, BadgeService $badges): RedirectResponse
-    {
-        $data = $request->validate([
-            'badge_id' => ['required', 'integer', 'exists:badge_definitions,id'],
-            'comment' => ['nullable', 'string', 'max:1000'],
-        ]);
-
-        $granted = $badges->grantManualBadge(
-            $user,
-            (int) $data['badge_id'],
-            $data['comment'] ?? null,
-            $request->user(),
-        );
-
-        return back()->with('ui_toast', $granted
-            ? __('admin.users.status_badge_granted')
-            : __('admin.users.status_badge_updated'));
-    }
-
-    public function revokeBadge(Request $request, User $user, int $badge, BadgeService $badges): RedirectResponse
-    {
-        $revoked = $badges->revokeManualBadge($user, $badge, $request->user());
-
-        return back()->with('ui_toast', $revoked
-            ? __('admin.users.status_badge_revoked')
-            : __('admin.users.status_badge_missing'));
     }
 
     public function setOverride(Request $request, User $user, RolePermissionService $access): RedirectResponse
