@@ -321,38 +321,6 @@
             </section>
 
             <section class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-                <h2 class="text-lg font-semibold">{{ __('place_editing.info.suitable_for') }}</h2>
-                <p class="mt-1 text-xs text-zinc-500">{{ __('place_editing.info.vehicle_capacity_help') }}</p>
-                <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    @php($oldVehicleIds = array_map('intval', old('vehicle_type_ids', $selectedVehicleIds)))
-                    @foreach ($vehicleTypes as $vehicle)
-                        @php($capacityValue = old('vehicle_capacities.'.$vehicle->id, $selectedVehicleCapacities[(int) $vehicle->id] ?? null))
-                        <label class="flex items-center gap-2 rounded-lg border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-700">
-                            <input
-                                type="checkbox"
-                                name="vehicle_type_ids[]"
-                                value="{{ $vehicle->id }}"
-                                {{ in_array((int) $vehicle->id, $oldVehicleIds, true) ? 'checked' : '' }}
-                                class="rounded border-zinc-300"
-                            >
-                            <span class="min-w-0 flex-1">{{ $vehicle->label }}</span>
-                            <input
-                                type="number"
-                                name="vehicle_capacities[{{ $vehicle->id }}]"
-                                value="{{ $capacityValue }}"
-                                min="1"
-                                max="1000000"
-                                inputmode="numeric"
-                                placeholder="{{ __('place_editing.info.vehicle_capacity_placeholder') }}"
-                                aria-label="{{ __('place_editing.info.vehicle_capacity_aria', ['vehicle' => $vehicle->label]) }}"
-                                class="w-20 rounded-md border border-zinc-300 bg-white px-2 py-1 text-right text-xs dark:border-zinc-700 dark:bg-zinc-950"
-                            >
-                        </label>
-                    @endforeach
-                </div>
-            </section>
-
-            <section class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
                 <label class="block">
                     <span class="mb-1 block text-sm font-medium">{{ __('place_editing.info.comment') }} <span class="font-normal text-zinc-400">({{ __('place_editing.common.optional') }})</span></span>
                     <textarea name="comment" rows="3" maxlength="2000" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950" placeholder="{{ __('place_editing.info.comment_placeholder') }}">{{ old('comment') }}</textarea>
