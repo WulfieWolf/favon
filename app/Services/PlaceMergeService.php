@@ -17,17 +17,14 @@ class PlaceMergeService
         'latitude' => ['label' => 'admin.place_merges.fields.latitude', 'required' => true],
         'longitude' => ['label' => 'admin.place_merges.fields.longitude', 'required' => true],
         'legal_status' => ['label' => 'admin.place_merges.fields.legal_status', 'required' => false],
-        'opening_status' => ['label' => 'admin.place_merges.fields.opening_status', 'required' => false],
     ];
 
     private const VERSIONED_TABLES = [
         'place_translations' => ['label' => 'admin.place_merges.groups.texts', 'identity' => ['locale']],
         'place_addresses' => ['label' => 'admin.place_merges.groups.address', 'identity' => []],
         'place_details' => ['label' => 'admin.place_merges.groups.details', 'identity' => []],
-        'place_vehicle_types' => ['label' => 'admin.place_merges.groups.vehicle_types', 'identity' => ['vehicle_type_id']],
         'place_features' => ['label' => 'admin.place_merges.groups.features', 'identity' => ['feature_id']],
         'place_contacts' => ['label' => 'admin.place_merges.groups.contacts', 'identity' => ['contact_type', 'value']],
-        'place_prices' => ['label' => 'admin.place_merges.groups.prices', 'identity' => ['price_type_id']],
     ];
 
     public function comparison(int $mainId, int $duplicateId): array
@@ -167,11 +164,10 @@ class PlaceMergeService
                 $this->applyRecordChoice($record, $choice, $mainId);
             }
 
-            $this->mergeReviewsAndPhotos($mergeId, $mainId, $duplicateId, $actor);
+            $this->mergeReviews($mainId, $duplicateId);
             $this->mergeFavorites($mainId, $duplicateId);
             $this->mergeDataSources($mainId, $duplicateId);
             $this->mergeExternalRecords($mainId, $duplicateId);
-            $this->mergePhotoSettings($mainId, $duplicateId);
 
             DB::table('places')->where('id', $duplicateId)->update([
                 'is_active' => false,
@@ -285,13 +281,7 @@ class PlaceMergeService
                         ->where('created_at', '>=', $merge->merged_at)->update(['is_public' => false, 'updated_at' => now()]);
                 }
             }
-            foreach ($snapshot['place_photos'] ?? [] as $row) {
-                $id = $row['id'];
-                unset($row['id']);
-                DB::table('place_photos')->where('id', $id)->update($row);
-            }
-
-            foreach (['place_favorites', 'place_photo_settings', 'place_data_sources'] as $table) {
+            foreach (['place_favorites', 'place_data_sources'] as $table) {
                 if (! Schema::hasTable($table)) {
                     continue;
                 }
@@ -317,9 +307,6 @@ class PlaceMergeService
                 }
             }
 
-            DB::table('photo_merge_conflicts')->where('place_merge_id', $mergeId)->update([
-                'status' => 'cancelled', 'resolved_at' => now(), 'updated_at' => now(),
-            ]);
             DB::table('place_merges')->where('id', $mergeId)->update([
                 'status' => 'reversed', 'reversed_by' => $actor->id, 'reversed_at' => now(), 'updated_at' => now(),
             ]);
@@ -479,18 +466,20 @@ class PlaceMergeService
         }
     }
 
-    private function mergeReviewsAndPhotos(int $mergeId, int $mainId, int $duplicateId, User $actor): void
+    private function mergeReviews(int $mainId, int $duplicateId): void
     {
         $targetByUser = DB::table('place_reviews')->where('place_id', $mainId)->get()->keyBy('user_id');
         $sourceReviews = DB::table('place_reviews')->where('place_id', $duplicateId)->orderBy('id')->get();
 
         foreach ($sourceReviews as $source) {
             $target = $targetByUser->get($source->user_id);
-            if (! $target) {
-                DB::table('place_reviews')->where('id', $source->id)->update(['place_id' => $mainId, 'updated_at' => now()]);
-                DB::table('place_photos')->where('place_review_id', $source->id)->update(['place_id' => $mainId, 'updated_at' => now()]);
-                $targetByUser->put($source->user_id, $source);
 
+            if (! $target) {
+                DB::table('place_reviews')->where('id', $source->id)->update([
+                    'place_id' => $mainId,
+                    'updated_at' => now(),
+                ]);
+                $targetByUser->put($source->user_id, $source);
                 continue;
             }
 
@@ -502,6 +491,7 @@ class PlaceMergeService
                 $version['version_number'] = ((int) DB::table('place_review_versions')->where('review_id', $target->id)->max('version_number')) + 1;
                 $version['created_at'] = now();
                 $version['updated_at'] = now();
+
                 $newVersionId = (int) DB::table('place_review_versions')->insertGetId($version);
                 DB::table('place_reviews')->where('id', $target->id)->update([
                     'current_version_id' => $newVersionId,
@@ -512,15 +502,11 @@ class PlaceMergeService
                 ]);
             }
 
-            DB::table('place_photos')->where('place_review_id', $source->id)->update([
-                'place_id' => $mainId,
-                'place_review_id' => $target->id,
+            DB::table('place_reviews')->where('id', $source->id)->update([
+                'status' => 'merged_archived',
                 'updated_at' => now(),
             ]);
-            DB::table('place_reviews')->where('id', $source->id)->update(['status' => 'merged_archived', 'updated_at' => now()]);
         }
-
-        $this->createPhotoConflicts($mergeId, $mainId, $actor);
     }
 
     private function comparePriceOffers(int $mainId, int $duplicateId): array
@@ -854,7 +840,7 @@ class PlaceMergeService
                 ->all();
         }
 
-        foreach (['place_reviews', 'place_photos', 'place_favorites', 'place_photo_settings', 'place_data_sources'] as $table) {
+        foreach (['place_reviews', 'place_favorites', 'place_data_sources'] as $table) {
             if (Schema::hasTable($table)) {
                 $snapshot[$table] = DB::table($table)->whereIn('place_id', [$mainId, $duplicateId])->get()->map(fn ($r) => (array) $r)->all();
             }
