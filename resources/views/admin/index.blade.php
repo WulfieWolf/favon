@@ -45,16 +45,6 @@
                     </a>
                 @endif
 
-                @if ($canModeratePhotos)
-                    <a href="{{ route('admin.photos.library') }}" class="{{ $cardClass }}">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="font-semibold">{{ __('admin.overview.photo_library') }}</div>
-                            <span class="{{ $neutralBadge }}">{{ __('admin.overview.total_count', ['count' => $photoCount]) }}</span>
-                        </div>
-                        <div class="mt-1 text-sm text-neutral-500">{{ __('admin.overview.photo_library_help') }}</div>
-                    </a>
-                @endif
-
                 @if ($canManageFeatures)
                     <a href="{{ route('admin.features.index') }}" class="{{ $cardClass }}">
                         <div class="flex items-start justify-between gap-3">
@@ -102,18 +92,6 @@
                             </div>
                         </div>
                         <div class="mt-1 text-sm text-neutral-500">{{ __('admin.overview.change_requests_help') }}</div>
-                    </a>
-                @endif
-
-                @if ($canModeratePhotos)
-                    <a href="{{ route('admin.photos.index') }}" class="{{ $cardClass }}">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="font-semibold">{{ __('admin.overview.photo_moderation') }}</div>
-                            @if (($pendingPhotoCount + $pendingPhotoReportCount) > 0)
-                                <span class="{{ $openBadge }}">{{ __('admin.overview.open_count', ['count' => $pendingPhotoCount + $pendingPhotoReportCount]) }}</span>
-                            @endif
-                        </div>
-                        <div class="mt-1 text-sm text-neutral-500">{{ __('admin.overview.photo_moderation_help') }}</div>
                     </a>
                 @endif
 
