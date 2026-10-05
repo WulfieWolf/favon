@@ -31,7 +31,6 @@ use App\Http\Controllers\PlaceSuggestionController;
 use App\Http\Controllers\RolePreviewController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SupportTicketController;
-use App\Http\Controllers\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
@@ -41,7 +40,6 @@ Route::get('places/{slug}', PlaceProfileController::class)->middleware('throttle
 Route::get('places/{slug}/contact/email', [PlaceContactController::class, 'email'])->middleware('throttle:30,1')->name('places.contact.email');
 Route::get('places/{slug}/reviews/feed', [PlaceReviewController::class, 'feed'])->middleware('throttle:public-read')->name('places.reviews.feed');
 Route::get('reviews/{review}/history', [PlaceReviewController::class, 'history'])->middleware('throttle:public-read')->name('reviews.history');
-Route::get('user/{handle}', UserProfileController::class)->middleware('throttle:public-read')->name('users.profile');
 Route::post('locale', [LocaleController::class, 'update'])->name('locale.update');
 Route::get('devlog', DevLogController::class)->name('devlog');
 
