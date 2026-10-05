@@ -62,7 +62,7 @@
         "background:run": [
             "Composer\\Config::disableProcessTimeout",
             "@php artisan schedule:run",
-            "@php artisan queue:work --queue=photos,default --stop-when-empty --tries=1"
+            "@php artisan queue:work --queue=default --stop-when-empty --tries=1"
         ],
         "lint": [
             "pint --parallel"
