@@ -38,7 +38,6 @@ class RolePermissionSeeder extends Seeder
             ['places', 'places.change_legal_status', 'Rechtsstatus ändern', 'Den rechtlichen Nutzungsstatus eines Platzes ändern.'],
 
             ['users', 'users.view', 'Benutzerverzeichnis ansehen', 'Registrierte Benutzer finden und Basisdaten sehen.'],
-            ['users', 'users.view_profile', 'Benutzerprofile ansehen', 'Öffentliche Profile anderer Community-Mitglieder öffnen.'],
             ['users', 'users.view_details', 'Benutzerdetails ansehen', 'Erweiterte Moderations- und Accountinformationen sehen.'],
             ['users', 'users.edit_profile', 'Fremde Profile bearbeiten', 'Profildaten anderer Benutzer administrativ ändern.'],
             ['users', 'users.verify_email', 'E-Mail manuell bestätigen', 'Eine Benutzer-E-Mail administrativ als bestätigt markieren.'],
@@ -159,8 +158,7 @@ class RolePermissionSeeder extends Seeder
         ];
 
         $user = array_merge($guest, [
-            'users.view', 'users.view_profile',
-            'reports.view_own',
+            'users.view', 'reports.view_own',
             'audit.view_own',
             'owners.request_verification', 'owners.view_own_requests',
             'favorites.manage_own',
