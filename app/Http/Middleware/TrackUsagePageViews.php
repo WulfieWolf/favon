@@ -29,7 +29,7 @@ class TrackUsagePageViews
             return $response;
         }
 
-        [$contentType, $contentId] = $this->contentReference($request, $routeName);
+        [$contentType, $contentId] = $this->contentReference($request);
 
         $this->analytics->track(
             $request,
@@ -43,23 +43,8 @@ class TrackUsagePageViews
             $this->analytics->track($request, 'search', 'dashboard');
         }
 
-        $startEvent = match ($routeName) {
-            'places.suggest.create' => ['place_suggestion_started', 'place_suggestions'],
-            'places.info-suggest.edit' => ['change_suggestion_started', 'place_information'],
-            'places.opening-hours.edit' => ['opening_hours_started', 'opening_hours'],
-            'places.prices.edit' => ['price_edit_started', 'prices'],
-            'support.report', 'support.privacy-legal' => ['support_started', 'support'],
-            default => null,
-        };
-
-        if ($startEvent) {
-            $this->analytics->track(
-                $request,
-                $startEvent[0],
-                $startEvent[1],
-                $contentType,
-                $contentId,
-            );
+        if (in_array($routeName, ['support.report', 'support.privacy-legal'], true)) {
+            $this->analytics->track($request, 'support_started', 'support');
         }
 
         return $response;
@@ -72,25 +57,13 @@ class TrackUsagePageViews
         }
 
         $contentType = strtolower((string) $response->headers->get('Content-Type'));
-        if (! str_contains($contentType, 'text/html')) {
-            return false;
-        }
 
-        $routeName = $request->route()?->getName();
-
-        if (! is_string($routeName) || $routeName === '') {
-            return false;
-        }
-
-        return ! in_array($routeName, [
-            'reviews.feed',
-            'photos.show',
-            'photos.owner',
-            'admin.photos.asset',
-        ], true);
+        return str_contains($contentType, 'text/html')
+            && is_string($request->route()?->getName())
+            && $request->route()?->getName() !== '';
     }
 
-    private function contentReference(Request $request, string $routeName): array
+    private function contentReference(Request $request): array
     {
         $slug = $request->route('slug');
         if (! is_string($slug) || $slug === '') {
