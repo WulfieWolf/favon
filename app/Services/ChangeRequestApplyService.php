@@ -535,31 +535,11 @@ class ChangeRequestApplyService
                 'internal_comment' => null,
                 'created_by' => $requests->first()->submitted_by,
             ];
-        } elseif ($table === 'place_vehicle_types') {
-            $values += [
-                'capacity' => null,
-                'internal_comment' => null,
-            ];
         } elseif ($table === 'place_details') {
             $values += [
                 'operator_name' => null,
                 'pitch_count' => null,
                 'internal_comment' => null,
-                'created_by' => $requests->first()->submitted_by,
-            ];
-        } elseif ($table === 'opening_hours') {
-            $values += [
-                'feature_id' => null,
-                'day_type' => 'weekday',
-                'weekday' => null,
-                'opens_at' => null,
-                'closes_at' => null,
-                'is_closed' => false,
-                'is_24_hours' => false,
-                'by_appointment_only' => false,
-                'valid_from' => null,
-                'valid_until' => null,
-                'internal_comment' => 'Applied from approved opening-hours change request.',
                 'created_by' => $requests->first()->submitted_by,
             ];
         }
@@ -583,18 +563,6 @@ class ChangeRequestApplyService
                 continue;
             }
 
-            if (
-                $table === 'place_vehicle_types'
-                && $request->target_field === 'vehicle_type_id'
-                && is_array($proposed)
-            ) {
-                $values['vehicle_type_id'] = (int) ($proposed['vehicle_type_id'] ?? 0);
-                $capacity = $proposed['capacity'] ?? null;
-                $values['capacity'] = is_numeric($capacity) && (int) $capacity > 0 ? (int) $capacity : null;
-                $changed['vehicle_type_id'] = $values['vehicle_type_id'];
-                $changed['capacity'] = $values['capacity'];
-                continue;
-            }
 
             $values[$request->target_field] = $proposed;
             $changed[$request->target_field] = $proposed;
@@ -602,10 +570,6 @@ class ChangeRequestApplyService
 
         if ($table === 'place_contacts' && (! isset($values['contact_type']) || ! isset($values['value']))) {
             throw new RuntimeException('Creating a contact requires contact_type and value in the same change-request group.');
-        }
-
-        if ($table === 'place_vehicle_types' && (! isset($values['vehicle_type_id']) || (int) $values['vehicle_type_id'] <= 0)) {
-            throw new RuntimeException('Creating vehicle suitability requires vehicle_type_id.');
         }
 
         $newId = DB::table($table)->insertGetId($values);
@@ -622,68 +586,6 @@ class ChangeRequestApplyService
         );
 
         return $requests->mapWithKeys(fn ($request) => [$request->id => $newId])->all();
-    }
-
-    private function applyOpeningHoursGroup(Collection $requests, int $placeId, User $reviewer, $now): array
-    {
-        if (
-            $requests->count() === 1
-            && $requests->first()->target_field === 'period_schedule'
-            && $requests->first()->operation === 'create'
-        ) {
-            $request = $requests->first();
-            $newPeriodId = $this->openingHoursPeriods->applyProposal($request, (int) $reviewer->id, $now);
-
-            if (! $newPeriodId) {
-                throw new RuntimeException('Opening-hours proposal did not create a period.');
-            }
-
-            $this->auditDomainChange(
-                $reviewer,
-                'opening_hour_period',
-                $newPeriodId,
-                'change_request_applied_period_schedule',
-                $this->decodeJsonValue($request->original_value),
-                $this->decodeJsonValue($request->proposed_value),
-                $requests,
-                $now,
-            );
-
-            return [$request->id => $newPeriodId];
-        }
-
-        return $this->applyStandardVersionedRecord($requests, $placeId, $reviewer, $now);
-    }
-
-    private function applyPriceGroup(Collection $requests, int $placeId, User $reviewer, $now): array
-    {
-        if (
-            $requests->count() !== 1
-            || $requests->first()->target_field !== 'period_pricing'
-            || $requests->first()->operation !== 'create'
-        ) {
-            throw new RuntimeException('Structured price proposals must use place_price_offers.period_pricing.');
-        }
-
-        $request = $requests->first();
-        $offerId = $this->pricePeriods->applyProposal($request, (int) $reviewer->id, $now);
-
-        if (! $offerId) {
-            throw new RuntimeException('Price proposal did not create or update an offer.');
-        }
-
-        $this->auditDomainChange(
-            $reviewer,
-            'place_price_offer',
-            $offerId,
-            'change_request_applied_period_pricing',
-            $this->decodeJsonValue($request->original_value),
-            $this->decodeJsonValue($request->proposed_value),
-            $requests,
-            $now,
-        );
-
-        return [$request->id => $offerId];
     }
 
     private function applyPlaceFeatureRecord(Collection $requests, int $placeId, User $reviewer, $now): array
@@ -899,7 +801,6 @@ class ChangeRequestApplyService
         $child = match ($table) {
             'place_contacts' => ['table' => 'place_contact_translations', 'parent_key' => 'place_contact_id'],
             'place_details' => ['table' => 'place_detail_translations', 'parent_key' => 'place_detail_id'],
-            'place_vehicle_types' => ['table' => 'place_vehicle_type_notes', 'parent_key' => 'place_vehicle_type_id'],
             'place_features' => ['table' => 'place_feature_notes', 'parent_key' => 'place_feature_id'],
             default => null,
         };
