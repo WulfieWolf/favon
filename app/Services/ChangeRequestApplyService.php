@@ -28,26 +28,12 @@ class ChangeRequestApplyService
             'valid_until' => 'version_valid_until',
             'audit_type' => 'place_detail',
         ],
-        'place_vehicle_types' => [
-            'place_key' => 'place_id',
-            'valid_from' => 'version_valid_from',
-            'valid_until' => 'version_valid_until',
-            'audit_type' => 'place_vehicle_type',
-        ],
-        'opening_hours' => [
-            'place_key' => 'place_id',
-            'valid_from' => 'version_valid_from',
-            'valid_until' => 'version_valid_until',
-            'audit_type' => 'opening_hour',
-        ],
     ];
 
     public function __construct(
         private PermissionService $permissions,
         private XpService $xpService,
         private BadgeService $badgeService,
-        private OpeningHoursPeriodService $openingHoursPeriods,
-        private PricePeriodService $pricePeriods,
     ) {
     }
 
@@ -110,10 +96,6 @@ class ChangeRequestApplyService
             foreach ($requests->groupBy(function ($request) {
                 $recordKey = $request->target_record_id ?? 'new';
 
-                // Each new vehicle suitability row is its own record.
-                if ($request->target_table === 'place_vehicle_types' && $request->operation === 'create') {
-                    $recordKey = 'new-'.$request->id;
-                }
 
                 // New contacts submitted by the place-info editor use one
                 // composite request per contact so several contacts can be
@@ -138,10 +120,7 @@ class ChangeRequestApplyService
                     'place_addresses' => $this->applyVersionedPlaceAddressUpdates($group, $anchor->place_id, $reviewer, $now),
                     'place_translations',
                     'place_contacts',
-                    'place_details',
-                    'place_vehicle_types' => $this->applyStandardVersionedRecord($group, $anchor->place_id, $reviewer, $now),
-                    'opening_hours' => $this->applyOpeningHoursGroup($group, $anchor->place_id, $reviewer, $now),
-                    'place_price_offers' => $this->applyPriceGroup($group, $anchor->place_id, $reviewer, $now),
+                    'place_details' => $this->applyStandardVersionedRecord($group, $anchor->place_id, $reviewer, $now),
                     'place_features' => $this->applyPlaceFeatureRecord($group, $anchor->place_id, $reviewer, $now),
                     default => throw new RuntimeException("Applying changes to {$table} is not implemented yet."),
                 };
