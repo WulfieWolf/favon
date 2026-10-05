@@ -33,15 +33,6 @@ class PlaceDeletionService
             if ($place->deleted_at) {
                 throw new RuntimeException('Place is already deleted.');
             }
-
-            $photoResult = app(PhotoDeletionService::class)->deleteForPlace(
-                $placeId,
-                (int) $actor->id,
-                'Place permanently deleted.',
-            );
-
-            $this->sanitizeGamification($placeId);
-            $this->markExternalBaseline($placeId);
             $this->deleteNotifications($placeId);
             $this->deleteRelatedAudits($placeId);
             $this->deletePlaceRelations($placeId);
@@ -50,13 +41,6 @@ class PlaceDeletionService
                 ->where('entity_type', 'place')
                 ->where('entity_id', $placeId)
                 ->delete();
-
-            foreach ($photoResult['photo_ids'] as $photoId) {
-                DB::table('audit_logs')
-                    ->where('entity_type', 'photo')
-                    ->where('entity_id', $photoId)
-                    ->delete();
-            }
 
             DB::table('abuse_flags')
                 ->where('entity_type', 'place')
@@ -99,41 +83,8 @@ class PlaceDeletionService
                 'created_at' => now(),
             ]);
 
-            return [
-                'place_id' => $placeId,
-                'photos_deleted' => $photoResult['deleted'],
-                'shared_photos_detached' => $photoResult['shared_detached'],
-            ];
+            return ['place_id' => $placeId];
         }, 3);
-    }
-
-    private function sanitizeGamification(int $placeId): void
-    {
-        if (Schema::hasTable('xp_ledger')) {
-            DB::table('xp_ledger')->where('place_id', $placeId)->update([
-                'place_id' => null,
-                'description' => '',
-            ]);
-        }
-
-        if (Schema::hasTable('badge_progress_events')) {
-            DB::table('badge_progress_events')->where('place_id', $placeId)->update([
-                'place_id' => null,
-                'updated_at' => now(),
-            ]);
-        }
-    }
-
-    private function markExternalBaseline(int $placeId): void
-    {
-        if (! Schema::hasTable('external_records') || ! Schema::hasColumn('external_records', 'tombstone_review_hash')) {
-            return;
-        }
-
-        DB::table('external_records')->where('place_id', $placeId)->update([
-            'tombstone_review_hash' => DB::raw('normalized_hash'),
-            'updated_at' => now(),
-        ]);
     }
 
     private function deleteNotifications(int $placeId): void
