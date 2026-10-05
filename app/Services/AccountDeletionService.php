@@ -188,7 +188,6 @@ class AccountDeletionService
     {
         $tables = [
             'place_favorites',
-            'user_settings',
             'user_consents',
             'user_notification_reads',
             'notification_events',
