@@ -16,7 +16,6 @@ class SuggestableFieldSeeder extends Seeder
             ['places', 'latitude', false, true, false, 30],
             ['places', 'longitude', false, true, false, 40],
             ['places', 'legal_status', false, true, false, 50],
-            ['places', 'opening_status', false, true, false, 60],
             // Internal workflow field used when a newly suggested place is approved.
             // It is intentionally not meant to be rendered as a normal editable place field.
             ['places', 'publication_status', false, true, false, 70],
@@ -45,14 +44,6 @@ class SuggestableFieldSeeder extends Seeder
 
             // General place details
             ['place_details', 'operator_name', true, true, true, 500],
-            ['place_details', 'pitch_count', true, true, true, 510],
-            ['place_details', 'minimum_stay_nights', true, true, true, 515],
-            ['place_details', 'pitch_area_min_m2', true, true, true, 520],
-            ['place_detail_translations', 'season_note', true, true, true, 530],
-
-            // Vehicle suitability
-            ['place_vehicle_types', 'vehicle_type_id', true, false, true, 600],
-            ['place_vehicle_types', 'capacity', false, true, false, 610],
 
             // Features and values
             ['place_features', 'feature_id', true, false, true, 700],
@@ -67,40 +58,6 @@ class SuggestableFieldSeeder extends Seeder
             ['place_features', 'rate_unit_id', true, true, true, 760],
             ['place_feature_notes', 'note', true, true, true, 770],
 
-            // Opening hours
-            ['opening_hours', 'day_type', true, true, true, 800],
-            ['opening_hours', 'weekday', true, true, true, 810],
-            ['opening_hours', 'opens_at', true, true, true, 820],
-            ['opening_hours', 'closes_at', true, true, true, 830],
-            ['opening_hours', 'is_closed', true, true, true, 840],
-            ['opening_hours', 'is_24_hours', true, true, true, 850],
-            ['opening_hours', 'by_appointment_only', true, true, true, 860],
-            ['opening_hours', 'valid_from', true, true, true, 870],
-            ['opening_hours', 'valid_until', true, true, true, 880],
-            // Virtual aggregate field used for recurring period proposals. The
-            // apply service handles the contained schedule atomically.
-            ['opening_hours', 'period_schedule', true, false, false, 885],
-            ['opening_hour_exceptions', 'exception_date', true, true, true, 890],
-            ['opening_hour_exceptions', 'opens_at', true, true, true, 900],
-            ['opening_hour_exceptions', 'closes_at', true, true, true, 910],
-            ['opening_hour_exceptions', 'is_closed', true, true, true, 920],
-            ['opening_hour_exceptions', 'is_24_hours', true, true, true, 930],
-            ['opening_hour_exceptions', 'by_appointment_only', true, true, true, 940],
-
-            // Prices
-            ['place_prices', 'price_type_id', true, false, true, 1000],
-            ['place_prices', 'amount', true, true, true, 1010],
-            ['place_prices', 'currency_unit_id', true, true, true, 1020],
-            ['place_prices', 'rate_quantity', true, true, true, 1030],
-            ['place_prices', 'rate_unit_id', true, true, true, 1040],
-            ['place_prices', 'is_included', true, true, true, 1050],
-            ['place_prices', 'valid_from', true, true, true, 1060],
-            ['place_prices', 'valid_until', true, true, true, 1070],
-            ['place_price_translations', 'label', true, true, true, 1080],
-            ['place_price_translations', 'description', true, true, true, 1090],
-
-            // Structured seasonal pricing (virtual aggregate field).
-            ['place_price_offers', 'period_pricing', true, false, false, 1100],
         ];
 
         foreach ($fields as [$table, $field, $allowCreate, $allowUpdate, $allowDeactivate, $sortOrder]) {
@@ -138,14 +95,5 @@ class SuggestableFieldSeeder extends Seeder
                 'updated_at' => now(),
             ]);
 
-        DB::table('suggestable_fields')
-            ->where('target_table', 'place_detail_translations')
-            ->where('target_field', 'season_information')
-            ->update([
-                'is_suggestable' => false,
-                'is_active' => false,
-                'internal_comment' => 'Replaced by place_detail_translations.season_note.',
-                'updated_at' => now(),
-            ]);
     }
 }
