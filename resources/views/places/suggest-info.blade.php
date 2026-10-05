@@ -214,31 +214,6 @@
                     </label>
 
                     <label class="block">
-                        <span class="mb-1 block text-sm font-medium">{{ __('place_editing.info.pitch_count') }}</span>
-                        <input type="number" name="pitch_count" value="{{ old('pitch_count', $details->pitch_count ?? '') }}" min="0" max="1000000" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
-                    </label>
-
-                    <label class="block">
-                        <span class="mb-1 block text-sm font-medium">{{ __('place_editing.info.minimum_stay_nights') }}</span>
-                        <input type="number" name="minimum_stay_nights" value="{{ old('minimum_stay_nights', $details->minimum_stay_nights ?? '') }}" min="1" max="3650" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
-                    </label>
-
-                    <label class="block">
-                        <span class="mb-1 block text-sm font-medium">{{ __('place_editing.info.pitch_area_min_m2') }}</span>
-                        <input type="number" step="0.01" name="pitch_area_min_m2" value="{{ old('pitch_area_min_m2', $details->pitch_area_min_m2 ?? '') }}" min="0.01" max="1000000" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
-                    </label>
-
-                    <label class="block">
-                        <span class="mb-1 block text-sm font-medium">{{ __('place_editing.info.opening_status') }}</span>
-                        @php($openingStatus = old('opening_status', $place->opening_status ?? 'unclear'))
-                        <select name="opening_status" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
-                            @foreach (__('place_editing.info.opening_statuses') as $value => $label)
-                                <option value="{{ $value }}" @selected($openingStatus === $value)>{{ $label }}</option>
-                            @endforeach
-                        </select>
-                    </label>
-
-                    <label class="block">
                         <span class="mb-1 block text-sm font-medium">{{ __('place_editing.info.website') }}</span>
                         <input type="url" name="website" value="{{ old('website', $website->value ?? '') }}" maxlength="1024" placeholder="https://…" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
                     </label>
