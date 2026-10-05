@@ -1,6 +1,6 @@
 # Favon – Project Context
 
-_Last updated: 2026-10-05 – handoff before repository inventory_
+_Last updated: 2026-10-05 – repository inventory and first slimming pass completed_
 
 This file is the authoritative working context for **Favon**.
 
@@ -1072,165 +1072,267 @@ Unless explicitly reconsidered later:
 
 ---
 
-# 30. Next session plan: full repository inventory before deletion
+# 30. Repository inventory result – 2026-10-05
 
-The next development session should **not start by deleting code immediately**.
+A full Favon-only repository inventory was performed against `WulfieWolf/favon`.
 
-First perform a structured inventory of the current Favon repository and classify the inherited Camperwolf codebase.
+The inventory confirmed that the copied repository was still largely Camperwolf product code on top of a useful Laravel/infrastructure foundation.
 
-## Inventory scope
+## KEEP / ADAPT
 
-Inspect at least:
+Retained as useful Favon foundations:
 
-- `app/`
-- `routes/`
-- `database/migrations/`
-- `database/seeders/`
-- `database/factories/`
-- `resources/views/`
-- `resources/js/`
-- `resources/css/`
-- `config/`
-- `tests/`
-- `.github/workflows/`
-- `docs/`
-- scheduler registrations
-- console commands
-- queued jobs
-- services
-- models and relationships
-- policies/middleware
-- notifications/mail
-- admin controllers/pages
-- localization files
-
-## Classification model
-
-Every meaningful subsystem should be placed into one of three categories:
-
-### KEEP / ADAPT
-
-Infrastructure that is useful for Favon and should be retained, simplified or renamed.
-
-Likely examples:
-
-- Laravel core
+- Laravel application foundation
+- Livewire / Flux / Tailwind / Vite stack
+- Leaflet/map foundation
 - public place browse/search foundation
-- map/geolocation code
-- place profile shell
+- basic place profile shell
 - favorites
-- admin/roles base
-- abuse/security base
-- locale infrastructure
-- basic legal/privacy page infrastructure
+- localization infrastructure
+- admin foundation
+- roles / permissions
+- account suspension and abuse protection
+- security headers / public browse hardening
+- account deletion concepts
+- audit logging
+- support/takedown infrastructure
+- legal-page infrastructure
+- sitemap
+- queue/scheduler foundation
+- usage statistics / internal analytics
 
-### REMOVE
+### Statistics decision
 
-Subsystems that are clearly Camperwolf-specific and not part of Favon.
+The internal statistics system is explicitly **KEEP / ADAPT**, not REMOVE.
 
-Likely examples:
+The current `usage_events` tracking does not store a concrete user ID. It records event/category information such as:
 
-- all Open Data imports
-- import center/staging/external source pipeline
-- photo system
-- image processing
-- camping prices/seasons
-- vehicle suitability
-- XP/badges/achievements
-- owner verification
-- camping-specific review implementation
-- camping-specific help/content
-- obsolete scheduled jobs/commands
-- workflows/tests that exist only for removed functionality
+- event type
+- area / route context
+- optional content reference
+- coarse audience category
+- traffic type
+- optional metadata
+- timestamp
 
-### REBUILD
+This provides useful operator insight without building per-user usage histories.
 
-Areas where inherited Camperwolf code may provide technical ideas, but the Favon behavior should be redesigned instead of merely renamed.
+For Favon, statistics must still be reviewed before launch because a content reference may identify which sensitive place page was viewed. The desired direction is therefore:
 
-Likely examples:
+- keep operator insights
+- do not add per-user analytics
+- avoid persistent individual behavior profiles
+- review whether place-level content references should be coarsened or retained
+- document retention and privacy treatment before production launch
 
-- authentication
-- place type model
-- stable attribute voting
-- variable feature/health-check model
-- check-ins
+## REBUILD
+
+Inherited code may provide ideas, but these areas should be redesigned for Favon:
+
+- authentication -> Telegram-based account model
+- user/account schema -> minimal pseudonymous internal identity
+- place types
+- stable place attributes and voting
+- variable health-check features and freshness/TTL
+- check-ins and proximity validation
 - structured ratings
-- Favon-specific moderation/content rules
+- Favon moderation/content rules
+- place merge behavior after the new Favon schema exists
+- statistics dimensions for the final Favon UI
 
-## Output expected from the inventory
+## REMOVE
 
-Before deleting anything, produce a subsystem-level plan similar to:
+The following inherited product areas were classified as Camperwolf-specific and unnecessary:
 
-```
-PHOTO SYSTEM
-Status: REMOVE
-
-Includes:
-- controllers
-- models/services
-- migrations
-- routes
-- views
-- queue jobs
-- admin pages
-- tests
-
-Dependencies / cleanup:
-- user relationships
-- admin counters
-- navigation
-- scheduled jobs
-- translation keys
-```
-
-The purpose is to understand **complete dependency groups**, not just identify individual files.
+- Open Data import center and source pipelines
+- Niedersachsen / NRW TFIS / Bayern ATKIS / RVR / Overture / DATEX-II tooling
+- research/import scripts
+- photo upload / processing / moderation / helpful votes
+- review-photo system
+- public user profiles
+- profile photos
+- XP / levels / badges / achievements
+- Camperwolf development log
+- Camperwolf demo/performance seed/report helpers
+- Camperwolf feature catalogue UI/workflows
+- Camperwolf place suggestion workflow
+- Camperwolf free-text/current review implementation
+- camping prices
+- camping opening-hours editing
+- vehicle/camping-specific feature editing
+- related obsolete routes, views, services, jobs, tests and seeders
 
 ---
 
-# 31. Removal strategy after inventory
+# 31. First slimming pass – implementation status
 
-Once the inventory is complete, cleanup should happen **subsystem by subsystem**.
+Cleanup work was performed **only in `WulfieWolf/favon`**.
 
-Do not remove isolated files without checking all references.
+Camperwolf remained untouched.
 
-For every subsystem removal, verify:
+Development branch:
 
-- routes
-- controllers
-- services
-- models
-- model relationships
-- migrations
-- foreign keys
-- seeders/factories
-- Blade templates/components
-- JavaScript/CSS references
-- navigation links
-- admin dashboard counters/cards
-- policies/middleware
-- notifications/mail
-- scheduled commands
-- queued jobs
-- service provider/container bindings
-- translation keys
-- GitHub Actions
-- feature/unit tests
+```
+cleanup/remove-camperwolf-subsystems
+```
 
-After each major removal group, the application should remain bootable and testable.
+`main` has not been changed by this cleanup yet.
 
-The intended sequence is:
+## Commits
 
-1. complete inventory
-2. produce KEEP / REMOVE / REBUILD matrix
-3. identify dependency order for removals
-4. remove the safest isolated Camperwolf-only subsystems first
-5. run tests/build
-6. continue with larger coupled subsystems
-7. only after the codebase is substantially slimmed down, redesign the Favon domain model
-8. then implement Telegram auth, place types, voting, check-ins, health checks and structured ratings
+The cleanup is split into logical commits:
 
-The immediate next task for the new session is therefore:
+1. `6ff65a40bc9f7a61e2768d4616aa3fb19e02671c`
+   - remove inherited Camperwolf import subsystem
 
-> **Analyze the complete `WulfieWolf/favon` repository and create a structured subsystem inventory with KEEP / REMOVE / REBUILD classification and dependency notes. Do not delete anything yet.**
+2. `d5e62553f38429a2cf79ef08d668397d0a65479b`
+   - remove Camperwolf devlog and performance helpers
 
-Camperwolf remains read-only reference during this analysis.
+3. `816ff33069131f87d0926d66ec77de52c01b16b5`
+   - remove public profiles and gamification
+
+4. `29a756bb5324990c3e882c76da8736cc9c7b57bf`
+   - slim active application to a minimal place-directory shell
+
+5. `8148996c3177e29f99ddb2e9810bb16735bba6c8`
+   - replace inherited global Camperwolf shell with a Favon transition UI
+
+6. subsequent cleanup:
+   - remove remaining legacy photo/contact/deletion hooks
+
+## Size change
+
+Before this pass the repository contained roughly:
+
+```
+674 files
+167 app/ files
+120 tests
+```
+
+After the major slimming commit it contained roughly:
+
+```
+456 files
+83 app/ files
+51 tests
+```
+
+The exact number may change slightly with follow-up cleanup commits.
+
+## Active transitional application
+
+The active public application is intentionally minimal for now:
+
+- public place browse/search
+- simple place-type filter based on the existing temporary schema
+- Leaflet map
+- place cards
+- minimal place profile with map
+- private favorites
+- legal/help/support foundations
+- authentication temporarily still based on inherited Fortify/e-mail logic
+- admin users/roles/permissions
+- account suspension/deletion foundations
+- support/takedown administration
+- audit log
+- internal usage statistics
+- system/security foundations
+
+This UI is **not the final Favon product**.
+
+Its purpose is to give us a small bootable/testable baseline from which the real Favon domain can be built.
+
+## Intentionally retained transitional debt
+
+Some inherited code/schema remains on purpose until local validation:
+
+### Database migrations
+
+The old migration history has **not yet been aggressively deleted**.
+
+There are still many Camperwolf-era migrations, including tables for already removed product functionality.
+
+Reason:
+
+- deleting arbitrary historical migrations now could break the dependency chain of a fresh database build
+- the next step is to verify a clean local installation first
+- after that, Favon can receive a deliberately designed clean database baseline rather than guessing which historical migrations can disappear independently
+
+### Authentication
+
+Fortify/e-mail/password/passkey-related infrastructure remains temporarily.
+
+It will be replaced or heavily simplified when Telegram authentication is implemented.
+
+Do not invest in polishing the current public account/profile model.
+
+### User-profile tables
+
+Public profile routes/UI and gamification have been removed.
+
+Some internal inherited profile schema/models remain temporarily because the current authentication/admin code still references them.
+
+They should disappear or be simplified as part of the Telegram/minimal-user-model rebuild.
+
+### Place merge
+
+Place merging remains conceptually useful for Favon.
+
+The inherited merge implementation still knows about old Camperwolf tables and must be adapted after the new Favon place schema exists.
+
+Do not treat the current merge implementation as final Favon behavior.
+
+### Notifications / mail
+
+The current notification/mail infrastructure is temporarily retained because the final Telegram/auth/operator communication model is not yet settled.
+
+Evaluate it later rather than rebuilding it during the initial slimming pass.
+
+### Branding / translations / copied docs
+
+The active public shell now says Favon, but a complete repository-wide wording/assets/translation cleanup is still outstanding.
+
+Do not spend time polishing obsolete Camperwolf copy until the active Favon domain/UI is established.
+
+---
+
+# 32. Immediate next step: local development baseline
+
+The next task is **not another large deletion pass**.
+
+First prove that the slimmed Favon branch can run locally.
+
+Recommended sequence:
+
+1. check out/pull `cleanup/remove-camperwolf-subsystems`
+2. install/update PHP dependencies as needed
+3. install/update Node dependencies
+4. prepare a Favon-local `.env`
+5. use a fresh local Favon database
+6. run Laravel migrations
+7. run the application
+8. build frontend assets
+9. inspect the public browse page and a place profile
+10. run the remaining relevant tests
+11. fix boot/runtime/schema references exposed by the cleanup
+
+Do not merge the cleanup to `main` until this local baseline has been validated.
+
+## After the local baseline works
+
+Then proceed in this order:
+
+1. design a clean Favon database baseline / migration strategy
+2. remove obsolete historical Camperwolf schema safely
+3. define the final minimal user schema
+4. implement Telegram authentication
+5. define the Favon place-type catalogue
+6. implement stable attributes + consensus voting
+7. implement variable features + freshness/TTL
+8. implement proximity-validated check-ins
+9. implement structured ratings
+10. adapt moderation, merge and statistics to the final Favon domain
+
+The goal is to build new Favon functionality on a verified small baseline rather than modifying the original Camperwolf application in place.
+
