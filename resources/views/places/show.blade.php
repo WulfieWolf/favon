@@ -916,30 +916,6 @@
                             </dd>
                         </div>
                         <div class="flex justify-between gap-5 py-2.5">
-                            <dt class="text-zinc-500">{{ __('place_profile.pitches') }}</dt>
-                            <dd class="text-right font-medium {{ $details?->pitch_count !== null ? '' : 'italic text-zinc-400' }}">
-                                {{ $details?->pitch_count !== null ? $details->pitch_count : __('place_profile.not_provided') }}
-                            </dd>
-                        </div>
-                        <div class="flex justify-between gap-5 py-2.5">
-                            <dt class="text-zinc-500">{{ __('place_profile.minimum_stay_nights') }}</dt>
-                            <dd class="text-right font-medium {{ $details?->minimum_stay_nights !== null ? '' : 'italic text-zinc-400' }}">
-                                {{ $details?->minimum_stay_nights !== null ? trans_choice('place_profile.minimum_stay_value', $details->minimum_stay_nights, ['count' => $details->minimum_stay_nights]) : __('place_profile.not_provided') }}
-                            </dd>
-                        </div>
-                        <div class="flex justify-between gap-5 py-2.5">
-                            <dt class="text-zinc-500">{{ __('place_profile.pitch_area_min_m2') }}</dt>
-                            <dd class="text-right font-medium {{ $details?->pitch_area_min_m2 !== null ? '' : 'italic text-zinc-400' }}">
-                                {{ $details?->pitch_area_min_m2 !== null ? rtrim(rtrim(number_format((float) $details->pitch_area_min_m2, 2, ',', '.'), '0'), ',').' m²' : __('place_profile.not_provided') }}
-                            </dd>
-                        </div>
-                                    @endif
-                                @else
-                                    <span class="text-red-700 dark:text-red-400">{{ $operatingStatusLabels[$place->opening_status] ?? str($place->opening_status)->headline() }}</span>
-                                @endif
-                            </dd>
-                        </div>
-                        <div class="flex justify-between gap-5 py-2.5">
                             <dt class="text-zinc-500">{{ __('place_profile.legal_status') }}</dt>
                             <dd class="text-right font-medium {{ $place->legal_status === 'unclear' ? 'italic text-zinc-400' : '' }}">
                                 {{ $place->legal_status !== 'unclear' ? ($legalLabels[$place->legal_status] ?? str($place->legal_status)->replace('_', ' ')->headline()) : __('place_profile.not_provided') }}
