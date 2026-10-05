@@ -17,9 +17,6 @@ class AccountDeletionService
     public function statistics(int $userId): array
     {
         return [
-            'photos' => Schema::hasTable('photos')
-                ? DB::table('photos')->where('user_id', $userId)->where('is_active', true)->count()
-                : 0,
             'reviews' => Schema::hasTable('place_reviews')
                 ? DB::table('place_reviews')->where('user_id', $userId)->where('status', 'active')->count()
                 : 0,
@@ -94,7 +91,6 @@ class AccountDeletionService
         $oldEmail = (string) $user->email;
         $now = now();
 
-        $this->deleteUserPhotos($userId, $now);
         $this->deleteDataExports($userId);
         $this->retireReviews($userId, $now);
 
@@ -103,7 +99,6 @@ class AccountDeletionService
             $this->detachSupport($userId);
             $this->detachTechnicalLogs($userId);
             $this->anonymizeReferences($userId);
-            $this->scrubProfile($userId, $now);
 
             if (Schema::hasTable('password_reset_tokens')) {
                 DB::table('password_reset_tokens')->where('email', $oldEmail)->delete();
@@ -117,7 +112,6 @@ class AccountDeletionService
                 'email_verified_at' => null,
                 'password' => Hash::make(Str::random(96)),
                 'remember_token' => null,
-                'profile_photo_id' => null,
                 'last_seen_at' => null,
                 'account_status' => 'deleted',
                 'suspension_reason' => null,
@@ -191,41 +185,15 @@ class AccountDeletionService
         }
     }
 
-    private function deleteUserPhotos(int $userId, $now): void
-    {
-        if (! Schema::hasTable('photos')) {
-            return;
-        }
-
-        $photoIds = DB::table('photos')
-            ->where('user_id', $userId)
-            ->pluck('id')
-            ->map(fn ($id) => (int) $id);
-
-        foreach ($photoIds as $photoId) {
-            app(PhotoDeletionService::class)->deactivate(
-                $photoId,
-                'deleted',
-                null,
-                'Account permanently deleted.',
-            );
-        }
-    }
-
     private function deletePersonalRows(int $userId): void
     {
         $tables = [
             'place_favorites',
-            'user_profile_social_links',
             'user_settings',
             'user_consents',
             'user_notification_reads',
             'notification_events',
             'user_notifications',
-            'xp_ledger',
-            'badge_progress_events',
-            'user_badge_unlocks',
-            'user_activity_days',
             'user_roles',
             'user_permission_overrides',
         ];
@@ -271,12 +239,7 @@ class AccountDeletionService
             ['audit_logs', 'user_id'],
             ['change_requests', 'reviewed_by'],
             ['places', 'approved_by'],
-            ['photos', 'moderated_by'],
-            ['photo_reports', 'moderated_by'],
-            ['place_photo_settings', 'admin_selected_by'],
             ['user_notifications', 'created_by'],
-            ['xp_ledger', 'awarded_by'],
-            ['user_badge_unlocks', 'awarded_by'],
             ['user_roles', 'assigned_by'],
             ['user_permission_overrides', 'set_by'],
             ['abuse_flags', 'resolved_by'],
@@ -293,30 +256,4 @@ class AccountDeletionService
         // point only to the anonymous tombstone account and preserve history.
     }
 
-    private function scrubProfile(int $userId, $now): void
-    {
-        if (! Schema::hasTable('user_profiles')) {
-            return;
-        }
-
-        DB::table('user_profiles')->where('user_id', $userId)->update([
-            'public_handle' => 'deleted-'.Str::lower((string) Str::uuid()),
-            'public_alias' => null,
-            'alias_finalized_at' => null,
-            'handle_finalized_at' => null,
-            'selected_badge_id' => null,
-            'bio' => null,
-            'hometown_city' => null,
-            'hometown_country_code' => null,
-            'hometown_latitude' => null,
-            'hometown_longitude' => null,
-            'hometown_source_id' => null,
-            'birth_date' => null,
-            'gender' => null,
-            'gender_custom' => null,
-            'vehicle_type' => null,
-            'vehicle_details' => null,
-            'updated_at' => $now,
-        ]);
-    }
 }
