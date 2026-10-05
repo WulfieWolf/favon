@@ -129,13 +129,6 @@ class UserDataExportService
             $this->addJson($zip, 'notifications.json', $this->notifications((int) $user->id));
             $this->addJson($zip, 'support.json', $this->support((int) $user->id));
 
-            $photos = $this->photos((int) $user->id);
-            $this->addJson($zip, 'photos/metadata.json', $photos['metadata']);
-            foreach ($photos['files'] as $file) {
-                if (Storage::disk('local')->exists($file['path'])) {
-                    $zip->addFile(Storage::disk('local')->path($file['path']), 'photos/files/'.$file['name']);
-                }
-            }
 
             $zip->addFromString('README.txt', $this->readme($user));
         } catch (\Throwable $e) {
@@ -318,11 +311,6 @@ class UserDataExportService
                     'p.name as place_name', 'p.slug as place_slug',
                     'pf.notify_changes', 'pf.created_at', 'pf.updated_at',
                 ]),
-            'photo_helpful_votes' => DB::table('photo_helpful_votes as phv')
-                ->join('photos as ph', 'ph.id', '=', 'phv.photo_id')
-                ->where('phv.user_id', $userId)
-                ->orderBy('phv.created_at')
-                ->get(['ph.uuid as photo_reference', 'phv.created_at', 'phv.updated_at']),
             'review_reports' => DB::table('place_review_reports as rr')
                 ->join('place_reviews as pr', 'pr.id', '=', 'rr.review_id')
                 ->join('places as p', 'p.id', '=', 'pr.place_id')
@@ -332,14 +320,6 @@ class UserDataExportService
                     'p.name as place_name', 'p.slug as place_slug',
                     'rr.reason', 'rr.comment', 'rr.status',
                     'rr.created_at', 'rr.moderated_at',
-                ]),
-            'photo_reports' => DB::table('photo_reports as pr')
-                ->join('photos as ph', 'ph.id', '=', 'pr.photo_id')
-                ->where('pr.reported_by', $userId)
-                ->orderBy('pr.created_at')
-                ->get([
-                    'ph.uuid as photo_reference', 'pr.reason', 'pr.comment',
-                    'pr.status', 'pr.created_at', 'pr.moderated_at',
                 ]),
         ];
     }
@@ -422,52 +402,6 @@ class UserDataExportService
                     ->get(['message_type', 'message', 'created_at', 'updated_at']),
             ];
         })->all();
-    }
-
-    private function photos(int $userId): array
-    {
-        $rows = DB::table('photos as ph')
-            ->leftJoin('place_photos as pp', 'pp.photo_id', '=', 'ph.id')
-            ->leftJoin('places as p', 'p.id', '=', 'pp.place_id')
-            ->where('ph.user_id', $userId)
-            ->orderBy('ph.created_at')
-            ->get([
-                'ph.uuid', 'ph.storage_path', 'ph.mime_type', 'ph.file_size',
-                'ph.width', 'ph.height', 'ph.status', 'ph.is_active',
-                'ph.moderated_at', 'ph.moderation_reason',
-                'ph.created_at', 'ph.updated_at',
-                'p.name as place_name', 'p.slug as place_slug',
-            ]);
-
-        $files = [];
-        $metadata = [];
-
-        foreach ($rows as $row) {
-            $fileName = null;
-            if ($row->storage_path && Storage::disk('local')->exists($row->storage_path)) {
-                $extension = pathinfo($row->storage_path, PATHINFO_EXTENSION) ?: 'bin';
-                $fileName = ($row->uuid ?: 'photo-'.count($metadata)).'.'.$extension;
-                $files[] = ['path' => $row->storage_path, 'name' => $fileName];
-            }
-
-            $metadata[] = [
-                'photo_reference' => $row->uuid,
-                'place' => $row->place_name ? ['name' => $row->place_name, 'slug' => $row->place_slug] : null,
-                'mime_type' => $row->mime_type,
-                'file_size' => $row->file_size,
-                'width' => $row->width,
-                'height' => $row->height,
-                'status' => $row->status,
-                'is_active' => (bool) $row->is_active,
-                'moderated_at' => $row->moderated_at,
-                'moderation_reason' => $row->moderation_reason,
-                'created_at' => $row->created_at,
-                'updated_at' => $row->updated_at,
-                'file' => $fileName ? 'files/'.$fileName : null,
-            ];
-        }
-
-        return ['metadata' => $metadata, 'files' => $files];
     }
 
     private function readme(User $user): string
