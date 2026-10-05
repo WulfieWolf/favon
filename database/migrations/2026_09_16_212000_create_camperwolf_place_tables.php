@@ -21,7 +21,6 @@ return new class extends Migration
             $table->char('country_code', 2)->nullable();
             $table->string('publication_status', 32)->default('pending');
             $table->string('legal_status', 32)->default('unclear');
-            $table->string('opening_status', 32)->default('unclear');
             $table->boolean('is_active')->default(true);
             $table->text('internal_comment')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
