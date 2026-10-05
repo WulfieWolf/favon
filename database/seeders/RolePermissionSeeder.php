@@ -171,8 +171,6 @@ class RolePermissionSeeder extends Seeder
             ['statistics', 'statistics.view', 'Statistik ansehen', 'Aggregierte Bestands-, Aktivitäts- und Nutzungsstatistiken ansehen.'],
 
             ['system', 'settings.manage', 'Systemeinstellungen verwalten', 'Allgemeine Systemeinstellungen ändern.'],
-            ['system', 'imports.run', 'Datenimporte ausführen', 'Administrativ Datenimporte starten.'],
-            ['system', 'imports.view_history', 'Importhistorie ansehen', 'Importläufe und deren Ergebnis ansehen.'],
         ];
 
         $sort = 10;
