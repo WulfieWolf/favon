@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -17,9 +16,6 @@ class AccountDeletionService
     public function statistics(int $userId): array
     {
         return [
-            'photos' => Schema::hasTable('photos')
-                ? DB::table('photos')->where('user_id', $userId)->where('is_active', true)->count()
-                : 0,
             'reviews' => Schema::hasTable('place_reviews')
                 ? DB::table('place_reviews')->where('user_id', $userId)->where('status', 'active')->count()
                 : 0,
@@ -94,7 +90,6 @@ class AccountDeletionService
         $oldEmail = (string) $user->email;
         $now = now();
 
-        $this->deleteUserPhotos($userId, $now);
         $this->deleteDataExports($userId);
         $this->retireReviews($userId, $now);
 
@@ -117,7 +112,6 @@ class AccountDeletionService
                 'email_verified_at' => null,
                 'password' => Hash::make(Str::random(96)),
                 'remember_token' => null,
-                'profile_photo_id' => null,
                 'last_seen_at' => null,
                 'account_status' => 'deleted',
                 'suspension_reason' => null,
@@ -191,27 +185,6 @@ class AccountDeletionService
         }
     }
 
-    private function deleteUserPhotos(int $userId, $now): void
-    {
-        if (! Schema::hasTable('photos')) {
-            return;
-        }
-
-        $photoIds = DB::table('photos')
-            ->where('user_id', $userId)
-            ->pluck('id')
-            ->map(fn ($id) => (int) $id);
-
-        foreach ($photoIds as $photoId) {
-            app(PhotoDeletionService::class)->deactivate(
-                $photoId,
-                'deleted',
-                null,
-                'Account permanently deleted.',
-            );
-        }
-    }
-
     private function deletePersonalRows(int $userId): void
     {
         $tables = [
@@ -271,9 +244,6 @@ class AccountDeletionService
             ['audit_logs', 'user_id'],
             ['change_requests', 'reviewed_by'],
             ['places', 'approved_by'],
-            ['photos', 'moderated_by'],
-            ['photo_reports', 'moderated_by'],
-            ['place_photo_settings', 'admin_selected_by'],
             ['user_notifications', 'created_by'],
             ['xp_ledger', 'awarded_by'],
             ['user_badge_unlocks', 'awarded_by'],
@@ -289,8 +259,8 @@ class AccountDeletionService
         }
 
         // Deliberately retained: places.created_by, change_requests.submitted_by,
-        // place_reviews.user_id, photo/report/helpful author relations. They now
-        // point only to the anonymous tombstone account and preserve history.
+        // place_reviews.user_id remains linked to the anonymous tombstone account
+        // so moderation and contribution history can remain internally consistent.
     }
 
     private function scrubProfile(int $userId, $now): void
