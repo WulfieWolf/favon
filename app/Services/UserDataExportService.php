@@ -120,12 +120,10 @@ class UserDataExportService
 
         try {
             $this->addJson($zip, 'account.json', $this->account($user));
-            $this->addJson($zip, 'profile.json', $this->profile((int) $user->id));
             $this->addJson($zip, 'settings.json', $this->settings((int) $user->id));
             $this->addJson($zip, 'reviews.json', $this->reviews((int) $user->id));
             $this->addJson($zip, 'contributions.json', $this->contributions((int) $user->id));
             $this->addJson($zip, 'interactions.json', $this->interactions((int) $user->id));
-            $this->addJson($zip, 'gamification.json', $this->gamification((int) $user->id));
             $this->addJson($zip, 'notifications.json', $this->notifications((int) $user->id));
             $this->addJson($zip, 'support.json', $this->support((int) $user->id));
 
@@ -207,33 +205,9 @@ class UserDataExportService
         ];
     }
 
-    private function profile(int $userId): array
-    {
-        $profile = DB::table('user_profiles')->where('user_id', $userId)->first([
-            'public_handle', 'public_alias', 'alias_finalized_at', 'handle_finalized_at', 'bio', 'hometown_city', 'hometown_country_code',
-            'hometown_latitude', 'hometown_longitude', 'hometown_source_id', 'birth_date', 'gender',
-            'gender_custom', 'vehicle_type', 'vehicle_details', 'created_at', 'updated_at',
-        ]);
-
-        return [
-            'profile' => $profile,
-            'social_links' => DB::table('user_profile_social_links')
-                ->where('user_id', $userId)
-                ->orderBy('sort_order')
-                ->get(['platform', 'url', 'sort_order', 'created_at', 'updated_at']),
-        ];
-    }
-
     private function settings(int $userId): array
     {
         return [
-            'preferences' => DB::table('user_settings')->where('user_id', $userId)->first([
-                'show_real_name', 'show_reviews_in_profile', 'show_photos_in_profile',
-                'show_join_date', 'show_activity_counts', 'allow_email_notifications',
-                'profile_photo_visibility', 'bio_visibility', 'hometown_visibility',
-                'age_visibility', 'gender_visibility', 'vehicle_visibility',
-                'social_links_visibility', 'show_gamification', 'created_at', 'updated_at',
-            ]),
             'consents' => DB::table('user_consents')
                 ->where('user_id', $userId)
                 ->orderBy('accepted_at')
@@ -321,32 +295,6 @@ class UserDataExportService
                     'rr.reason', 'rr.comment', 'rr.status',
                     'rr.created_at', 'rr.moderated_at',
                 ]),
-        ];
-    }
-
-    private function gamification(int $userId): array
-    {
-        return [
-            'xp_ledger' => DB::table('xp_ledger as xp')
-                ->leftJoin('places as p', 'p.id', '=', 'xp.place_id')
-                ->where('xp.user_id', $userId)
-                ->orderBy('xp.created_at')
-                ->get([
-                    'xp.event_type', 'p.name as place_name', 'p.slug as place_slug',
-                    'xp.xp', 'xp.description', 'xp.rule_version', 'xp.created_at',
-                ]),
-            'badges' => DB::table('user_badge_unlocks as ubu')
-                ->join('badge_definitions as bd', 'bd.id', '=', 'ubu.badge_id')
-                ->where('ubu.user_id', $userId)
-                ->orderBy('ubu.unlocked_at')
-                ->get([
-                    'bd.slug', 'bd.name', 'ubu.tier', 'ubu.award_comment',
-                    'ubu.unlocked_at', 'ubu.revoked_at',
-                ]),
-            'activity_days' => DB::table('user_activity_days')
-                ->where('user_id', $userId)
-                ->orderBy('activity_date')
-                ->get(['activity_date', 'source', 'created_at']),
         ];
     }
 
