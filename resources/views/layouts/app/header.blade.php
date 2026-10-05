@@ -52,9 +52,6 @@
                 @auth
                     @php
                         $mobileUser = auth()->user();
-                        $mobileProfileUrl = $mobileUser->publicProfileUrl();
-                        $mobilePhotoUrl = $mobileUser->publicProfilePhotoUrl();
-                        $mobileGamification = $mobileUser->gamificationSummary();
                         $mobilePermissionService = app(\App\Services\PermissionService::class);
                         $mobileRolePreview = $mobilePermissionService->activeRolePreview($mobileUser);
                         $mobilePreviewRoles = $mobilePermissionService->isOwner($mobileUser)
@@ -87,20 +84,9 @@
 
                         <flux:dropdown position="bottom" align="end">
                         <button type="button" class="relative inline-flex size-10 items-center justify-center rounded-full">
-                            @if ($mobilePhotoUrl)
-                                <img src="{{ $mobilePhotoUrl }}" alt="{{ $mobileUser->publicName() }}" class="size-9 rounded-full object-cover">
-                            @else
-                                <span class="flex size-9 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">{{ $mobileUser->initials() }}</span>
-                            @endif
-                            @if ($mobileGamification)
-                                <span class="absolute bottom-0 right-0 inline-flex min-w-4 items-center justify-center rounded-full border border-white bg-zinc-900 px-1 text-[9px] font-bold leading-4 text-white dark:border-zinc-950 dark:bg-white dark:text-zinc-950">{{ $mobileGamification['level'] }}</span>
-                            @endif
+                            <span class="flex size-9 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">{{ $mobileUser->initials() }}</span>
                         </button>
                         <flux:menu>
-                            @if ($mobileProfileUrl)
-                                <flux:menu.item :href="$mobileProfileUrl" icon="user">{{ __('community_profile.public_title') }}</flux:menu.item>
-                            @endif
-                            <flux:menu.item :href="route('community-profile.edit')" icon="pencil-square">{{ __('community_profile.settings.title') }}</flux:menu.item>
 
                             @if ($mobilePermissionService->can($mobileUser, 'admin.access'))
                                 <flux:menu.item :href="route('admin.index')" icon="wrench-screwdriver">{{ __('ui.admin') }}</flux:menu.item>

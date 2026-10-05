@@ -6,8 +6,6 @@ use App\Services\FeatureWorkflowService;
 use App\Services\PermissionService;
 use App\Services\PlaceHistoryService;
 use App\Services\UsageAnalyticsService;
-use App\Services\XpService;
-use App\Services\BadgeService;
 use App\Services\UserNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -385,16 +383,6 @@ class PlaceFeatureController extends Controller
             return;
         }
 
-        app(XpService::class)->awardPlaceField(
-            $userId,
-            $placeId,
-            'feature:'.$featureId,
-            (int) config('xp.place_info.default_xp', 1),
-            'Merkmal ergänzt oder aktualisiert',
-            'place_feature',
-            $recordId,
-        );
-
         $request = (object) [
             'submitted_by' => $userId,
             'place_id' => $placeId,
@@ -402,8 +390,6 @@ class PlaceFeatureController extends Controller
             'target_field' => 'status',
             'proposed_value' => null,
         ];
-
-        app(BadgeService::class)->recordApprovedPlaceChange($request, $recordId, $placeName);
     }
 
     private function recordDirectFeatureHistory(int $placeId, \App\Models\User $user, array $changes): void

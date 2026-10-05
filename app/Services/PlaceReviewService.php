@@ -162,21 +162,6 @@ class PlaceReviewService
         });
 
         $placeName = (string) DB::table('places')->where('id', $placeId)->value('name');
-        $detailed = mb_strlen($text ?? '') >= (int) config('xp.reviews.detailed_min_chars', 300);
-
-        app(XpService::class)->awardReview((int) $user->id, $placeId, $result['review_id'], $placeName, $detailed);
-
-        foreach ($this->dimensions() as $key => $dimension) {
-            app(XpService::class)->awardRatingDimension(
-                (int) $user->id,
-                $placeId,
-                $key,
-                $dimension['label'],
-                $placeName,
-            );
-        }
-
-        app(BadgeService::class)->recordReview((int) $user->id, $placeId, $result['review_id']);
 
         return $result;
     }
@@ -333,11 +318,6 @@ class PlaceReviewService
             ->whereIn('id', $userIds)
             ->get()
             ->keyBy('id');
-        $xpTotals = DB::table('xp_ledger')
-            ->whereIn('user_id', $userIds)
-            ->selectRaw('user_id, SUM(xp) as total_xp')
-            ->groupBy('user_id')
-            ->pluck('total_xp', 'user_id');
         $settings = DB::table('user_settings')
             ->whereIn('user_id', $userIds)
             ->get(['user_id', 'show_gamification', 'profile_photo_visibility'])
@@ -365,12 +345,6 @@ class PlaceReviewService
             $presenters[$userId] = [
                 'user' => $user,
                 'photo_url' => $canSeePhoto ? $user->publicProfilePhotoUrl() : null,
-                'gamification' => $showGamification
-                    ? app(LevelService::class)->summary((int) ($xpTotals[$userId] ?? 0))
-                    : null,
-                'title' => $showGamification && $titles->has($userId)
-                    ? ['label' => $titles[$userId]]
-                    : null,
                 'joined_at' => $user->created_at?->format('m/Y'),
             ];
         }

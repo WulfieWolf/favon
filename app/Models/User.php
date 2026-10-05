@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Jobs\SendPasswordResetMail;
 use App\Jobs\SendVerificationMail;
 use App\Services\PermissionService;
-use App\Services\XpService;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Translation\HasLocalePreference;
@@ -139,19 +138,6 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
             : null;
     }
 
-    public function gamificationVisible(): bool
-    {
-        return (bool) (DB::table('user_settings')
-            ->where('user_id', $this->id)
-            ->value('show_gamification') ?? true);
-    }
-
-    public function gamificationSummary(): ?array
-    {
-        return $this->gamificationVisible()
-            ? app(XpService::class)->summaryForUser((int) $this->id)
-            : null;
-    }
 
     public function hasPermission(string $permissionSlug): bool
     {
