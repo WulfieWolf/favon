@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\PermissionService;
-use App\Services\PlacePhotoService;
 use App\Services\PlaceReviewService;
 use App\Services\UsageAnalyticsService;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use RuntimeException;
-use Throwable;
 
 class PlaceReviewController extends Controller
 {
@@ -21,7 +19,6 @@ class PlaceReviewController extends Controller
         Request $request,
         string $slug,
         PlaceReviewService $reviews,
-        PlacePhotoService $photos,
         PermissionService $permissions,
     ): JsonResponse {
         $place = $this->publishedPlace($slug);
@@ -36,10 +33,10 @@ class PlaceReviewController extends Controller
             'place' => $place,
             'placeReviews' => $collection,
             'reviewPresenters' => $reviews->presentersFor($collection, $request->user()),
-            'reviewPhotos' => $photos->publicPhotosForReviews($collection->pluck('review_id'), $request->user()?->id),
+            'reviewPhotos' => collect(),
             'dimensionMeta' => $reviews->dimensions(),
-            'canManagePhotoCovers' => $permissions->can($request->user(), 'photos.set_cover'),
-            'placePhotoSetting' => DB::table('place_photo_settings')->where('place_id', $place->id)->first(),
+            'canManagePhotoCovers' => false,
+            'placePhotoSetting' => null,
         ])->render();
 
         return response()->json([
@@ -53,7 +50,6 @@ class PlaceReviewController extends Controller
         Request $request,
         string $slug,
         PlaceReviewService $reviews,
-        PlacePhotoService $photos,
         PermissionService $permissions,
         UsageAnalyticsService $analytics,
     ): RedirectResponse
@@ -81,11 +77,8 @@ class PlaceReviewController extends Controller
 
         $data = $request->validate($ratingRules + [
             'review_text' => ['nullable', 'string', 'min:20', 'max:2000'],
-            'photos' => ['nullable', 'array', 'max:'.config('photos.max_per_review', 5)],
-            'photos.*' => ['file', 'max:'.config('photos.upload_max_kilobytes', 51200)],
         ], $validationMessages);
 
-        abort_unless(empty($data['photos']) || $permissions->can($request->user(), 'photos.upload'), 404);
 
         try {
             $result = $reviews->submit(
@@ -100,23 +93,6 @@ class PlaceReviewController extends Controller
             return back()->withInput()->withErrors(['review' => $e->getMessage()]);
         }
 
-        $photoWarning = null;
-        if (! empty($data['photos'])) {
-            try {
-                $photos->queueUploads(
-                    $request->user(),
-                    (int) $place->id,
-                    (int) $result['review_id'],
-                    $data['photos'],
-                );
-            } catch (RuntimeException $exception) {
-                $photoWarning = __('reviews.flash.saved_photos_failed', ['message' => $exception->getMessage()]);
-            } catch (Throwable $exception) {
-                report($exception);
-                $photoWarning = __('reviews.flash.saved_photos_technical');
-            }
-        }
-
         $message = $result['is_correction']
             ? __('reviews.flash.corrected')
             : __('reviews.flash.published');
@@ -128,9 +104,9 @@ class PlaceReviewController extends Controller
         return redirect()
             ->route('places.show', ['slug' => $place->slug, 'sort' => 'newest'])
             ->with('ui_dialog', [
-                'variant' => $photoWarning ? 'warning' : 'success',
+                'variant' => 'success',
                 'message' => $message,
-                'details' => $photoWarning ? [$photoWarning] : [],
+                'details' => [],
             ]);
     }
 
