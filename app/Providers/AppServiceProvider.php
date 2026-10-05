@@ -115,32 +115,9 @@ class AppServiceProvider extends ServiceProvider
             ];
         });
 
-        RateLimiter::for('review-write', function (Request $request) use ($actorKey, $isPrivileged): array|Limit {
-            if ($isPrivileged($request)) {
-                return Limit::none();
-            }
 
-            $key = $actorKey($request);
 
-            return [
-                Limit::perHour(5)->by('review-write-hour:'.$key),
-                Limit::perDay(15)->by('review-write-day:'.$key),
-            ];
-        });
 
-        RateLimiter::for('photo-upload', function (Request $request) use ($actorKey, $isPrivileged): array|Limit {
-            if ($isPrivileged($request)) {
-                return Limit::none();
-            }
-
-            $key = $actorKey($request);
-
-            return [
-                Limit::perMinute(5)->by('photo-upload-minute:'.$key),
-                Limit::perHour(15)->by('photo-upload-hour:'.$key),
-                Limit::perDay(50)->by('photo-upload-day:'.$key),
-            ];
-        });
 
         RateLimiter::for('report-create', function (Request $request) use ($actorKey, $isPrivileged): array|Limit {
             if ($isPrivileged($request)) {

@@ -2,12 +2,8 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AuditLogController;
-use App\Http\Controllers\Admin\ChangeRequestController;
-use App\Http\Controllers\Admin\FeatureCatalogController;
-use App\Http\Controllers\Admin\PhotoModerationController;
-use App\Http\Controllers\Admin\PlaceMergeController;
 use App\Http\Controllers\Admin\PlaceDeletionController;
-use App\Http\Controllers\Admin\ReviewReportController;
+use App\Http\Controllers\Admin\PlaceMergeController;
 use App\Http\Controllers\Admin\StatisticsController;
 use App\Http\Controllers\Admin\SupportContentController;
 use App\Http\Controllers\Admin\SupportController;
@@ -19,36 +15,17 @@ use App\Http\Controllers\LegalController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MailPreviewController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PhotoAssetController;
-use App\Http\Controllers\PhotoHelpfulVoteController;
-use App\Http\Controllers\PhotoReportController;
 use App\Http\Controllers\PlaceBrowseController;
-use App\Http\Controllers\PlaceContactController;
-use App\Http\Controllers\PlaceFeatureController;
-use App\Http\Controllers\PlaceInfoSuggestionController;
-use App\Http\Controllers\PlaceOpeningHoursController;
-use App\Http\Controllers\PlacePhotoController;
-use App\Http\Controllers\PlacePriceController;
 use App\Http\Controllers\PlaceProfileController;
-use App\Http\Controllers\PlaceReviewController;
-use App\Http\Controllers\PlaceSuggestionController;
 use App\Http\Controllers\RolePreviewController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SupportTicketController;
-use App\Http\Controllers\UserPhotoLibraryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/', PlaceBrowseController::class)->middleware(['harden-browse', 'throttle:public-read'])->name('home');
 Route::get('dashboard', PlaceBrowseController::class)->middleware(['harden-browse', 'throttle:public-read', 'limit-filtered-browse'])->name('dashboard');
 Route::get('places/{slug}', PlaceProfileController::class)->middleware('throttle:public-read')->name('places.show');
-Route::get('places/{slug}/contact/email', [PlaceContactController::class, 'email'])->middleware('throttle:30,1')->name('places.contact.email');
-Route::get('places/{slug}/reviews/feed', [PlaceReviewController::class, 'feed'])->middleware('throttle:public-read')->name('places.reviews.feed');
-Route::get('photos/{uuid}/{variant}', [PhotoAssetController::class, 'show'])
-    ->whereUuid('uuid')
-    ->whereIn('variant', ['preview', 'detail'])
-    ->name('photos.show');
-Route::get('reviews/{review}/history', [PlaceReviewController::class, 'history'])->middleware('throttle:public-read')->name('reviews.history');
 Route::post('locale', [LocaleController::class, 'update'])->name('locale.update');
 
 if (app()->environment('local')) {
@@ -72,54 +49,6 @@ Route::post('support/report', [SupportTicketController::class, 'store'])->middle
 Route::get('support/thanks', [SupportTicketController::class, 'thanks'])->name('support.thanks');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('places/{slug}/suggest-info', [PlaceInfoSuggestionController::class, 'edit'])->name('places.info-suggest.edit');
-    Route::post('places/{slug}/suggest-info', [PlaceInfoSuggestionController::class, 'update'])->middleware('throttle:community-write')->name('places.info-suggest.update');
-
-    Route::get('places/{slug}/opening-hours', [PlaceOpeningHoursController::class, 'edit'])->name('places.opening-hours.edit');
-    Route::put('places/{slug}/opening-hours', [PlaceOpeningHoursController::class, 'update'])->middleware('throttle:community-write')->name('places.opening-hours.update');
-
-    Route::get('places/{slug}/prices', [PlacePriceController::class, 'edit'])->name('places.prices.edit');
-    Route::put('places/{slug}/prices', [PlacePriceController::class, 'update'])->middleware('throttle:community-write')->name('places.prices.update');
-
-    Route::post('places/{slug}/reviews', [PlaceReviewController::class, 'store'])->middleware(['permission:reviews.create', 'throttle:review-write'])->name('reviews.store');
-    Route::delete('places/{slug}/reviews', [PlaceReviewController::class, 'destroy'])->middleware(['permission:reviews.delete_own', 'throttle:community-write'])->name('reviews.destroy');
-    Route::delete('reviews/{review}/history/{version}', [PlaceReviewController::class, 'hideVersion'])->middleware(['permission:reviews.delete_own', 'throttle:community-write'])->name('reviews.history.hide');
-    Route::post('reviews/{review}/report', [PlaceReviewController::class, 'report'])->middleware(['permission:reports.create', 'throttle:report-create'])->name('reviews.report');
-    Route::post('places/{slug}/review-photos', [PlacePhotoController::class, 'store'])
-        ->middleware(['permission:photos.upload', 'throttle:photo-upload'])
-        ->name('photos.store');
-    Route::get('my/photos/{uuid}/{variant}', [PhotoAssetController::class, 'owner'])
-        ->whereUuid('uuid')
-        ->whereIn('variant', ['preview', 'detail'])
-        ->name('photos.owner');
-    Route::get('my/photos', UserPhotoLibraryController::class)->name('my.photos.index');
-    Route::delete('photos/{photo}', [PlacePhotoController::class, 'destroy'])
-        ->middleware(['permission:photos.delete_own', 'throttle:community-write'])
-        ->name('photos.destroy');
-    Route::post('photos/{photo}/helpful', [PhotoHelpfulVoteController::class, 'store'])
-        ->middleware(['permission:reviews.vote_helpful', 'throttle:engagement-write'])
-        ->name('photos.helpful.store');
-    Route::delete('photos/{photo}/helpful', [PhotoHelpfulVoteController::class, 'destroy'])
-        ->middleware(['permission:reviews.remove_own_helpful_vote', 'throttle:engagement-write'])
-        ->name('photos.helpful.destroy');
-    Route::post('photos/{photo}/report', [PhotoReportController::class, 'store'])
-        ->middleware(['permission:reports.create', 'throttle:report-create'])
-        ->name('photos.report');
-    Route::put('places/{slug}/features/category/{category}', [PlaceFeatureController::class, 'updateCategory'])->middleware('throttle:community-write')->name('places.features.category.update');
-    Route::put('places/{slug}/features/{feature}', [PlaceFeatureController::class, 'update'])->middleware('throttle:community-write')->name('places.features.update');
-
-    Route::middleware('permission:places.suggest')->group(function () {
-        Route::get('places/suggest/new', [PlaceSuggestionController::class, 'create'])->name('places.suggest.create');
-        Route::get('places/suggest/duplicates', [PlaceSuggestionController::class, 'nearbyDuplicates'])->name('places.suggest.duplicates');
-        Route::post('places/suggest', [PlaceSuggestionController::class, 'store'])->middleware('throttle:place-create')->name('places.suggest.store');
-        Route::get('places/drafts/{place}/edit', [PlaceSuggestionController::class, 'editDraft'])->name('places.drafts.edit');
-        Route::put('places/drafts/{place}', [PlaceSuggestionController::class, 'updateDraft'])->name('places.drafts.update');
-        Route::get('places/drafts/{place}/features', [PlaceSuggestionController::class, 'editDraftFeatures'])->name('places.drafts.features.edit');
-        Route::put('places/drafts/{place}/features', [PlaceSuggestionController::class, 'updateDraftFeatures'])->middleware('throttle:community-write')->name('places.drafts.features.update');
-        Route::get('places/drafts/{place}/review', [PlaceSuggestionController::class, 'reviewDraft'])->name('places.drafts.review');
-        Route::post('places/drafts/{place}/submit', [PlaceSuggestionController::class, 'submitDraft'])->middleware('throttle:community-write')->name('places.drafts.submit');
-    });
-
     Route::middleware('permission:favorites.manage_own')->group(function () {
         Route::get('favorites', fn () => redirect()->route('dashboard', ['favorites' => 1]))->name('favorites.index');
         Route::post('places/{slug}/favorite', [FavoriteController::class, 'store'])->middleware('throttle:engagement-write')->name('favorites.store');
@@ -133,6 +62,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('support/my', [SupportTicketController::class, 'myIndex'])->middleware('permission:support.view_own')->name('support.my.index');
     Route::get('support/my/{ticket}', [SupportTicketController::class, 'myShow'])->middleware('permission:support.view_own')->name('support.my.show');
     Route::post('support/my/{ticket}/reply', [SupportTicketController::class, 'reply'])->middleware(['permission:support.reply_own', 'throttle:support-reply'])->name('support.my.reply');
+
+    Route::post('role-preview', [RolePreviewController::class, 'update'])->name('role-preview.update');
 
     Route::prefix('admin/support')
         ->name('admin.support.')
@@ -150,28 +81,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/{ticket}', [SupportController::class, 'update'])->middleware('permission:support.change_status')->name('update');
         });
 
-    Route::post('role-preview', [RolePreviewController::class, 'update'])->name('role-preview.update');
-
-    Route::prefix('admin/photos')
-        ->name('admin.photos.')
-        ->group(function () {
-            Route::get('/', [PhotoModerationController::class, 'index'])->middleware('permission:photos.view_pending')->name('index');
-            Route::get('/library', [PhotoModerationController::class, 'library'])->middleware('permission:photos.view_pending')->name('library');
-            Route::get('/asset/{uuid}/{variant}', [PhotoAssetController::class, 'moderation'])
-                ->middleware('permission:photos.view_pending')
-                ->whereUuid('uuid')
-                ->whereIn('variant', ['preview', 'detail'])
-                ->name('asset');
-            Route::post('/{photo}/approve', [PhotoModerationController::class, 'approve'])->middleware('permission:photos.moderate')->name('approve');
-            Route::post('/{photo}/reject', [PhotoModerationController::class, 'reject'])->middleware('permission:photos.moderate')->name('reject');
-            Route::post('/{photo}/remove', [PhotoModerationController::class, 'remove'])->middleware('permission:photos.delete_any')->name('remove');
-            Route::post('/reports/{report}/dismiss', [PhotoModerationController::class, 'dismissReport'])->middleware('permission:photos.moderate')->name('reports.dismiss');
-            Route::post('/{photo}/cover', [PhotoModerationController::class, 'setCover'])->middleware('permission:photos.set_cover')->name('cover.set');
-            Route::delete('/places/{place}/cover', [PhotoModerationController::class, 'clearCover'])->middleware('permission:photos.set_cover')->name('cover.clear');
-            Route::post('/{photo}/exclude-thumbnail', [PhotoModerationController::class, 'excludeThumbnail'])->middleware('permission:photos.set_cover')->name('thumbnail.exclude');
-            Route::post('/{photo}/include-thumbnail', [PhotoModerationController::class, 'includeThumbnail'])->middleware('permission:photos.set_cover')->name('thumbnail.include');
-        });
-
     Route::prefix('admin')
         ->name('admin.')
         ->middleware('permission:admin.access')
@@ -181,29 +90,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/statistics', [StatisticsController::class, 'index'])->middleware('permission:statistics.view')->name('statistics.index');
             Route::put('/system/debug', [SystemToolsController::class, 'updateDebug'])->name('system.debug');
             Route::put('/system/access', [SystemToolsController::class, 'updateAccess'])->name('system.access');
-            Route::post('/system/data-scores/rebuild', [SystemToolsController::class, 'rebuildDataScores'])->name('system.data-scores.rebuild');
+
             Route::get('/users', [AdminController::class, 'users'])->middleware('permission:users.view')->name('users.index');
             Route::get('/users/{user}', [AdminController::class, 'user'])->middleware('permission:users.view_details')->name('users.show');
-            Route::get('/users/{user}/photo', [AdminController::class, 'userPhoto'])->middleware('permission:users.view')->name('users.photo');
             Route::put('/users/{user}/account', [AdminController::class, 'updateAccount'])->middleware('permission:users.edit_profile')->name('users.account.update');
             Route::post('/users/{user}/verify-email', [AdminController::class, 'verifyEmail'])->middleware('permission:users.verify_email')->name('users.email.verify');
             Route::post('/users/{user}/suspend', [AdminController::class, 'suspend'])->middleware('permission:users.suspend')->name('users.suspend');
             Route::delete('/users/{user}/suspend', [AdminController::class, 'unsuspend'])->middleware('permission:users.unsuspend')->name('users.unsuspend');
             Route::delete('/users/{user}/account', [AdminController::class, 'deleteAccount'])->middleware('permission:users.delete_account')->name('users.account.delete');
-            Route::get('/review-reports', [ReviewReportController::class, 'index'])->middleware('permission:reports.view_all')->name('review-reports.index');
-            Route::post('/review-reports/{report}/remove', [ReviewReportController::class, 'remove'])->middleware('permission:reports.handle')->name('review-reports.remove');
-            Route::post('/review-reports/{report}/dismiss', [ReviewReportController::class, 'dismiss'])->middleware('permission:reports.handle')->name('review-reports.dismiss');
             Route::post('/users/{user}/roles', [AdminController::class, 'assignRole'])->middleware('permission:users.assign_roles')->name('users.roles.assign');
             Route::delete('/users/{user}/roles', [AdminController::class, 'removeRole'])->middleware('permission:users.assign_roles')->name('users.roles.remove');
             Route::put('/users/{user}/permission-overrides', [AdminController::class, 'setOverride'])->middleware('permission:users.override_permissions')->name('users.permissions.override');
-
-            Route::middleware('permission:features.manage_catalog')->group(function () {
-                Route::get('/features', [FeatureCatalogController::class, 'index'])->name('features.index');
-                Route::post('/features', [FeatureCatalogController::class, 'storeFeature'])->name('features.store');
-                Route::put('/features/{feature}', [FeatureCatalogController::class, 'updateFeature'])->name('features.update');
-                Route::post('/feature-categories', [FeatureCatalogController::class, 'storeCategory'])->name('feature-categories.store');
-                Route::put('/feature-categories/{category}', [FeatureCatalogController::class, 'updateCategory'])->name('feature-categories.update');
-            });
 
             Route::delete('/places/{place}/permanent', [PlaceDeletionController::class, 'destroy'])
                 ->middleware('permission:places.delete_permanently')
@@ -213,13 +110,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/place-merges', [PlaceMergeController::class, 'index'])->name('place-merges.index');
                 Route::post('/place-merges', [PlaceMergeController::class, 'store'])->name('place-merges.store');
                 Route::post('/place-merges/{merge}/reverse', [PlaceMergeController::class, 'reverse'])->name('place-merges.reverse');
-            });
-
-            Route::middleware('permission:places.approve_changes')->group(function () {
-                Route::get('/change-requests', [ChangeRequestController::class, 'index'])->name('change-requests.index');
-                Route::get('/change-requests/{changeRequest}', [ChangeRequestController::class, 'show'])->name('change-requests.show');
-                Route::post('/change-requests/{changeRequest}/approve', [ChangeRequestController::class, 'approve'])->name('change-requests.approve');
-                Route::post('/change-requests/{changeRequest}/reject', [ChangeRequestController::class, 'reject'])->name('change-requests.reject');
             });
 
             Route::middleware('permission:notifications.send_system')->group(function () {
