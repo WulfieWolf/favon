@@ -1076,7 +1076,7 @@
         $facetQuery = $facetState['query'];
         $placeTypeChangeFacetQuery = array_intersect_key($facetQuery, array_flip(['rating']));
         $placeTypeQuery = $selectedPlaceTypes !== [] ? ['place_types' => $selectedPlaceTypes] : [];
-        $vehicleTypeQuery = $selectedVehicleTypes !== [] ? ['vehicle_types' => $selectedVehicleTypes] : [];
+        $vehicleTypeQuery = [];
         $facetPersistentQuery = array_merge($mapQuery, $placeTypeQuery, $vehicleTypeQuery, $facetQuery);
         $persistentQuery = array_merge($facetPersistentQuery, $favoritesOnly ? ['favorites' => 1] : []);
         $hasFacetFilters = $facetState['active_filters']->isNotEmpty();
@@ -1161,31 +1161,6 @@
                     </form>
                 </section>
 
-                <section>
-                    <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">{{ __('ui.browse.suitable_for') }}</h3>
-                    <form method="GET" action="{{ route('dashboard') }}" class="space-y-2">
-                        <input type="hidden" name="vehicle_types_filter" value="1">
-                        @include('partials.query-hidden-fields', ['values' => array_merge($mapQuery, $placeTypeQuery, $facetQuery, $favoritesOnly ? ['favorites' => 1] : [], array_filter(['q' => $q, 'sort' => $sort, 'sort_direction' => $sortDirection])), 'prefix' => ''])
-                        <details class="rounded-md border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900">
-                            <summary class="cursor-pointer list-none px-3 py-2 text-sm">
-                                {{ $selectedVehicleTypes === []
-                                    ? __('ui.browse.all_vehicle_types')
-                                    : __('ui.browse.selected_vehicle_types', ['count' => count($selectedVehicleTypes)]) }}
-                            </summary>
-                            <div class="space-y-1 border-t border-zinc-200 p-2 dark:border-zinc-700">
-                                @foreach ($filterVehicleTypes as $vehicleType)
-                                    <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                                        <input type="checkbox" name="vehicle_types[]" value="{{ $vehicleType->slug }}" @checked(in_array($vehicleType->slug, $selectedVehicleTypes, true)) class="rounded border-zinc-300 dark:border-zinc-600">
-                                        <span>{{ $vehicleType->label }}</span>
-                                    </label>
-                                @endforeach
-                            </div>
-                        </details>
-                        <button class="w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1.5 text-[11px] font-medium text-zinc-500 transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-800 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200">
-                            {{ __('ui.browse.apply_selection') }}
-                        </button>
-                    </form>
-                </section>
 
                 <section class="tag-group" data-tag-group data-expanded="1">
                     <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">{{ __('ui.browse.personal') }}</h3>
@@ -1687,9 +1662,7 @@
                             @foreach ($selectedPlaceTypes as $selectedPlaceType)
                                 <input type="hidden" name="place_types[]" value="{{ $selectedPlaceType }}">
                             @endforeach
-                            @foreach ($selectedVehicleTypes as $selectedVehicleType)
-                                <input type="hidden" name="vehicle_types[]" value="{{ $selectedVehicleType }}">
-                            @endforeach
+
                             @foreach ($mapQuery as $key => $value)
                                 <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                             @endforeach
