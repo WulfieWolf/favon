@@ -138,7 +138,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/system/data-scores/rebuild', [SystemToolsController::class, 'rebuildDataScores'])->name('system.data-scores.rebuild');
             Route::get('/users', [AdminController::class, 'users'])->middleware('permission:users.view')->name('users.index');
             Route::get('/users/{user}', [AdminController::class, 'user'])->middleware('permission:users.view_details')->name('users.show');
-            Route::get('/users/{user}/photo', [AdminController::class, 'userPhoto'])->middleware('permission:users.view')->name('users.photo');
             Route::put('/users/{user}/account', [AdminController::class, 'updateAccount'])->middleware('permission:users.edit_profile')->name('users.account.update');
             Route::post('/users/{user}/verify-email', [AdminController::class, 'verifyEmail'])->middleware('permission:users.verify_email')->name('users.email.verify');
             Route::post('/users/{user}/suspend', [AdminController::class, 'suspend'])->middleware('permission:users.suspend')->name('users.suspend');
