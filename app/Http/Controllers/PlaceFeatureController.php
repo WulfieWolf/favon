@@ -6,8 +6,6 @@ use App\Services\FeatureWorkflowService;
 use App\Services\PermissionService;
 use App\Services\PlaceHistoryService;
 use App\Services\UsageAnalyticsService;
-use App\Services\XpService;
-use App\Services\BadgeService;
 use App\Services\UserNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -378,32 +376,7 @@ class PlaceFeatureController extends Controller
 
     private function recordDirectFeatureRewards(int $placeId, string $placeName, int $userId, array $change): void
     {
-        $recordId = (int) ($change['record_id'] ?? 0);
-        $featureId = (int) ($change['feature_id'] ?? 0);
-
-        if ($recordId < 1 || $featureId < 1) {
-            return;
-        }
-
-        app(XpService::class)->awardPlaceField(
-            $userId,
-            $placeId,
-            'feature:'.$featureId,
-            (int) config('xp.place_info.default_xp', 1),
-            'Merkmal ergänzt oder aktualisiert',
-            'place_feature',
-            $recordId,
-        );
-
-        $request = (object) [
-            'submitted_by' => $userId,
-            'place_id' => $placeId,
-            'target_table' => 'place_features',
-            'target_field' => 'status',
-            'proposed_value' => null,
-        ];
-
-        app(BadgeService::class)->recordApprovedPlaceChange($request, $recordId, $placeName);
+        // Favon does not use XP or badges.
     }
 
     private function recordDirectFeatureHistory(int $placeId, \App\Models\User $user, array $changes): void
