@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\AdminDebugService;
-use App\Services\CurrentOpeningStateService;
 use App\Services\PlaceBrowseFacetService;
 use App\Support\LocaleConfiguration;
 use Illuminate\Http\JsonResponse;
@@ -26,7 +25,6 @@ class PlaceBrowseController extends Controller
         Request $request,
         PlaceBrowseFacetService $facetService,
         AdminDebugService $debug,
-        CurrentOpeningStateService $openingStateService,
     ): View|JsonResponse
     {
         $profileEnabled = $debug->enabled($request->user());
@@ -47,15 +45,11 @@ class PlaceBrowseController extends Controller
         $q = trim((string) $request->query('q', ''));
         $isAuthenticated = (bool) $request->user();
 
-        // Price filtering is intentionally hidden for the public beta. Keep the
-        // backend intact, but ignore stale/manual price filter query input.
-        $request->query->remove('price_values');
-
         // Keep non-sensitive browse preferences for the lifetime of the Laravel
         // session. Search text, map position/bounds and geolocation are
         // intentionally excluded. Query values explicitly supplied by the
         // current request win; missing values fall back to the session.
-        $persistentKeys = ['sort', 'sort_direction', 'place_types', 'vehicle_types', 'features', 'feature_values', 'option_values', 'rating', 'favorites'];
+        $persistentKeys = ['sort', 'sort_direction', 'place_types', 'features', 'feature_values', 'option_values', 'rating', 'favorites'];
 
         if ($request->boolean('reset_filters')) {
             $request->session()->forget('browse_filters');
@@ -64,7 +58,7 @@ class PlaceBrowseController extends Controller
 
             // Forms whose values may legitimately become empty send a marker,
             // because browsers omit an unchecked checkbox group entirely.
-            foreach (['place_types', 'vehicle_types'] as $multiSelectKey) {
+            foreach (['place_types'] as $multiSelectKey) {
                 if ($request->boolean($multiSelectKey.'_filter') && ! $request->query->has($multiSelectKey)) {
                     $request->query->set($multiSelectKey, []);
                 }
@@ -165,34 +159,8 @@ class PlaceBrowseController extends Controller
             $sortDirection = in_array($sort, ['name', 'city'], true) ? 'asc' : 'desc';
         }
 
-        $requestedVehicleTypes = $request->query('vehicle_types', []);
-        if (! is_array($requestedVehicleTypes)) {
-            $requestedVehicleTypes = [];
-        }
-
-        $requestedVehicleTypes = collect($requestedVehicleTypes)
-            ->filter(fn ($value) => is_string($value) && preg_match('/^[a-z0-9-]+$/', $value))
-            ->unique()
-            ->take(20)
-            ->values();
-
-        $selectedVehicleTypeRows = $requestedVehicleTypes->isEmpty()
-            ? collect()
-            : DB::table('vehicle_types')
-                ->whereIn('slug', $requestedVehicleTypes)
-                ->where('is_active', true)
-                ->get(['id', 'slug']);
-
-        $selectedVehicleTypes = $requestedVehicleTypes
-            ->filter(fn ($slug) => $selectedVehicleTypeRows->contains('slug', $slug))
-            ->values()
-            ->all();
-
-        $selectedVehicleTypeIds = $selectedVehicleTypeRows
-            ->pluck('id')
-            ->map(fn ($id) => (int) $id)
-            ->values()
-            ->all();
+        $selectedVehicleTypes = [];
+        $selectedVehicleTypeIds = [];
 
         $selectedFeatures = collect($request->query('features', []))
             ->filter(fn ($value) => is_string($value) && preg_match('/^[a-z0-9-]+$/', $value))
@@ -260,16 +228,6 @@ class PlaceBrowseController extends Controller
             $placesQuery->whereIn('p.place_type_id', $selectedPlaceTypeIds);
         }
 
-        foreach ($selectedVehicleTypeIds as $vehicleTypeId) {
-            $placesQuery->whereExists(function ($vehicleQuery) use ($vehicleTypeId): void {
-                $vehicleQuery->selectRaw('1')
-                    ->from('place_vehicle_types as pvt_filter')
-                    ->whereColumn('pvt_filter.place_id', 'p.id')
-                    ->where('pvt_filter.vehicle_type_id', $vehicleTypeId)
-                    ->where('pvt_filter.is_active', true)
-                    ->whereNull('pvt_filter.version_valid_until');
-            });
-        }
 
         if ($favoritesOnly) {
             $placesQuery->whereExists(function ($favoriteQuery) use ($request): void {
@@ -522,7 +480,7 @@ class PlaceBrowseController extends Controller
         $profileMark('Pagination');
         $placeIds = $places->getCollection()->pluck('id');
         $thumbnails = collect();
-        $currentOpeningStates = $openingStateService->forPlaces($placeIds);
+        $currentOpeningStates = collect();
         $profileMark('Page opening states');
 
         $reviewStats = $placeIds->isEmpty()
@@ -699,15 +657,7 @@ class PlaceBrowseController extends Controller
                 ?? Str::headline(str_replace('-', ' ', $type->slug));
         });
 
-        $filterVehicleTypes = DB::table('vehicle_types')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get(['id', 'slug']);
-        $filterVehicleTypeLabels = $this->translationLabels(['vehicle_type', 'vehicle_types'], $filterVehicleTypes->pluck('id'));
-        $filterVehicleTypes->each(function ($type) use ($filterVehicleTypeLabels) {
-            $type->label = $filterVehicleTypeLabels[(int) $type->id]
-                ?? Str::headline(str_replace('-', ' ', $type->slug));
-        });
+        $filterVehicleTypes = collect();
 
         $featureLabels = $this->translationLabels(['feature', 'features'], $featureIds);
         $categoryLabels = $this->translationLabels(['feature_category', 'feature_categories'], $categoryIds);
