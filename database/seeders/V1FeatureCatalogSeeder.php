@@ -34,7 +34,6 @@ class V1FeatureCatalogSeeder extends Seeder
             UtilitiesFeatureRefinementSeeder::class,
             FeatureCatalogRefinementSeeder::class,
             FeatureWorkflowSeeder::class,
-            RestAreaCatalogSeeder::class,
         ]);
 
         DB::transaction(function (): void {
@@ -66,7 +65,6 @@ class V1FeatureCatalogSeeder extends Seeder
             $this->deactivateLegacyFeatures();
             $this->ensureWorkflows();
             $this->ensurePlaceTypeVisibility();
-            $this->ensureStructuredPriceProducts();
             $this->ensureAdminPermission();
 
             DB::table('catalog_releases')->insert([
@@ -295,35 +293,6 @@ class V1FeatureCatalogSeeder extends Seeder
         return collect(self::PLACE_TYPES)->mapWithKeys(function (string $slug) use ($standard, $extended) {
             return [$slug => in_array($slug, $standard, true) ? 'standard' : (in_array($slug, $extended, true) ? 'extended' : 'hidden')];
         })->all();
-    }
-
-    private function ensureStructuredPriceProducts(): void
-    {
-        foreach ([
-            ['washing-machine', 160, 'Waschmaschine', 'Washing machine'],
-            ['dryer', 170, 'Trockner', 'Dryer'],
-        ] as [$slug, $sortOrder, $de, $en]) {
-            DB::table('price_products')->updateOrInsert(
-                ['slug' => $slug],
-                [
-                    'sort_order' => $sortOrder,
-                    'supports_vehicle_length' => false,
-                    'supports_age_range' => false,
-                    'is_active' => true,
-                    'is_searchable' => true,
-                    'updated_at' => now(),
-                    'created_at' => now(),
-                ],
-            );
-
-            $id = DB::table('price_products')->where('slug', $slug)->value('id');
-            $this->translate('price_product', $id, 'name', $de, $en);
-
-            DB::table('price_product_variants')->updateOrInsert(
-                ['price_product_id' => $id, 'slug' => 'other'],
-                ['sort_order' => 1000, 'is_active' => true, 'updated_at' => now(), 'created_at' => now()],
-            );
-        }
     }
 
     private function ensureAdminPermission(): void
