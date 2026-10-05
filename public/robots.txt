@@ -1,0 +1,19 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password/
+Disallow: /settings/
+Disallow: /notifications
+Disallow: /support/report
+Disallow: /support/datenschutz-recht
+Disallow: /support/my
+Disallow: /my/
+Disallow: /role-preview
+
+# Public place browsing and place profiles are intentionally crawlable.
+# Keep the unfiltered dashboard crawlable, but do not crawl faceted/filter URLs.
+Disallow: /dashboard?
+
+Sitemap: https://camperwolf.de/sitemap.xml

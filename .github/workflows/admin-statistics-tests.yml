@@ -1,0 +1,63 @@
+name: admin-statistics-tests
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  focused-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          extensions: imagick
+          tools: composer:v2
+          coverage: none
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Prepare application
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+          php artisan migrate --force
+
+      - name: PHP syntax check
+        run: |
+          php -l app/Http/Controllers/Admin/AdminController.php
+          php -l app/Http/Controllers/Admin/StatisticsController.php
+          php -l app/Http/Middleware/TrackUsagePageViews.php
+          php -l app/Services/UsageAnalyticsService.php
+          php -l app/Http/Controllers/FavoriteController.php
+          php -l app/Http/Controllers/PlaceReviewController.php
+          php -l app/Http/Controllers/PlaceSuggestionController.php
+          php -l app/Http/Controllers/PlaceInfoSuggestionController.php
+          php -l app/Http/Controllers/PlacePhotoController.php
+          php -l app/Http/Controllers/PlaceOpeningHoursController.php
+          php -l app/Http/Controllers/PlacePriceController.php
+          php -l app/Http/Controllers/PlaceFeatureController.php
+          php -l app/Http/Controllers/SupportTicketController.php
+          php -l database/migrations/2026_09_30_081000_create_usage_events_and_statistics_permission.php
+          php -l database/seeders/RolePermissionSeeder.php
+          php -l routes/web.php
+          php -l lang/de/admin.php
+          php -l lang/en/admin.php
+
+      - name: Compile Blade views
+        run: php artisan view:cache
+
+      - name: Run focused tests
+        run: php artisan test tests/Feature/UsageAnalyticsTest.php tests/Feature/LocaleUiTranslationTest.php

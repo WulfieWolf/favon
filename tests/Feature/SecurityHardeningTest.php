@@ -1,0 +1,118 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\RateLimiter;
+use Tests\TestCase;
+
+class SecurityHardeningTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_public_browse_accepts_normal_queries_and_sends_security_headers(): void
+    {
+        $response = $this->get(route('home', ['q' => 'Essen']));
+
+        $response->assertOk()
+            ->assertHeader('X-Content-Type-Options', 'nosniff')
+            ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
+            ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+            ->assertHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self), payment=()');
+    }
+
+    public function test_public_browse_rejects_excessively_long_search_terms(): void
+    {
+        $this->get(route('home', ['q' => str_repeat('x', 121)]))
+            ->assertStatus(422);
+
+        $this->assertDatabaseHas('security_events', [
+            'event_type' => 'browse_query_rejected',
+        ]);
+    }
+
+    public function test_public_browse_rejects_excessive_query_complexity(): void
+    {
+        $query = [];
+
+        for ($i = 0; $i < 121; $i++) {
+            $query['features']['feature-'.$i] = 'yes';
+        }
+
+        $this->get(route('home', $query))
+            ->assertStatus(414);
+    }
+
+    public function test_private_auth_surface_is_marked_noindex(): void
+    {
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    }
+
+    public function test_public_support_entry_forms_are_marked_noindex(): void
+    {
+        $this->get(route('support.report'))
+            ->assertOk()
+            ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+
+        $this->get(route('support.privacy-legal'))
+            ->assertOk()
+            ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    }
+
+    public function test_public_home_is_not_marked_noindex(): void
+    {
+        $response = $this->get(route('home'));
+
+        $response->assertOk();
+        $this->assertFalse($response->headers->has('X-Robots-Tag'));
+    }
+
+    public function test_robots_disallows_filtered_dashboard_but_keeps_public_places_crawlable(): void
+    {
+        $robots = file_get_contents(public_path('robots.txt'));
+
+        $this->assertStringContainsString('Disallow: /dashboard?', $robots);
+        $this->assertStringNotContainsString('Disallow: /places/', $robots);
+    }
+
+    public function test_filtered_dashboard_requests_are_rate_limited_but_plain_dashboard_is_not(): void
+    {
+        config(['camperwolf.security.filtered_browse_per_minute' => 2]);
+
+        RateLimiter::clear('filtered-browse:127.0.0.1');
+
+        $this->get(route('dashboard', ['q' => 'Essen']))->assertOk();
+        $this->get(route('dashboard', ['q' => 'Bochum']))->assertOk();
+        $this->get(route('dashboard', ['q' => 'Dortmund']))->assertStatus(429);
+
+        $this->assertDatabaseHas('security_events', [
+            'event_type' => 'rate_limited',
+        ]);
+
+        RateLimiter::clear('filtered-browse:127.0.0.1');
+
+        for ($i = 0; $i < 3; $i++) {
+            $this->get(route('dashboard'))->assertOk();
+        }
+    }
+
+    public function test_password_reset_mail_requests_are_limited_per_ip(): void
+    {
+        for ($i = 1; $i <= 20; $i++) {
+            $this->post('/forgot-password', [
+                'email' => 'reset-'.$i.'@example.test',
+            ])->assertStatus(302);
+        }
+
+        $this->post('/forgot-password', [
+            'email' => 'reset-21@example.test',
+        ])->assertStatus(429);
+
+        $this->assertDatabaseHas('security_events', [
+            'event_type' => 'rate_limited',
+        ]);
+    }
+
+}
