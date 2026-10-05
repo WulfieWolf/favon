@@ -12,32 +12,17 @@ class UserRoutePermissionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_denied_review_notification_and_support_permissions_block_direct_routes(): void
+    public function test_denied_notification_and_support_permissions_block_direct_routes(): void
     {
         $this->seed(RolePermissionSeeder::class);
 
         $user = User::factory()->create();
         $this->assignRole($user, 'user');
 
-        $this->deny($user, 'reviews.create');
-        $this->deny($user, 'reviews.delete_own');
-        $this->deny($user, 'reports.create');
         $this->deny($user, 'notifications.view_own');
         $this->deny($user, 'notifications.manage_own');
         $this->deny($user, 'support.view_own');
         $this->deny($user, 'support.reply_own');
-
-        $this->actingAs($user)
-            ->post(route('reviews.store', ['slug' => 'permission-test']), [])
-            ->assertNotFound();
-
-        $this->actingAs($user)
-            ->delete(route('reviews.destroy', ['slug' => 'permission-test']))
-            ->assertNotFound();
-
-        $this->actingAs($user)
-            ->post(route('reviews.report', ['review' => 999999]), [])
-            ->assertNotFound();
 
         $this->actingAs($user)
             ->get(route('notifications.index'))

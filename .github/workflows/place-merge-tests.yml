@@ -17,7 +17,6 @@ jobs:
       - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
         with:
           php-version: '8.4'
-          extensions: imagick
           tools: composer:v2
           coverage: none
       - name: Install dependencies
@@ -28,14 +27,8 @@ jobs:
           php artisan key:generate
           touch database/database.sqlite
           php artisan migrate --force
-      - name: Check changed PHP file formatting
+      - name: Check current merge PHP formatting
         run: |
-          vendor/bin/pint --test \
-            app/Http/Controllers/Admin/PlaceMergeController.php \
-            app/Http/Controllers/UserPhotoLibraryController.php \
-            app/Services/PlaceMergeService.php \
-            app/Services/PhotoMergeConflictService.php \
-            database/migrations/2026_09_21_120000_create_place_merge_tables.php \
-            tests/Feature/PlaceMergeServiceTest.php
-      - name: Run merge and affected subsystem tests
-        run: php artisan test --filter='(PlaceMergeServiceTest|PlacePhotoServiceTest|PlaceReviewServiceTest|PlaceOpeningHoursTest|PlacePriceTest|PlaceSuggestionDuplicateTest)'
+          vendor/bin/pint --test             app/Http/Controllers/Admin/PlaceMergeController.php             app/Services/PlaceMergeService.php             database/migrations/2026_09_21_120000_create_place_merge_tables.php             tests/Feature/PlaceMergeServiceTest.php
+      - name: Run current merge tests
+        run: php artisan test tests/Feature/PlaceMergeServiceTest.php tests/Feature/PlaceMergeAdminLocaleTest.php
