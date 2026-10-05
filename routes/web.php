@@ -149,8 +149,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/users/{user}/roles', [AdminController::class, 'assignRole'])->middleware('permission:users.assign_roles')->name('users.roles.assign');
             Route::delete('/users/{user}/roles', [AdminController::class, 'removeRole'])->middleware('permission:users.assign_roles')->name('users.roles.remove');
             Route::put('/users/{user}/permission-overrides', [AdminController::class, 'setOverride'])->middleware('permission:users.override_permissions')->name('users.permissions.override');
-            Route::post('/users/{user}/badges', [AdminController::class, 'grantBadge'])->middleware('permission:users.manage_badges')->name('users.badges.grant');
-            Route::delete('/users/{user}/badges/{badge}', [AdminController::class, 'revokeBadge'])->middleware('permission:users.manage_badges')->name('users.badges.revoke');
 
             Route::middleware('permission:features.manage_catalog')->group(function () {
                 Route::get('/features', [FeatureCatalogController::class, 'index'])->name('features.index');
