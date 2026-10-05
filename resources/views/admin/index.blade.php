@@ -65,23 +65,6 @@
                     </a>
                 @endif
 
-                @if ($canViewImports)
-                    <a href="{{ route('admin.imports.index') }}" class="{{ $cardClass }}">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="font-semibold">{{ __('admin.overview.imports') }}</div>
-                            <div class="flex flex-wrap justify-end gap-1">
-                                @if ($newImportCandidateCount > 0)
-                                    <span class="{{ $openBadge }}">{{ __('admin.overview.import_candidates_count', ['count' => $newImportCandidateCount]) }}</span>
-                                @endif
-                                @if ($pendingImportReviewCount > 0)
-                                    <span class="{{ $openBadge }}">{{ __('admin.overview.import_reviews_count', ['count' => $pendingImportReviewCount]) }}</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="mt-1 text-sm text-neutral-500">{{ __('admin.overview.imports_help') }}</div>
-                    </a>
-                @endif
-
                 @if ($canSendSystemNotifications)
                     <a href="{{ route('admin.notifications.create') }}" class="{{ $cardClass }}">
                         <div class="font-semibold">{{ __('admin.overview.system_notification') }}</div>

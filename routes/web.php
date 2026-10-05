@@ -4,7 +4,6 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\ChangeRequestController;
 use App\Http\Controllers\Admin\FeatureCatalogController;
-use App\Http\Controllers\Admin\ImportCenterController;
 use App\Http\Controllers\Admin\PhotoModerationController;
 use App\Http\Controllers\Admin\PlaceMergeController;
 use App\Http\Controllers\Admin\PlaceDeletionController;
@@ -234,43 +233,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::middleware('permission:notifications.send_system')->group(function () {
                 Route::get('/notifications/create', [SystemNotificationController::class, 'create'])->name('notifications.create');
                 Route::post('/notifications', [SystemNotificationController::class, 'store'])->name('notifications.store');
-            });
-
-            Route::middleware('permission:imports.view_history')->group(function () {
-                Route::get('/imports', [ImportCenterController::class, 'index'])->name('imports.index');
-                Route::get('/imports/csv-template', [ImportCenterController::class, 'template'])->middleware('permission:imports.run')->name('imports.template');
-                Route::get('/imports/research-export', [ImportCenterController::class, 'researchExport'])->middleware('permission:imports.run')->name('imports.research-export');
-                Route::post('/imports/research-upload', [ImportCenterController::class, 'researchUpload'])->middleware('permission:imports.run')->name('imports.research-upload');
-                Route::post('/imports/research-reviews/approve-all', [ImportCenterController::class, 'approveAllResearchReviews'])->middleware('permission:imports.run')->name('imports.research-reviews.approve-all');
-                Route::post('/imports/research-reviews/{review}/approve', [ImportCenterController::class, 'approveResearchReview'])->middleware('permission:imports.run')->name('imports.research-reviews.approve');
-                Route::post('/imports/upload', [ImportCenterController::class, 'upload'])->middleware('permission:imports.run')->name('imports.upload');
-                Route::post('/imports/candidates/bulk-create', [ImportCenterController::class, 'createPlacesFromCandidates'])->middleware('permission:imports.run')->name('imports.candidates.bulk-create');
-                Route::post('/imports/candidates/create-all-batch', [ImportCenterController::class, 'createAllCandidateBatch'])->middleware('permission:imports.run')->name('imports.candidates.create-all-batch');
-                Route::post('/imports/media/import-selected', [ImportCenterController::class, 'importExternalMediaSelected'])->middleware('permission:imports.run')->name('imports.media.import-selected');
-                Route::post('/imports/media/import-all-batch', [ImportCenterController::class, 'importExternalMediaBatch'])->middleware('permission:imports.run')->name('imports.media.import-all-batch');
-                Route::post('/imports/candidates/{record}/create-place', [ImportCenterController::class, 'createPlaceFromCandidate'])->middleware('permission:imports.run')->name('imports.candidates.create-place');
-                Route::post('/imports/candidates/{record}/ignore', [ImportCenterController::class, 'ignoreCandidate'])->middleware('permission:imports.run')->name('imports.candidates.ignore');
-                Route::post('/imports/reviews/{review}/link', [ImportCenterController::class, 'linkReview'])->middleware('permission:imports.run')->name('imports.reviews.link');
-                Route::post('/imports/reviews/{review}/promote-candidate', [ImportCenterController::class, 'promoteReviewCandidate'])->middleware(['permission:imports.run', 'permission:places.merge'])->name('imports.reviews.promote-candidate');
-                Route::get('/imports/reviews/{review}/map', [ImportCenterController::class, 'reviewMap'])->name('imports.reviews.map');
-                Route::post('/imports/reviews/{review}/coordinates', [ImportCenterController::class, 'updateReviewCoordinates'])->middleware('permission:imports.run')->name('imports.reviews.coordinates');
-                Route::post('/imports/reviews/{review}/reopen', [ImportCenterController::class, 'reopenReviewPlace'])->middleware('permission:imports.run')->name('imports.reviews.reopen');
-                Route::post('/imports/reviews/{review}/resolve-reopen', [ImportCenterController::class, 'resolvePossibleReopenReview'])->middleware('permission:imports.run')->name('imports.reviews.resolve-reopen');
-                Route::get('/imports/duplicate-groups/{review}/map', [ImportCenterController::class, 'duplicateGroupMap'])->name('imports.duplicate-groups.map');
-                Route::post('/imports/duplicate-groups/link', [ImportCenterController::class, 'linkDuplicateGroup'])->middleware('permission:imports.run')->name('imports.duplicate-groups.link');
-                Route::post('/imports/duplicate-groups/link-eligible-atkis', [ImportCenterController::class, 'linkEligibleAtkisDuplicateGroups'])->middleware('permission:imports.run')->name('imports.duplicate-groups.link-eligible-atkis');
-                Route::post('/imports/duplicate-groups/create-place', [ImportCenterController::class, 'createPlaceFromDuplicateGroup'])->middleware('permission:imports.run')->name('imports.duplicate-groups.create-place');
-                Route::post('/imports/duplicate-groups/{review}/create-separate', [ImportCenterController::class, 'createSeparateDuplicateGroupMember'])->middleware('permission:imports.run')->name('imports.duplicate-groups.create-separate');
-                Route::post('/imports/reviews/{review}/create-place', [ImportCenterController::class, 'createPlaceFromReview'])->middleware('permission:imports.run')->name('imports.reviews.create-place');
-                Route::post('/imports/reviews/defer-selected', [ImportCenterController::class, 'deferSelectedReviews'])->middleware('permission:imports.run')->name('imports.reviews.defer-selected');
-                Route::post('/imports/reviews/ignore-selected', [ImportCenterController::class, 'ignoreSelectedReviews'])->middleware('permission:imports.run')->name('imports.reviews.ignore-selected');
-                Route::post('/imports/reviews/defer-all', [ImportCenterController::class, 'deferAllReviews'])->middleware('permission:imports.run')->name('imports.reviews.defer-all');
-                Route::post('/imports/reviews/ignore-all', [ImportCenterController::class, 'ignoreAllReviews'])->middleware('permission:imports.run')->name('imports.reviews.ignore-all');
-                Route::post('/imports/reviews/{review}/ignore', [ImportCenterController::class, 'ignoreReview'])->middleware('permission:imports.run')->name('imports.reviews.ignore');
-                Route::post('/imports/reviews/{review}/deleted-place/create', [ImportCenterController::class, 'createPlaceFromDeletedReview'])->middleware('permission:imports.run')->name('imports.reviews.deleted-place.create');
-                Route::post('/imports/reviews/{review}/deleted-place/ignore', [ImportCenterController::class, 'ignoreDeletedPlaceReview'])->middleware('permission:imports.run')->name('imports.reviews.deleted-place.ignore');
-                Route::post('/imports/reviews/{review}/resolve-source-missing', [ImportCenterController::class, 'resolveSourceMissingReview'])->middleware('permission:imports.run')->name('imports.reviews.resolve-source-missing');
-                Route::post('/imports/reviews/{review}/defer', [ImportCenterController::class, 'deferReview'])->middleware('permission:imports.run')->name('imports.reviews.defer');
             });
 
             Route::middleware('permission:audit.view_all')->group(function () {

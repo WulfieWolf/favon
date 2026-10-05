@@ -44,7 +44,6 @@ class AdminController extends Controller
             'canManageSupport' => $permissions->can($user, 'support.view_all'),
             'canModeratePhotos' => $permissions->can($user, 'photos.view_pending'),
             'canManageFeatures' => $permissions->can($user, 'features.manage_catalog'),
-            'canViewImports' => $permissions->can($user, 'imports.view_history'),
             'userCount' => User::count(),
             'pendingChangeRequestCount' => DB::table('change_requests')->where('status', 'pending')->count(),
             'quarantinedPlaceSubmissionCount' => DB::table('abuse_flags')
@@ -58,12 +57,7 @@ class AdminController extends Controller
             'photoCount' => DB::table('photos')->count(),
             'featureCount' => DB::table('features')->where('is_active', true)->count(),
             'supportStatusCounts' => $supportStatusCounts,
-            'pendingImportReviewCount' => DB::table('external_import_review_items')->where('status', 'pending')->count(),
-            'newImportCandidateCount' => DB::table('external_records')
-                ->where('status', 'active')
-                ->where('classification', 'new_candidate')
-                ->whereNull('place_id')
-                ->count(),
+
             'auditLogCount' => DB::table('audit_logs')->count(),
         ]);
     }
