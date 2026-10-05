@@ -34,36 +34,9 @@ class PlaceInfoSuggestionController extends Controller
         $email = $this->contact((int) $place->id, ['email']);
         $placeTypes = $this->placeTypes($locale);
 
-        $vehicleTypes = DB::table('vehicle_types as vt')
-            ->leftJoin('translations as tr', function ($join) use ($locale) {
-                $join->on('tr.entity_id', '=', 'vt.id')
-                    ->where('tr.entity_type', 'vehicle_type')
-                    ->where('tr.field', 'name')
-                    ->where('tr.locale', $locale)
-                    ->where('tr.is_active', true);
-            })
-            ->where('vt.is_active', true)
-            ->orderBy('vt.sort_order')
-            ->get([
-                'vt.id',
-                'vt.slug',
-                DB::raw('COALESCE(tr.value, vt.slug) as label'),
-            ]);
-
-        $selectedVehicleRows = DB::table('place_vehicle_types')
-            ->where('place_id', $place->id)
-            ->where('is_active', true)
-            ->whereNull('version_valid_until')
-            ->get(['vehicle_type_id', 'capacity']);
-
-        $selectedVehicleIds = $selectedVehicleRows
-            ->pluck('vehicle_type_id')
-            ->map(fn ($id) => (int) $id)
-            ->all();
-
-        $selectedVehicleCapacities = $selectedVehicleRows
-            ->mapWithKeys(fn ($row) => [(int) $row->vehicle_type_id => $row->capacity !== null ? (int) $row->capacity : null])
-            ->all();
+        $vehicleTypes = collect();
+        $selectedVehicleIds = [];
+        $selectedVehicleCapacities = [];
 
         return view('places.suggest-info', [
             'place' => $place,
@@ -118,10 +91,6 @@ class PlaceInfoSuggestionController extends Controller
             'street' => ['nullable', 'string', 'max:255'],
             'house_number' => ['nullable', 'string', 'max:32'],
             'address_addition' => ['nullable', 'string', 'max:255'],
-            'vehicle_type_ids' => ['nullable', 'array'],
-            'vehicle_type_ids.*' => ['integer', 'exists:vehicle_types,id'],
-            'vehicle_capacities' => ['nullable', 'array'],
-            'vehicle_capacities.*' => ['nullable', 'integer', 'min:1', 'max:1000000'],
             'comment' => ['nullable', 'string', 'max:2000'],
         ]);
 
@@ -272,70 +241,6 @@ class PlaceInfoSuggestionController extends Controller
             'email',
             $data['email'] ?? null,
         );
-
-        $currentVehicleRows = DB::table('place_vehicle_types')
-            ->where('place_id', $place->id)
-            ->where('is_active', true)
-            ->whereNull('version_valid_until')
-            ->get(['id', 'vehicle_type_id', 'capacity'])
-            ->keyBy(fn ($row) => (int) $row->vehicle_type_id);
-
-        $requestedVehicleIds = collect($data['vehicle_type_ids'] ?? [])
-            ->map(fn ($id) => (int) $id)
-            ->unique()
-            ->values();
-
-        $requestedVehicleCapacities = collect($data['vehicle_capacities'] ?? [])
-            ->mapWithKeys(function ($value, $key) {
-                $vehicleTypeId = (int) $key;
-                $capacity = is_numeric($value) && (int) $value > 0 ? (int) $value : null;
-
-                return [$vehicleTypeId => $capacity];
-            });
-
-        foreach ($requestedVehicleIds as $vehicleTypeId) {
-            $requestedCapacity = $requestedVehicleCapacities->get($vehicleTypeId);
-
-            if (! $currentVehicleRows->has($vehicleTypeId)) {
-                $changes[] = [
-                    'table' => 'place_vehicle_types',
-                    'field' => 'vehicle_type_id',
-                    'operation' => 'create',
-                    'target_record_id' => null,
-                    'original' => null,
-                    'proposed' => [
-                        'vehicle_type_id' => $vehicleTypeId,
-                        'capacity' => $requestedCapacity,
-                    ],
-                ];
-                continue;
-            }
-
-            $currentRow = $currentVehicleRows->get($vehicleTypeId);
-            $currentCapacity = $currentRow->capacity !== null ? (int) $currentRow->capacity : null;
-
-            $this->queueScalarUpdate(
-                $changes,
-                'place_vehicle_types',
-                'capacity',
-                (int) $currentRow->id,
-                $currentCapacity,
-                $requestedCapacity,
-            );
-        }
-
-        foreach ($currentVehicleRows as $vehicleTypeId => $row) {
-            if (! $requestedVehicleIds->contains((int) $vehicleTypeId)) {
-                $changes[] = [
-                    'table' => 'place_vehicle_types',
-                    'field' => 'vehicle_type_id',
-                    'operation' => 'deactivate',
-                    'target_record_id' => (int) $row->id,
-                    'original' => (int) $vehicleTypeId,
-                    'proposed' => null,
-                ];
-            }
-        }
 
         if ($changes === []) {
             return redirect()
