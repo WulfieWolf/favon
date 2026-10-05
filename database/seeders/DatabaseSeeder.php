@@ -16,15 +16,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PlaceTypeSeeder::class,
-            VehicleTypeSeeder::class,
             V1FeatureCatalogSeeder::class,
-            ExternalDataFeatureExtensionSeeder::class,
             UnitSeeder::class,
-            BillingUnitSeeder::class,
             FeatureUnitSeeder::class,
             CountryRegionSeeder::class,
-            PriceTypeSeeder::class,
-            PriceCatalogSeeder::class,
             SuggestableFieldSeeder::class,
             RolePermissionSeeder::class,
             AdminAccessPermissionSeeder::class,
