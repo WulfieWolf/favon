@@ -933,19 +933,6 @@
                                 {{ $details?->pitch_area_min_m2 !== null ? rtrim(rtrim(number_format((float) $details->pitch_area_min_m2, 2, ',', '.'), '0'), ',').' m²' : __('place_profile.not_provided') }}
                             </dd>
                         </div>
-                        <div class="flex justify-between gap-5 py-2.5">
-                            <dt class="text-zinc-500">{{ __('place_profile.operation') }}</dt>
-                            <dd class="text-right font-medium">
-                                @if ($place->opening_status === 'unclear')
-                                    <span class="italic text-zinc-400">{{ __('place_profile.unknown') }}</span>
-                                @elseif ($place->opening_status === 'open')
-                                    <span class="text-emerald-700 dark:text-emerald-400">{{ __('ui.browse.operating_status.active') }}</span>
-                                    @if ($openingClosureHint)
-                                        <div class="mt-1 max-w-sm text-xs font-medium text-red-700 dark:text-red-400">
-                                            {{ $openingClosureHint['kind'] === 'year_round'
-                                                ? __('place_profile.opening_closure_probably_permanent')
-                                                : __('place_profile.opening_closure_until', ['date' => $openingClosureHint['until']]) }}
-                                        </div>
                                     @endif
                                 @else
                                     <span class="text-red-700 dark:text-red-400">{{ $operatingStatusLabels[$place->opening_status] ?? str($place->opening_status)->headline() }}</span>
@@ -956,22 +943,6 @@
                             <dt class="text-zinc-500">{{ __('place_profile.legal_status') }}</dt>
                             <dd class="text-right font-medium {{ $place->legal_status === 'unclear' ? 'italic text-zinc-400' : '' }}">
                                 {{ $place->legal_status !== 'unclear' ? ($legalLabels[$place->legal_status] ?? str($place->legal_status)->replace('_', ' ')->headline()) : __('place_profile.not_provided') }}
-                            </dd>
-                        </div>
-                        <div class="flex justify-between gap-5 py-2.5">
-                            <dt class="text-zinc-500">{{ __('place_profile.opening_status') }}</dt>
-                            <dd class="text-right font-medium">
-                                @if (! $currentOpeningState)
-                                    <span class="italic text-zinc-400">{{ __('place_profile.unknown') }}</span>
-                                @elseif ($currentOpeningState['state'] === 'open')
-                                    <span class="text-emerald-700 dark:text-emerald-400">{{ __('ui.browse.current_opening.open') }}</span>
-                                @elseif ($currentOpeningState['state'] === 'closing_soon')
-                                    <span class="text-amber-700 dark:text-amber-400">{{ __('ui.browse.current_opening.closing_soon', ['minutes' => $currentOpeningState['minutes_until_close']]) }}</span>
-                                @elseif ($currentOpeningState['state'] === 'opening_soon')
-                                    <span class="text-amber-700 dark:text-amber-400">{{ __('ui.browse.current_opening.opening_soon', ['minutes' => $currentOpeningState['minutes_until_open']]) }}</span>
-                                @else
-                                    <span class="text-red-700 dark:text-red-400">{{ __('ui.browse.current_opening.closed') }}</span>
-                                @endif
                             </dd>
                         </div>
                         <div class="flex justify-between gap-5 py-2.5">
@@ -1152,116 +1123,6 @@
                 </div>
             </section>
 
-            <div>
-                <section class="rounded-xl border border-zinc-200 bg-white p-3 sm:p-5 dark:border-zinc-800 dark:bg-zinc-900">
-                    <div class="flex items-center justify-between gap-3">
-                        <div>
-                            <h2 class="text-base font-semibold">{{ __('place_profile.opening_hours') }}</h2>
-                            <div class="mt-1 text-xs text-zinc-400">
-                                {{ $openingPeriods->isNotEmpty() ? trans_choice('place_profile.opening_periods', $openingPeriods->count(), ['count' => $openingPeriods->count()]) : __('place_profile.no_opening_hours') }}
-                            </div>
-                        </div>
-                        @if ($canDirectEdit || $canSuggest)
-                            <a
-                                href="{{ route('places.opening-hours.edit', $place->slug) }}"
-                                class="cw-profile-edit-action inline-flex size-7 shrink-0 items-center justify-center rounded text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-                                title="{{ $canDirectEdit ? __('place_profile.edit_opening_hours') : __('place_profile.suggest_opening_hours') }}"
-                                aria-label="{{ $canDirectEdit ? __('place_profile.edit_opening_hours') : __('place_profile.suggest_opening_hours') }}"
-                            >
-                                <x-tabler-icon name="pencil" class="size-3.5" />
-                            </a>
-                        @endif
-                    </div>
-
-                    @if ($openingPeriods->isEmpty())
-                        <p class="mt-4 text-sm italic text-zinc-400">{{ __('place_profile.no_information') }}</p>
-                    @else
-                        @php
-                            $weekdayLabels = __('place_profile.weekdays');
-                        @endphp
-
-                        <div class="mt-4 space-y-5">
-                            @foreach ($openingPeriods as $period)
-                                @php
-                                    $weekdayHours = $period->hours
-                                        ->where('day_type', 'weekday')
-                                        ->groupBy(fn ($row) => (int) $row->weekday);
-                                    $holidayHours = $period->hours->where('day_type', 'holiday')->values();
-                                @endphp
-
-                                <div class="rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
-                                    <div class="mb-2 text-sm font-semibold">{{ $period->label }}</div>
-                                    <dl class="divide-y divide-zinc-100 text-sm dark:divide-zinc-800">
-                                        @foreach ($weekdayLabels as $weekday => $weekdayLabel)
-                                            @php
-                                                $rows = $weekdayHours->get($weekday, collect());
-                                            @endphp
-                                            <div class="flex justify-between gap-5 py-2 first:pt-0">
-                                                <dt class="text-zinc-500">{{ $weekdayLabel }}</dt>
-                                                <dd class="text-right font-medium">
-                                                    @if ($rows->isEmpty())
-                                                        <span class="italic text-zinc-400">{{ __('place_profile.unknown') }}</span>
-                                                    @else
-                                                        @foreach ($rows as $row)
-                                                            <div>
-                                                                @if ($row->is_not_provided_by_operator)
-                                                                    {{ __('place_profile.operator_not_provided') }}
-                                                                @elseif ($row->is_closed)
-                                                                    {{ __('place_profile.closed') }}
-                                                                @elseif ($row->is_24_hours)
-                                                                    {{ __('place_profile.open_24_hours') }}
-                                                                @elseif ($row->by_appointment_only)
-                                                                    {{ __('place_profile.appointment_only') }}
-                                                                @elseif ($row->opens_at && $row->closes_at)
-                                                                    {{ substr($row->opens_at, 0, 5) }}–{{ substr($row->closes_at, 0, 5) }}
-                                                                @else
-                                                                    <span class="italic text-zinc-400">{{ __('place_profile.unknown') }}</span>
-                                                                @endif
-                                                            </div>
-                                                        @endforeach
-                                                    @endif
-                                                </dd>
-                                            </div>
-                                        @endforeach
-
-                                        <div class="flex justify-between gap-5 py-2">
-                                            <dt class="text-zinc-500">{{ __('place_profile.holidays') }}</dt>
-                                            <dd class="text-right font-medium">
-                                                @if ($holidayHours->isEmpty())
-                                                    <span class="italic text-zinc-400">{{ __('place_profile.unknown') }}</span>
-                                                @else
-                                                    @foreach ($holidayHours as $row)
-                                                        <div>
-                                                            @if ($row->is_not_provided_by_operator)
-                                                                {{ __('place_profile.operator_not_provided') }}
-                                                            @elseif ($row->is_closed)
-                                                                {{ __('place_profile.closed') }}
-                                                            @elseif ($row->is_24_hours)
-                                                                {{ __('place_profile.open_24_hours') }}
-                                                            @elseif ($row->by_appointment_only)
-                                                                {{ __('place_profile.appointment_only') }}
-                                                            @elseif ($row->opens_at && $row->closes_at)
-                                                                {{ substr($row->opens_at, 0, 5) }}–{{ substr($row->closes_at, 0, 5) }}
-                                                            @else
-                                                                <span class="italic text-zinc-400">{{ __('place_profile.unknown') }}</span>
-                                                            @endif
-                                                        </div>
-                                                    @endforeach
-                                                @endif
-                                            </dd>
-                                        </div>
-                                    </dl>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    <p class="mt-3 text-xs text-zinc-400">
-                        {{ __('place_profile.holiday_note') }}
-                    </p>
-                </section>
-
-            </div>
 
         @php
     if ($profileEnabled ?? false) {
