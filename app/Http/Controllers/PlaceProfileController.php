@@ -3,10 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\AdminDebugService;
-use App\Services\CurrentOpeningStateService;
 use App\Services\FeatureWorkflowService;
-use App\Services\Imports\ExternalFeatureOverlayService;
-use App\Services\OpeningHoursPeriodService;
 use App\Services\PermissionService;
 use App\Services\PlaceHistoryPresenter;
 use App\Services\PlaceDataScoreService;
@@ -27,11 +24,8 @@ class PlaceProfileController extends Controller
         FeatureWorkflowService $workflows,
         PermissionService $permissions,
         PlaceReviewService $reviewService,
-        OpeningHoursPeriodService $openingHoursPeriods,
         PlaceTypeFeatureService $placeTypeFeatures,
-        ExternalFeatureOverlayService $externalFeatures,
         AdminDebugService $debug,
-        CurrentOpeningStateService $openingStateService,
         PlaceHistoryPresenter $historyPresenter,
         PlaceDataScoreService $dataScores,
     ): View|RedirectResponse {
@@ -106,8 +100,7 @@ class PlaceProfileController extends Controller
             ->whereNull('version_valid_until')
             ->first(['id', 'operator_name', 'pitch_count', 'minimum_stay_nights', 'pitch_area_min_m2']);
 
-        $featureGroups = $externalFeatures
-            ->apply((int) $place->id, $workflows->groupedForPlace((int) $place->id))
+        $featureGroups = $workflows->groupedForPlace((int) $place->id)
             ->map(function ($group) use ($workflows) {
                 $group->features = $group->features
                     ->map(fn ($feature) => $workflows->present($feature))
@@ -204,20 +197,7 @@ class PlaceProfileController extends Controller
 
         $profileMark('Pending feature suggestions');
 
-        $vehicleTypes = DB::table('place_vehicle_types as pvt')
-            ->join('vehicle_types as vt', 'vt.id', '=', 'pvt.vehicle_type_id')
-            ->where('pvt.place_id', $place->id)
-            ->where('pvt.is_active', true)
-            ->whereNull('pvt.version_valid_until')
-            ->where('vt.is_active', true)
-            ->orderBy('vt.sort_order')
-            ->get(['vt.id', 'vt.slug', 'pvt.capacity']);
-
-        $vehicleLabels = $this->translationLabels(['vehicle_type', 'vehicle_types'], $vehicleTypes->pluck('id'));
-        $vehicleTypes->each(function ($vehicle) use ($vehicleLabels) {
-            $vehicle->label = $vehicleLabels[(int) $vehicle->id]
-                ?? Str::headline(str_replace('-', ' ', $vehicle->slug));
-        });
+        $vehicleTypes = collect();
 
         $contacts = DB::table('place_contacts')
             ->where('place_id', $place->id)
@@ -228,9 +208,9 @@ class PlaceProfileController extends Controller
 
         $website = $contacts->first(fn ($contact) => in_array($contact->contact_type, ['website', 'url'], true));
 
-        $openingPeriods = $openingHoursPeriods->currentPeriods((int) $place->id);
-        $currentOpeningState = $openingStateService->forPlaces(collect([(int) $place->id]))->get((int) $place->id);
-        $openingClosureHint = $openingHoursPeriods->currentClosureHint((int) $place->id);
+        $openingPeriods = collect();
+        $currentOpeningState = null;
+        $openingClosureHint = null;
         $profileMark('Vehicle, contacts, opening hours');
 
         $typeLabels = $this->translationLabels(['place_type', 'place_types'], collect([$place->place_type_id]));
