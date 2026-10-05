@@ -34,18 +34,10 @@ class ChangeRequestApplyService
             'valid_until' => 'version_valid_until',
             'audit_type' => 'place_vehicle_type',
         ],
-        'opening_hours' => [
-            'place_key' => 'place_id',
-            'valid_from' => 'version_valid_from',
-            'valid_until' => 'version_valid_until',
-            'audit_type' => 'opening_hour',
-        ],
     ];
 
     public function __construct(
         private PermissionService $permissions,
-        private OpeningHoursPeriodService $openingHoursPeriods,
-        private PricePeriodService $pricePeriods,
     ) {
     }
 
@@ -138,8 +130,6 @@ class ChangeRequestApplyService
                     'place_contacts',
                     'place_details',
                     'place_vehicle_types' => $this->applyStandardVersionedRecord($group, $anchor->place_id, $reviewer, $now),
-                    'opening_hours' => $this->applyOpeningHoursGroup($group, $anchor->place_id, $reviewer, $now),
-                    'place_price_offers' => $this->applyPriceGroup($group, $anchor->place_id, $reviewer, $now),
                     'place_features' => $this->applyPlaceFeatureRecord($group, $anchor->place_id, $reviewer, $now),
                     default => throw new RuntimeException("Applying changes to {$table} is not implemented yet."),
                 };
@@ -641,67 +631,6 @@ class ChangeRequestApplyService
         return $requests->mapWithKeys(fn ($request) => [$request->id => $newId])->all();
     }
 
-    private function applyOpeningHoursGroup(Collection $requests, int $placeId, User $reviewer, $now): array
-    {
-        if (
-            $requests->count() === 1
-            && $requests->first()->target_field === 'period_schedule'
-            && $requests->first()->operation === 'create'
-        ) {
-            $request = $requests->first();
-            $newPeriodId = $this->openingHoursPeriods->applyProposal($request, (int) $reviewer->id, $now);
-
-            if (! $newPeriodId) {
-                throw new RuntimeException('Opening-hours proposal did not create a period.');
-            }
-
-            $this->auditDomainChange(
-                $reviewer,
-                'opening_hour_period',
-                $newPeriodId,
-                'change_request_applied_period_schedule',
-                $this->decodeJsonValue($request->original_value),
-                $this->decodeJsonValue($request->proposed_value),
-                $requests,
-                $now,
-            );
-
-            return [$request->id => $newPeriodId];
-        }
-
-        return $this->applyStandardVersionedRecord($requests, $placeId, $reviewer, $now);
-    }
-
-    private function applyPriceGroup(Collection $requests, int $placeId, User $reviewer, $now): array
-    {
-        if (
-            $requests->count() !== 1
-            || $requests->first()->target_field !== 'period_pricing'
-            || $requests->first()->operation !== 'create'
-        ) {
-            throw new RuntimeException('Structured price proposals must use place_price_offers.period_pricing.');
-        }
-
-        $request = $requests->first();
-        $offerId = $this->pricePeriods->applyProposal($request, (int) $reviewer->id, $now);
-
-        if (! $offerId) {
-            throw new RuntimeException('Price proposal did not create or update an offer.');
-        }
-
-        $this->auditDomainChange(
-            $reviewer,
-            'place_price_offer',
-            $offerId,
-            'change_request_applied_period_pricing',
-            $this->decodeJsonValue($request->original_value),
-            $this->decodeJsonValue($request->proposed_value),
-            $requests,
-            $now,
-        );
-
-        return [$request->id => $offerId];
-    }
 
     private function applyPlaceFeatureRecord(Collection $requests, int $placeId, User $reviewer, $now): array
     {
