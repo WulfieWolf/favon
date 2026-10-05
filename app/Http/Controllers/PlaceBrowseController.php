@@ -316,7 +316,6 @@ class PlaceBrowseController extends Controller
                     $selectedPlaceTypeIds,
                     $profileEnabled ? $profileMark : null,
                     $basePlaceIdsQuery,
-                    false,
                 ),
             );
         } else {
@@ -327,7 +326,6 @@ class PlaceBrowseController extends Controller
                 $selectedPlaceTypeIds,
                 $profileEnabled ? $profileMark : null,
                 $basePlaceIdsQuery,
-                false,
             );
         }
 
