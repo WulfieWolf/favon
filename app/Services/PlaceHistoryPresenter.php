@@ -102,10 +102,6 @@ class PlaceHistoryPresenter
         $labels = __('place_profile.history.research_fields');
         $label = is_array($labels) ? ($labels[$field] ?? null) : null;
 
-        if (! $label && str_starts_with($field, 'suitable_')) {
-            $vehicle = Str::headline(str_replace(['-', '_'], ' ', Str::after($field, 'suitable_')));
-            $label = __('place_profile.history.suitable_prefix', ['vehicle' => $vehicle]);
-        }
 
         $label ??= Str::headline(str_replace('_', ' ', $field));
 
@@ -118,16 +114,6 @@ class PlaceHistoryPresenter
             return __('place_profile.unknown');
         }
 
-        if ($field === 'opening_status') {
-            return match ((string) $value) {
-                'unclear' => __('place_profile.unknown'),
-                'open' => __('ui.browse.operating_status.active'),
-                'temporarily_closed' => __('ui.browse.operating_status.temporarily_closed'),
-                'seasonally_closed' => __('ui.browse.operating_status.seasonally_closed'),
-                'permanently_closed' => __('ui.browse.operating_status.permanently_closed'),
-                default => Str::headline((string) $value),
-            };
-        }
 
         if ($field === 'legal_status') {
             $labels = __('place_editing.info.legal_status_options');
@@ -198,13 +184,8 @@ class PlaceHistoryPresenter
         $labels = [
             'places.name' => __('place_profile.history.fields.name'),
             'places.place_type_id' => __('place_profile.type'),
-            'places.opening_status' => __('place_profile.operation'),
             'places.legal_status' => __('place_profile.legal_status'),
             'place_details.operator_name' => __('place_profile.operator'),
-            'place_details.pitch_count' => __('place_profile.pitches'),
-            'place_details.minimum_stay_nights' => __('place_profile.minimum_stay_nights'),
-            'place_details.pitch_area_min_m2' => __('place_profile.pitch_area_min_m2'),
-            'place_vehicle_types.vehicle_type_id' => __('place_profile.suitable_for'),
             'place_translations.description' => __('place_profile.history.fields.description'),
             'place_translations.directions' => __('place_profile.history.fields.directions'),
             'place_translations.access_information' => __('place_profile.history.fields.access'),
@@ -217,19 +198,11 @@ class PlaceHistoryPresenter
         if (is_array($value) && array_key_exists('value', $value)) $value = $value['value'];
         if ($value === null || $value === '') return __('place_profile.unknown');
         if ($table === 'places' && $field === 'place_type_id') return $this->translatedName('place_types', (int)$value);
-        if ($table === 'places' && $field === 'opening_status') return match ((string) $value) {
-            'unclear' => __('place_profile.unknown'),
-            'open' => __('ui.browse.operating_status.active'),
-            'temporarily_closed' => __('ui.browse.operating_status.temporarily_closed'),
-            'seasonally_closed' => __('ui.browse.operating_status.seasonally_closed'),
-            'permanently_closed' => __('ui.browse.operating_status.permanently_closed'),
-            default => Str::headline((string) $value),
-        };
+
         if ($table === 'places' && $field === 'legal_status') {
             $labels = __('place_editing.info.legal_status_options');
             return is_array($labels) ? ($labels[(string) $value] ?? Str::headline((string) $value)) : Str::headline((string) $value);
         }
-        if ($table === 'place_vehicle_types' && $field === 'vehicle_type_id') return $this->translatedName('vehicle_types', (int)$value);
         if (is_bool($value)) return $value ? __('place_profile.history.yes') : __('place_profile.history.no');
         if (is_array($value)) return __('place_profile.history.changed');
         return (string)$value;
