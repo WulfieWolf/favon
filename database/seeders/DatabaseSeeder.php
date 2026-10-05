@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
             PlaceTypeSeeder::class,
             VehicleTypeSeeder::class,
             V1FeatureCatalogSeeder::class,
-            ExternalDataFeatureExtensionSeeder::class,
             UnitSeeder::class,
             BillingUnitSeeder::class,
             FeatureUnitSeeder::class,
