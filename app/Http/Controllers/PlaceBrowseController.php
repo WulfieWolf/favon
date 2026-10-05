@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\AdminDebugService;
 use App\Services\CurrentOpeningStateService;
 use App\Services\PlaceBrowseFacetService;
-use App\Services\PlacePhotoService;
 use App\Support\LocaleConfiguration;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,7 +24,6 @@ class PlaceBrowseController extends Controller
 
     public function __invoke(
         Request $request,
-        PlacePhotoService $photoService,
         PlaceBrowseFacetService $facetService,
         AdminDebugService $debug,
         CurrentOpeningStateService $openingStateService,
@@ -523,7 +521,7 @@ class PlaceBrowseController extends Controller
         $places = $placesQuery->paginate(30)->withQueryString();
         $profileMark('Pagination');
         $placeIds = $places->getCollection()->pluck('id');
-        $thumbnails = $photoService->thumbnailsForPlaces($placeIds);
+        $thumbnails = collect();
         $currentOpeningStates = $openingStateService->forPlaces($placeIds);
         $profileMark('Page opening states');
 
