@@ -63,22 +63,26 @@ class AdminController extends Controller
         $verification = (string) $request->query('verification', '');
         $sort = (string) $request->query('sort', 'name');
         $direction = strtolower((string) $request->query('dir', 'asc')) === 'desc' ? 'desc' : 'asc';
-        $allowedSorts = ['name', 'display_name', 'email', 'status', 'role', 'last_seen', 'created'];
+        $allowedSorts = ['name', 'email', 'status', 'role', 'last_seen', 'created'];
         if (! in_array($sort, $allowedSorts, true)) {
             $sort = 'name';
         }
 
         $usersQuery = User::query()
-            ->leftJoin('user_profiles as up', 'up.user_id', '=', 'users.id')
-            ->select(['users.id','users.name','users.email','users.email_verified_at','users.account_status','users.last_seen_at','users.profile_photo_id','users.created_at','up.public_handle','up.public_alias'])
-            ->when($search !== '', function ($query) use ($search): void { $query->where(function ($query) use ($search): void { $query->where('users.name','like','%'.$search.'%')->orWhere('users.email','like','%'.$search.'%')->orWhere('users.id', ctype_digit($search) ? (int) $search : -1)->orWhereHas('profile', fn ($profile) => $profile->where('public_handle','like','%'.$search.'%')->orWhere('public_alias','like','%'.$search.'%')); }); })
+            ->select(['users.id','users.name','users.email','users.email_verified_at','users.account_status','users.last_seen_at','users.created_at'])
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->where('users.name', 'like', '%'.$search.'%')
+                        ->orWhere('users.email', 'like', '%'.$search.'%')
+                        ->orWhere('users.id', ctype_digit($search) ? (int) $search : -1);
+                });
+            })
             ->when(in_array($status, ['active','suspended','pending_deletion','deleted'], true), fn ($query) => $query->where('users.account_status',$status))
             ->when($verification === 'verified', fn ($query) => $query->whereNotNull('users.email_verified_at'))
             ->when($verification === 'unverified', fn ($query) => $query->whereNull('users.email_verified_at'))
             ->when($role !== '', fn ($query) => $query->whereHas('roles', fn ($roles) => $roles->where('roles.slug',$role)->where('roles.is_active',true)));
 
         match ($sort) {
-            'display_name' => $usersQuery->orderByRaw("COALESCE(NULLIF(up.public_alias, ''), up.public_handle, users.name) {$direction}"),
             'email' => $usersQuery->orderBy('users.email', $direction),
             'status' => $usersQuery->orderBy('users.account_status', $direction),
             'role' => $usersQuery->orderByRaw(
@@ -176,7 +180,6 @@ class AdminController extends Controller
             'actorIsOwner' => $actorIsOwner,
             'actorCanAssignRoles' => $actorCanAssignRoles,
             'actorCanOverridePermissions' => $actorCanOverridePermissions,
-            'profile' => $user->profile,
             'statistics' => app(AccountDeletionService::class)->statistics((int) $user->id),
             'actorCanEditProfile' => $permissions->can($actor, 'users.edit_profile'),
             'actorCanVerifyEmail' => $permissions->can($actor, 'users.verify_email'),
@@ -190,7 +193,7 @@ class AdminController extends Controller
     {
         abort_unless($permissions->can($request->user(), 'users.edit_profile'), 403);
         abort_if($permissions->isOwner($user) && ! $permissions->isOwner($request->user()), 403);
-        $data = $request->validate(['name'=>['required','string','max:255'],'email'=>['required','email','max:255',Rule::unique('users','email')->ignore($user->id)],'public_alias'=>['nullable','string','min:3','max:80','regex:/^[A-Za-z0-9._-]+$/',Rule::unique('user_profiles','public_alias')->ignore($user->id,'user_id')]]);
+        $data = $request->validate(['name'=>['required','string','max:255'],'email'=>['required','email','max:255',Rule::unique('users','email')->ignore($user->id)]]);
         if ($permissions->isOwner($user) && strcasecmp($user->email, $data['email']) !== 0) {
             return back()->withErrors(['email' => __('global.owner_email_locked')])->withInput();
         }
