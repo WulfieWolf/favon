@@ -75,31 +75,6 @@ return new class extends Migration
             $table->index(['locale', 'is_active']);
         });
 
-        Schema::create('place_vehicle_types', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('place_id')->constrained('places')->cascadeOnDelete();
-            $table->foreignId('vehicle_type_id')->constrained('vehicle_types')->restrictOnDelete();
-            $table->boolean('is_active')->default(true);
-            $table->text('internal_comment')->nullable();
-            $table->timestamps();
-
-            $table->unique(['place_id', 'vehicle_type_id']);
-            $table->index(['vehicle_type_id', 'is_active']);
-        });
-
-        Schema::create('place_vehicle_type_notes', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('place_vehicle_type_id')->constrained('place_vehicle_types')->cascadeOnDelete();
-            $table->string('locale', 16);
-            $table->text('note');
-            $table->boolean('is_active')->default(true);
-            $table->text('internal_comment')->nullable();
-            $table->timestamps();
-
-            $table->unique(['place_vehicle_type_id', 'locale']);
-            $table->index(['locale', 'is_active']);
-        });
-
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
             $table->string('note_type', 64)->default('general');
@@ -142,8 +117,6 @@ return new class extends Migration
         Schema::dropIfExists('place_notes');
         Schema::dropIfExists('note_translations');
         Schema::dropIfExists('notes');
-        Schema::dropIfExists('place_vehicle_type_notes');
-        Schema::dropIfExists('place_vehicle_types');
         Schema::dropIfExists('place_feature_notes');
         Schema::dropIfExists('place_features');
         Schema::dropIfExists('place_translations');
