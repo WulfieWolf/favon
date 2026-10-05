@@ -63,48 +63,6 @@ return new class extends Migration
             $table->unique(['review_id', 'user_id']);
         });
 
-        Schema::create('photos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('storage_path');
-            $table->string('original_filename')->nullable();
-            $table->string('mime_type', 100)->nullable();
-            $table->unsignedBigInteger('file_size')->nullable();
-            $table->unsignedInteger('width')->nullable();
-            $table->unsignedInteger('height')->nullable();
-            $table->string('status', 50)->default('pending');
-            $table->boolean('is_active')->default(true);
-            $table->text('internal_comment')->nullable();
-            $table->timestamps();
-
-            $table->index(['status', 'is_active']);
-        });
-
-        Schema::create('place_photos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('place_id')->constrained('places')->cascadeOnDelete();
-            $table->foreignId('photo_id')->constrained('photos')->cascadeOnDelete();
-            $table->string('photo_type', 50)->default('community');
-            $table->unsignedInteger('sort_order')->default(0);
-            $table->boolean('is_active')->default(true);
-            $table->text('internal_comment')->nullable();
-            $table->timestamps();
-
-            $table->unique(['place_id', 'photo_id']);
-        });
-
-        Schema::create('review_photos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('review_id')->constrained('reviews')->cascadeOnDelete();
-            $table->foreignId('photo_id')->constrained('photos')->cascadeOnDelete();
-            $table->unsignedInteger('sort_order')->default(0);
-            $table->boolean('is_active')->default(true);
-            $table->text('internal_comment')->nullable();
-            $table->timestamps();
-
-            $table->unique(['review_id', 'photo_id']);
-        });
-
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
@@ -126,9 +84,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('audit_logs');
-        Schema::dropIfExists('review_photos');
-        Schema::dropIfExists('place_photos');
-        Schema::dropIfExists('photos');
         Schema::dropIfExists('review_helpful_votes');
         Schema::dropIfExists('review_answers');
         Schema::dropIfExists('reviews');
