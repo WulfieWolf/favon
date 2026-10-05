@@ -23,8 +23,6 @@ use App\Http\Controllers\PlaceBrowseController;
 use App\Http\Controllers\PlaceContactController;
 use App\Http\Controllers\PlaceFeatureController;
 use App\Http\Controllers\PlaceInfoSuggestionController;
-use App\Http\Controllers\PlaceOpeningHoursController;
-use App\Http\Controllers\PlacePriceController;
 use App\Http\Controllers\PlaceProfileController;
 use App\Http\Controllers\PlaceReviewController;
 use App\Http\Controllers\PlaceSuggestionController;
@@ -66,12 +64,6 @@ Route::get('support/thanks', [SupportTicketController::class, 'thanks'])->name('
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('places/{slug}/suggest-info', [PlaceInfoSuggestionController::class, 'edit'])->name('places.info-suggest.edit');
     Route::post('places/{slug}/suggest-info', [PlaceInfoSuggestionController::class, 'update'])->middleware('throttle:community-write')->name('places.info-suggest.update');
-
-    Route::get('places/{slug}/opening-hours', [PlaceOpeningHoursController::class, 'edit'])->name('places.opening-hours.edit');
-    Route::put('places/{slug}/opening-hours', [PlaceOpeningHoursController::class, 'update'])->middleware('throttle:community-write')->name('places.opening-hours.update');
-
-    Route::get('places/{slug}/prices', [PlacePriceController::class, 'edit'])->name('places.prices.edit');
-    Route::put('places/{slug}/prices', [PlacePriceController::class, 'update'])->middleware('throttle:community-write')->name('places.prices.update');
 
     Route::post('places/{slug}/reviews', [PlaceReviewController::class, 'store'])->middleware(['permission:reviews.create', 'throttle:review-write'])->name('reviews.store');
     Route::delete('places/{slug}/reviews', [PlaceReviewController::class, 'destroy'])->middleware(['permission:reviews.delete_own', 'throttle:community-write'])->name('reviews.destroy');
