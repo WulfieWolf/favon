@@ -8,7 +8,6 @@ Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Route::livewire('settings/profile', 'pages::settings.profile')->name('profile.edit');
-    Route::livewire('settings/community-profile', 'pages::settings.community-profile')->name('community-profile.edit');
     Route::get('settings/delete-account', [AccountDeletionController::class, 'show'])->name('account-deletion.show');
     Route::post('settings/delete-account', [AccountDeletionController::class, 'request'])->name('account-deletion.request');
     Route::post('settings/delete-account/cancel', [AccountDeletionController::class, 'cancel'])->name('account-deletion.cancel');
