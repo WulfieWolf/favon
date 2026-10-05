@@ -12,10 +12,8 @@ use App\Services\RolePermissionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use RuntimeException;
 
 class AdminController extends Controller
@@ -42,7 +40,6 @@ class AdminController extends Controller
             'canViewStatistics' => $permissions->can($user, 'statistics.view'),
             'canSendSystemNotifications' => $permissions->can($user, 'notifications.send_system'),
             'canManageSupport' => $permissions->can($user, 'support.view_all'),
-            'canModeratePhotos' => $permissions->can($user, 'photos.view_pending'),
             'canManageFeatures' => $permissions->can($user, 'features.manage_catalog'),
             'userCount' => User::count(),
             'pendingChangeRequestCount' => DB::table('change_requests')->where('status', 'pending')->count(),
@@ -52,9 +49,6 @@ class AdminController extends Controller
                 ->distinct('entity_id')
                 ->count('entity_id'),
             'pendingReviewReportCount' => DB::table('place_review_reports')->where('status', 'pending')->count(),
-            'pendingPhotoCount' => DB::table('photos')->where('status', 'pending')->where('is_active', true)->count(),
-            'pendingPhotoReportCount' => DB::table('photo_reports')->where('status', 'pending')->count(),
-            'photoCount' => DB::table('photos')->count(),
             'featureCount' => DB::table('features')->where('is_active', true)->count(),
             'supportStatusCounts' => $supportStatusCounts,
 
@@ -216,31 +210,6 @@ class AdminController extends Controller
             'actorCanUnsuspend' => $permissions->can($actor, 'users.unsuspend'),
             'actorCanDelete' => $permissions->can($actor, 'users.delete_account'),
         ]);
-    }
-
-    public function userPhoto(User $user): StreamedResponse
-    {
-        abort_unless($user->profile_photo_id, 404);
-
-        $photo = DB::table('photos')
-            ->where('id', $user->profile_photo_id)
-            ->where('is_active', true)
-            ->first(['storage_path', 'mime_type']);
-
-        abort_unless($photo?->storage_path, 404);
-
-        $disk = Storage::disk('local');
-        abort_unless($disk->exists($photo->storage_path), 404);
-
-        return $disk->response(
-            $photo->storage_path,
-            null,
-            [
-                'Content-Type' => $photo->mime_type ?: 'application/octet-stream',
-                'Cache-Control' => 'private, max-age=300',
-                'X-Content-Type-Options' => 'nosniff',
-            ],
-        );
     }
 
     public function updateAccount(Request $request, User $user, PermissionService $permissions): RedirectResponse
