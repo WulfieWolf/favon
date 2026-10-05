@@ -39,9 +39,6 @@ Route::get('dashboard', PlaceBrowseController::class)->middleware(['harden-brows
 Route::get('places/{slug}', PlaceProfileController::class)->middleware('throttle:public-read')->name('places.show');
 Route::get('places/{slug}/contact/email', [PlaceContactController::class, 'email'])->middleware('throttle:30,1')->name('places.contact.email');
 Route::get('places/{slug}/reviews/feed', [PlaceReviewController::class, 'feed'])->middleware('throttle:public-read')->name('places.reviews.feed');
-    ->whereUuid('uuid')
-    ->whereIn('variant', ['preview', 'detail'])
-    ->name('photos.show');
 Route::get('reviews/{review}/history', [PlaceReviewController::class, 'history'])->middleware('throttle:public-read')->name('reviews.history');
 Route::post('locale', [LocaleController::class, 'update'])->name('locale.update');
 Route::get('devlog', DevLogController::class)->name('devlog');
@@ -80,19 +77,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('places/{slug}/reviews', [PlaceReviewController::class, 'destroy'])->middleware(['permission:reviews.delete_own', 'throttle:community-write'])->name('reviews.destroy');
     Route::delete('reviews/{review}/history/{version}', [PlaceReviewController::class, 'hideVersion'])->middleware(['permission:reviews.delete_own', 'throttle:community-write'])->name('reviews.history.hide');
     Route::post('reviews/{review}/report', [PlaceReviewController::class, 'report'])->middleware(['permission:reports.create', 'throttle:report-create'])->name('reviews.report');
-        ->middleware(['permission:photos.upload', 'throttle:photo-upload'])
-        ->name('photos.store');
-        ->whereUuid('uuid')
-        ->whereIn('variant', ['preview', 'detail'])
-        ->name('photos.owner');
-        ->middleware(['permission:photos.delete_own', 'throttle:community-write'])
-        ->name('photos.destroy');
-        ->middleware(['permission:reviews.vote_helpful', 'throttle:engagement-write'])
-        ->name('photos.helpful.store');
-        ->middleware(['permission:reviews.remove_own_helpful_vote', 'throttle:engagement-write'])
-        ->name('photos.helpful.destroy');
-        ->middleware(['permission:reports.create', 'throttle:report-create'])
-        ->name('photos.report');
     Route::put('places/{slug}/features/category/{category}', [PlaceFeatureController::class, 'updateCategory'])->middleware('throttle:community-write')->name('places.features.category.update');
     Route::put('places/{slug}/features/{feature}', [PlaceFeatureController::class, 'update'])->middleware('throttle:community-write')->name('places.features.update');
 
