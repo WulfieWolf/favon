@@ -261,8 +261,6 @@ class PlaceReviewService
     public function reviewsForPlace(int $placeId, string $sort = 'newest', int $perPage = 5): CursorPaginator
     {
         $query = $this->currentQuery($placeId)
-            ->join('users as u', 'u.id', '=', 'pr.user_id')
-            ->leftJoin('user_profiles as up', 'up.user_id', '=', 'u.id')
             ->select([
                 'pr.id',
                 'pr.id as review_id',
@@ -280,11 +278,6 @@ class PlaceReviewService
                 'prv.review_text',
                 'prv.valid_from',
                 'prv.valid_until',
-                'u.name as account_name',
-                'u.profile_photo_id',
-                'u.created_at as user_created_at',
-                DB::raw('COALESCE(up.public_alias, up.public_handle) as public_handle'),
-                'up.public_handle as automatic_handle',
             ])
             ->selectSub(function ($sub): void {
                 $sub->from('place_review_versions as older')
@@ -306,42 +299,14 @@ class PlaceReviewService
 
     public function presentersFor(Collection $reviews, ?User $viewer): array
     {
-        $userIds = $reviews->pluck('user_id')->map(fn ($id) => (int) $id)->unique()->values();
-        if ($userIds->isEmpty()) {
-            return [];
-        }
-
-        $users = User::query()
-            ->with('profile')
-            ->whereIn('id', $userIds)
-            ->get()
-            ->keyBy('id');
-
-        $presenters = [];
-        foreach ($userIds as $userId) {
-            $user = $users->get($userId);
-            if (! $user) {
-                continue;
-            }
-
-            $presenters[$userId] = [
-                'user' => $user,
-                'photo_url' => null,
-                'gamification' => null,
-                'title' => null,
-                'joined_at' => $user->created_at?->format('m/Y'),
-            ];
-        }
-
-        return $presenters;
+        // Favon never exposes contributor identities on public reviews.
+        return [];
     }
 
     public function reviewHistory(int $reviewId): array
     {
         $review = DB::table('place_reviews as pr')
             ->join('places as p', 'p.id', '=', 'pr.place_id')
-            ->join('users as u', 'u.id', '=', 'pr.user_id')
-            ->leftJoin('user_profiles as up', 'up.user_id', '=', 'u.id')
             ->where('pr.id', $reviewId)
             ->first([
                 'pr.id',
@@ -350,9 +315,6 @@ class PlaceReviewService
                 'pr.current_version_id',
                 'p.name as place_name',
                 'p.slug as place_slug',
-                'u.name as account_name',
-                DB::raw('COALESCE(up.public_alias, up.public_handle) as public_handle'),
-                'up.public_handle as automatic_handle',
             ]);
 
         if (! $review) {
