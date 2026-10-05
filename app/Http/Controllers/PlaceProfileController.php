@@ -8,7 +8,6 @@ use App\Services\FeatureWorkflowService;
 use App\Services\Imports\ExternalFeatureOverlayService;
 use App\Services\OpeningHoursPeriodService;
 use App\Services\PermissionService;
-use App\Services\PlacePhotoService;
 use App\Services\PlaceHistoryPresenter;
 use App\Services\PlaceDataScoreService;
 use App\Services\PlaceReviewService;
@@ -28,7 +27,6 @@ class PlaceProfileController extends Controller
         FeatureWorkflowService $workflows,
         PermissionService $permissions,
         PlaceReviewService $reviewService,
-        PlacePhotoService $photoService,
         OpeningHoursPeriodService $openingHoursPeriods,
         PlaceTypeFeatureService $placeTypeFeatures,
         ExternalFeatureOverlayService $externalFeatures,
@@ -297,16 +295,11 @@ class PlaceProfileController extends Controller
         $currentUserReview = auth()->check()
             ? $reviewService->currentForUser((int) $place->id, (int) auth()->id())
             : null;
-        $reviewPhotos = $photoService->publicPhotosForReviews(
-            $placeReviews->getCollection()->pluck('review_id'),
-            auth()->id(),
-        );
-        $currentUserPhotos = $currentUserReview
-            ? $photoService->photosForOwnerReview((int) $currentUserReview->review_id, (int) auth()->id())
-            : collect();
-        $placeThumbnail = $photoService->thumbnailsForPlaces(collect([(int) $place->id]))->get((int) $place->id);
-        $placeGalleryPhotos = $photoService->publicPhotosForPlace((int) $place->id, auth()->id(), 12);
-        $placePhotoSetting = DB::table('place_photo_settings')->where('place_id', $place->id)->first();
+        $reviewPhotos = collect();
+        $currentUserPhotos = collect();
+        $placeThumbnail = null;
+        $placeGalleryPhotos = collect();
+        $placePhotoSetting = null;
 
         $reviewPresenters = $reviewService->presentersFor($placeReviews->getCollection(), $request->user());
         $profileMark('Photos and review presentation');
@@ -334,7 +327,7 @@ class PlaceProfileController extends Controller
             'openingClosureHint' => $openingClosureHint,
             'canDirectEdit' => $permissions->can(auth()->user(), 'places.edit'),
             'canSuggest' => $permissions->can(auth()->user(), 'places.suggest'),
-            'canManagePhotoCovers' => $permissions->can(auth()->user(), 'photos.set_cover'),
+            'canManagePhotoCovers' => false,
             'canPermanentlyDelete' => $permissions->can(auth()->user(), 'places.delete_permanently'),
             'canFavorite' => $canFavorite,
             'isFavorite' => $isFavorite,
