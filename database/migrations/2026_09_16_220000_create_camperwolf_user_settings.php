@@ -12,19 +12,6 @@ return new class extends Migration
             $table->string('locale', 10)->default('de')->after('email');
         });
 
-        Schema::create('user_settings', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->boolean('show_real_name')->default(false);
-            $table->boolean('show_reviews_in_profile')->default(true);
-            $table->boolean('show_photos_in_profile')->default(true);
-            $table->boolean('show_join_date')->default(true);
-            $table->boolean('show_activity_counts')->default(true);
-            $table->boolean('allow_email_notifications')->default(true);
-            $table->timestamps();
-
-            $table->unique('user_id');
-        });
 
         Schema::create('user_consents', function (Blueprint $table) {
             $table->id();
@@ -42,7 +29,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('user_consents');
-        Schema::dropIfExists('user_settings');
 
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('locale');
