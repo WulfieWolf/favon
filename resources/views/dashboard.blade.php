@@ -1783,28 +1783,6 @@
                                     </div>
                                 </div>
 
-                                @if ($place->opening_status !== 'unclear')
-                                    <div class="mt-2 flex flex-wrap items-center gap-2 text-xs">
-                                        @if ($place->opening_status === 'open')
-                                            <span class="font-medium text-emerald-700 dark:text-emerald-400">{{ __('ui.browse.operating_status.active') }}</span>
-                                            @if ($place->current_opening_state)
-                                                <span class="text-zinc-300 dark:text-zinc-700">•</span>
-                                                @if ($place->current_opening_state['state'] === 'open')
-                                                    <span class="font-medium text-emerald-700 dark:text-emerald-400">{{ __('ui.browse.current_opening.open') }}</span>
-                                                @elseif ($place->current_opening_state['state'] === 'closing_soon')
-                                                    <span class="font-medium text-amber-700 dark:text-amber-400">{{ __('ui.browse.current_opening.closing_soon', ['minutes' => $place->current_opening_state['minutes_until_close']]) }}</span>
-                                                @elseif ($place->current_opening_state['state'] === 'opening_soon')
-                                                    <span class="font-medium text-amber-700 dark:text-amber-400">{{ __('ui.browse.current_opening.opening_soon', ['minutes' => $place->current_opening_state['minutes_until_open']]) }}</span>
-                                                @else
-                                                    <span class="font-medium text-red-700 dark:text-red-400">{{ __('ui.browse.current_opening.closed') }}</span>
-                                                @endif
-                                            @endif
-                                        @else
-                                            <span class="font-medium text-red-700 dark:text-red-400">{{ $openingLabels[$place->opening_status] ?? Str::headline(str_replace('_', ' ', $place->opening_status)) }}</span>
-                                        @endif
-                                    </div>
-                                @endif
-
                                 @if ($place->features->isNotEmpty())
                                     <div class="mt-3 flex flex-wrap items-center gap-1.5">
                                         @foreach ($place->features->take(3) as $feature)
