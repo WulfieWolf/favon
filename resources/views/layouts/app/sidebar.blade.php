@@ -77,13 +77,6 @@
 
                     <flux:menu.separator />
                     <div class="flex justify-end px-2 py-1">
-                        <a
-                            href="{{ route('devlog') }}"
-                            class="text-[10px] font-medium text-zinc-400 transition hover:text-zinc-700 dark:text-zinc-600 dark:hover:text-zinc-300"
-                            title="{{ __('ui.devlog') }}"
-                        >
-                            {{ app(\App\Services\DevReleaseService::class)->label() }}
-                        </a>
                     </div>
                 </flux:menu>
             </flux:dropdown>

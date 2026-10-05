@@ -13,7 +13,6 @@ use App\Http\Controllers\Admin\SupportContentController;
 use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\Admin\SystemNotificationController;
 use App\Http\Controllers\Admin\SystemToolsController;
-use App\Http\Controllers\DevLogController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\LegalController;
@@ -55,7 +54,6 @@ Route::get('reviews/{review}/history', [PlaceReviewController::class, 'history']
 Route::get('user/{handle}', UserProfileController::class)->middleware('throttle:public-read')->name('users.profile');
 Route::get('user/{handle}/photo', UserProfilePhotoController::class)->name('users.profile.photo');
 Route::post('locale', [LocaleController::class, 'update'])->name('locale.update');
-Route::get('devlog', DevLogController::class)->name('devlog');
 
 if (app()->environment('local')) {
     Route::get('dev/mail/verify-email', [MailPreviewController::class, 'verifyEmail'])
