@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Services\AbuseProtectionService;
-use App\Services\BadgeService;
 use App\Services\CountryService;
 use App\Services\FeatureWorkflowService;
 use App\Services\PermissionService;
 use App\Services\PlaceTypeFeatureService;
 use App\Services\PlaceTombstoneService;
 use App\Services\UsageAnalyticsService;
-use App\Services\XpService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -534,16 +532,6 @@ class PlaceSuggestionController extends Controller
             );
         }
 
-        $publication = (object) [
-            'submitted_by' => $userId,
-            'place_id' => $placeId,
-            'target_table' => 'places',
-            'target_field' => 'publication_status',
-            'proposed_value' => json_encode('published', JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-        ];
-
-        app(XpService::class)->awardApprovedPlaceChange($publication, $placeId, $placeName);
-        app(BadgeService::class)->recordApprovedPlaceChange($publication, $placeId, $placeName);
     }
 
     private function draftForUser(Request $request, int $place): object
