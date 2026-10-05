@@ -75,10 +75,6 @@ class PlaceInfoSuggestionController extends Controller
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'legal_status' => ['required', Rule::in(['overnight_allowed', 'camping_allowed', 'parking_only', 'prohibited', 'owner_unwanted', 'unclear'])],
             'operator_name' => ['nullable', 'string', 'max:255'],
-            'pitch_count' => ['nullable', 'integer', 'min:0', 'max:1000000'],
-            'minimum_stay_nights' => ['nullable', 'integer', 'min:1', 'max:3650'],
-            'pitch_area_min_m2' => ['nullable', 'numeric', 'min:0.01', 'max:1000000'],
-            'opening_status' => ['required', 'in:open,temporarily_closed,seasonally_closed,permanently_closed,unclear'],
             'website' => ['nullable', 'url:http,https', 'max:1024'],
             'phone' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:320'],
@@ -131,20 +127,9 @@ class PlaceInfoSuggestionController extends Controller
             );
         }
 
-        $this->queueScalarUpdate(
-            $changes,
-            'places',
-            'opening_status',
-            (int) $place->id,
-            $place->opening_status,
-            $data['opening_status'],
-        );
 
         $detailFields = [
             'operator_name' => $data['operator_name'] ?? null,
-            'pitch_count' => $data['pitch_count'] ?? null,
-            'minimum_stay_nights' => $data['minimum_stay_nights'] ?? null,
-            'pitch_area_min_m2' => $data['pitch_area_min_m2'] ?? null,
         ];
         if ($details) {
             foreach ($detailFields as $field => $value) {
