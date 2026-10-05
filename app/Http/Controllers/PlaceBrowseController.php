@@ -196,7 +196,6 @@ class PlaceBrowseController extends Controller
                 'p.latitude',
                 'p.longitude',
                 'p.legal_status',
-                'p.opening_status',
                 'p.data_score',
                 'p.created_at',
                 'pt.id as place_type_id',
