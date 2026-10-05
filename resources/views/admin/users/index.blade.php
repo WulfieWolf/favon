@@ -33,7 +33,6 @@
                         <tr>
                             <th class="w-16 px-4 py-3 text-left font-semibold"></th>
                             <th class="px-4 py-3 text-left font-semibold"><a href="{{ $sortUrl('name') }}" class="inline-flex items-center gap-1 hover:underline">{{ __('admin.users.name') }} <span class="text-xs text-neutral-400">{{ $sortIndicator('name') }}</span></a></th>
-                            <th class="px-4 py-3 text-left font-semibold"><a href="{{ $sortUrl('display_name') }}" class="inline-flex items-center gap-1 hover:underline">{{ __('admin.users.display_name') }} <span class="text-xs text-neutral-400">{{ $sortIndicator('display_name') }}</span></a></th>
                             <th class="px-4 py-3 text-left font-semibold"><a href="{{ $sortUrl('email') }}" class="inline-flex items-center gap-1 hover:underline">{{ __('admin.users.email') }} <span class="text-xs text-neutral-400">{{ $sortIndicator('email') }}</span></a></th>
                             <th class="px-4 py-3 text-left font-semibold"><a href="{{ $sortUrl('status') }}" class="inline-flex items-center gap-1 hover:underline">{{ __('admin.users.status') }} <span class="text-xs text-neutral-400">{{ $sortIndicator('status') }}</span></a></th>
                             <th class="px-4 py-3 text-left font-semibold"><a href="{{ $sortUrl('role') }}" class="inline-flex items-center gap-1 hover:underline">{{ __('admin.users.roles') }} <span class="text-xs text-neutral-400">{{ $sortIndicator('role') }}</span></a></th>
@@ -46,16 +45,11 @@
                         @foreach ($users as $user)
                             <tr>
                                 <td class="px-4 py-3">
-                                    @if ($user->profile_photo_id)
-                                        <img src="{{ route('admin.users.photo', $user) }}" alt="" class="size-10 rounded-full object-cover" loading="lazy">
-                                    @else
-                                        <div class="grid size-10 place-items-center rounded-full bg-neutral-100 text-sm font-semibold text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
-                                            {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
-                                        </div>
-                                    @endif
+                                    <div class="grid size-10 place-items-center rounded-full bg-neutral-100 text-sm font-semibold text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+                                        {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3 font-medium">{{ $user->name }}</td>
-                                <td class="px-4 py-3">{{ $user->public_alias ?: ($user->public_handle ?: $user->name) }}</td>
                                 <td class="px-4 py-3">{{ $user->email }}</td>
                                 <td class="px-4 py-3">{{ __('admin.users.account_statuses.'.$user->account_status) }}</td>
                                 <td class="px-4 py-3">
