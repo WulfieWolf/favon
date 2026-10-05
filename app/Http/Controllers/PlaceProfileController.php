@@ -306,7 +306,7 @@ class PlaceProfileController extends Controller
             : collect();
         $placeThumbnail = $photoService->thumbnailsForPlaces(collect([(int) $place->id]))->get((int) $place->id);
         $placeGalleryPhotos = $photoService->publicPhotosForPlace((int) $place->id, auth()->id(), 12);
-        $placePhotoSetting = DB::table('place_photo_settings')->where('place_id', $place->id)->first();
+        $placePhotoSetting = null;
 
         $reviewPresenters = $reviewService->presentersFor($placeReviews->getCollection(), $request->user());
         $profileMark('Photos and review presentation');
