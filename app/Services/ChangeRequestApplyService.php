@@ -28,12 +28,6 @@ class ChangeRequestApplyService
             'valid_until' => 'version_valid_until',
             'audit_type' => 'place_detail',
         ],
-        'place_vehicle_types' => [
-            'place_key' => 'place_id',
-            'valid_from' => 'version_valid_from',
-            'valid_until' => 'version_valid_until',
-            'audit_type' => 'place_vehicle_type',
-        ],
     ];
 
     public function __construct(
@@ -100,10 +94,6 @@ class ChangeRequestApplyService
             foreach ($requests->groupBy(function ($request) {
                 $recordKey = $request->target_record_id ?? 'new';
 
-                // Each new vehicle suitability row is its own record.
-                if ($request->target_table === 'place_vehicle_types' && $request->operation === 'create') {
-                    $recordKey = 'new-'.$request->id;
-                }
 
                 // New contacts submitted by the place-info editor use one
                 // composite request per contact so several contacts can be
@@ -128,8 +118,7 @@ class ChangeRequestApplyService
                     'place_addresses' => $this->applyVersionedPlaceAddressUpdates($group, $anchor->place_id, $reviewer, $now),
                     'place_translations',
                     'place_contacts',
-                    'place_details',
-                    'place_vehicle_types' => $this->applyStandardVersionedRecord($group, $anchor->place_id, $reviewer, $now),
+                    'place_details' => $this->applyStandardVersionedRecord($group, $anchor->place_id, $reviewer, $now),
                     'place_features' => $this->applyPlaceFeatureRecord($group, $anchor->place_id, $reviewer, $now),
                     default => throw new RuntimeException("Applying changes to {$table} is not implemented yet."),
                 };
@@ -542,11 +531,7 @@ class ChangeRequestApplyService
                 'internal_comment' => null,
                 'created_by' => $requests->first()->submitted_by,
             ];
-        } elseif ($table === 'place_vehicle_types') {
-            $values += [
-                'capacity' => null,
-                'internal_comment' => null,
-            ];
+
         } elseif ($table === 'place_details') {
             $values += [
                 'operator_name' => null,
@@ -590,18 +575,7 @@ class ChangeRequestApplyService
                 continue;
             }
 
-            if (
-                $table === 'place_vehicle_types'
-                && $request->target_field === 'vehicle_type_id'
-                && is_array($proposed)
-            ) {
-                $values['vehicle_type_id'] = (int) ($proposed['vehicle_type_id'] ?? 0);
-                $capacity = $proposed['capacity'] ?? null;
-                $values['capacity'] = is_numeric($capacity) && (int) $capacity > 0 ? (int) $capacity : null;
-                $changed['vehicle_type_id'] = $values['vehicle_type_id'];
-                $changed['capacity'] = $values['capacity'];
-                continue;
-            }
+
 
             $values[$request->target_field] = $proposed;
             $changed[$request->target_field] = $proposed;
@@ -611,9 +585,6 @@ class ChangeRequestApplyService
             throw new RuntimeException('Creating a contact requires contact_type and value in the same change-request group.');
         }
 
-        if ($table === 'place_vehicle_types' && (! isset($values['vehicle_type_id']) || (int) $values['vehicle_type_id'] <= 0)) {
-            throw new RuntimeException('Creating vehicle suitability requires vehicle_type_id.');
-        }
 
         $newId = DB::table($table)->insertGetId($values);
 
