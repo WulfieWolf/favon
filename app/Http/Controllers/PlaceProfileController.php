@@ -69,7 +69,6 @@ class PlaceProfileController extends Controller
                 'p.latitude',
                 'p.longitude',
                 'p.legal_status',
-                'p.opening_status',
                 'pt.id as place_type_id',
                 'pt.slug as place_type_slug',
                 'pa.country_code',
@@ -98,7 +97,7 @@ class PlaceProfileController extends Controller
             ->where('place_id', $place->id)
             ->where('is_active', true)
             ->whereNull('version_valid_until')
-            ->first(['id', 'operator_name', 'pitch_count', 'minimum_stay_nights', 'pitch_area_min_m2']);
+            ->first(['id', 'operator_name']);
 
         $featureGroups = $workflows->groupedForPlace((int) $place->id)
             ->map(function ($group) use ($workflows) {
@@ -243,13 +242,9 @@ class PlaceProfileController extends Controller
         $basicInfoChecks = [
             filled($place->place_type_label),
             filled($details?->operator_name),
-            $details?->pitch_count !== null,
-            $details?->minimum_stay_nights !== null,
-            $details?->pitch_area_min_m2 !== null,
             filled($place->city) || filled($place->street),
             filled($website?->value),
             $vehicleTypes->isNotEmpty(),
-            $place->opening_status !== 'unclear',
         ];
 
         $descriptionChecks = [
