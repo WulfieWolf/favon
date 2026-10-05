@@ -29,7 +29,6 @@
             </div>
             <div class="rounded-xl border border-neutral-200 p-4 dark:border-neutral-700"><div class="text-xs text-neutral-500">{{ __('admin.users.last_seen') }}</div><div class="mt-1 font-semibold">{{ $targetUser->last_seen_at ? \App\Support\LocalTime::format($targetUser->last_seen_at, app()->getLocale()==='de'?'d.m.Y H:i':'Y-m-d H:i') : __('admin.users.none') }}</div></div>
             <div class="rounded-xl border border-neutral-200 p-4 dark:border-neutral-700"><div class="text-xs text-neutral-500">{{ __('admin.users.locale') }}</div><div class="mt-1 font-semibold">{{ strtoupper($targetUser->locale ?? 'de') }}</div></div>
-            <div class="rounded-xl border border-neutral-200 p-4 dark:border-neutral-700"><div class="text-xs text-neutral-500">{{ __('admin.users.contributions') }}</div><div class="mt-1 text-sm">{{ $statistics['places'] }} / {{ $statistics['changes'] }} / {{ $statistics['reviews'] }} / {{ $statistics['photos'] }}</div><div class="text-xs text-neutral-500">{{ __('admin.users.contribution_order') }}</div></div>
         </section>
 
         @if ($actorCanEditProfile && $targetUser->account_status !== 'deleted')

@@ -50,7 +50,7 @@ class AdminController extends Controller
 
         $usersQuery = User::query()
             ->leftJoin('user_profiles as up', 'up.user_id', '=', 'users.id')
-            ->select(['users.id','users.name','users.email','users.email_verified_at','users.account_status','users.last_seen_at','users.profile_photo_id','users.created_at','up.public_handle','up.public_alias'])
+            ->select(['users.id','users.name','users.email','users.email_verified_at','users.account_status','users.last_seen_at','users.created_at','up.public_handle','up.public_alias'])
             ->when($search !== '', function ($query) use ($search): void { $query->where(function ($query) use ($search): void { $query->where('users.name','like','%'.$search.'%')->orWhere('users.email','like','%'.$search.'%')->orWhere('users.id', ctype_digit($search) ? (int) $search : -1)->orWhereHas('profile', fn ($profile) => $profile->where('public_handle','like','%'.$search.'%')->orWhere('public_alias','like','%'.$search.'%')); }); })
             ->when(in_array($status, ['active','suspended','pending_deletion','deleted'], true), fn ($query) => $query->where('users.account_status',$status))
             ->when($verification === 'verified', fn ($query) => $query->whereNotNull('users.email_verified_at'))
