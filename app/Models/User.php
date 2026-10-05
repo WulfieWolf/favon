@@ -5,55 +5,33 @@ namespace App\Models;
 use App\Jobs\SendPasswordResetMail;
 use App\Jobs\SendVerificationMail;
 use App\Services\PermissionService;
-use App\Services\XpService;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 /**
- * @property int $id
- * @property string $name
- * @property string $email
- * @property string $locale
- * @property Carbon|null $email_verified_at
- * @property string $password
- * @property int|null $profile_photo_id
- * @property string|null $two_factor_secret
- * @property string|null $two_factor_recovery_codes
- * @property Carbon|null $two_factor_confirmed_at
- * @property string|null $remember_token
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property string $account_status
- * @property string|null $suspension_reason
- * @property Carbon|null $suspended_until
+ * Transitional Favon account model.
+ *
+ * Public community profiles, profile photos and gamification are intentionally
+ * not part of Favon. Authentication itself will be rebuilt around Telegram.
  */
-#[Fillable(['name', 'email', 'password', 'locale', 'profile_photo_id'])]
+#[Fillable(['name', 'email', 'password', 'locale'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements HasLocalePreference, MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -61,16 +39,6 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
             'password' => 'hashed',
             'suspended_until' => 'datetime',
         ];
-    }
-
-    public function profile(): HasOne
-    {
-        return $this->hasOne(UserProfile::class);
-    }
-
-    public function profilePhoto(): BelongsTo
-    {
-        return $this->belongsTo(Photo::class, 'profile_photo_id');
     }
 
     public function roles(): BelongsToMany
@@ -95,62 +63,24 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
         return $this->locale ?: (string) config('app.fallback_locale', 'de');
     }
 
-    /**
-     * Name used to address the user in account and security emails.
-     * The automatic CW-ID is deliberately not used as a greeting.
-     */
     public function mailGreetingName(): string
     {
-        return trim((string) ($this->profile?->public_alias ?: $this->name));
+        return trim((string) $this->name);
     }
 
     public function publicName(): string
     {
-        if (($this->account_status ?? 'active') !== 'active') {
-            return $this->name;
-        }
-
-        return $this->profile?->public_alias ?: $this->profile?->public_handle ?: $this->name;
+        return (string) $this->name;
     }
 
     public function publicProfileUrl(): ?string
     {
-        if (($this->account_status ?? 'active') !== 'active') {
-            return null;
-        }
-
-        $profile = $this->profile;
-        $handle = $profile?->public_alias ?: $profile?->public_handle;
-
-        return $handle ? route('users.profile', $handle) : null;
+        return null;
     }
 
     public function publicProfilePhotoUrl(): ?string
     {
-        if (($this->account_status ?? 'active') !== 'active') {
-            return null;
-        }
-
-        $profile = $this->profile;
-        $handle = $profile?->public_alias ?: $profile?->public_handle;
-
-        return $this->profile_photo_id && $handle
-            ? route('users.profile.photo', $handle)
-            : null;
-    }
-
-    public function gamificationVisible(): bool
-    {
-        return (bool) (DB::table('user_settings')
-            ->where('user_id', $this->id)
-            ->value('show_gamification') ?? true);
-    }
-
-    public function gamificationSummary(): ?array
-    {
-        return $this->gamificationVisible()
-            ? app(XpService::class)->summaryForUser((int) $this->id)
-            : null;
+        return null;
     }
 
     public function hasPermission(string $permissionSlug): bool
@@ -168,9 +98,6 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
         return app(PermissionService::class)->isOwner($this);
     }
 
-    /**
-     * Get the user's initials.
-     */
     public function initials(): string
     {
         $initials = Str::initials($this->publicName(), true);
