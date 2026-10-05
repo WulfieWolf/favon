@@ -98,7 +98,6 @@ class AccountDeletionService
             $this->detachSupport($userId);
             $this->detachTechnicalLogs($userId);
             $this->anonymizeReferences($userId);
-            $this->scrubProfile($userId, $now);
 
             if (Schema::hasTable('password_reset_tokens')) {
                 DB::table('password_reset_tokens')->where('email', $oldEmail)->delete();
@@ -189,7 +188,6 @@ class AccountDeletionService
     {
         $tables = [
             'place_favorites',
-            'user_profile_social_links',
             'user_settings',
             'user_consents',
             'user_notification_reads',
