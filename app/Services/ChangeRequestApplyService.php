@@ -44,8 +44,6 @@ class ChangeRequestApplyService
 
     public function __construct(
         private PermissionService $permissions,
-        private XpService $xpService,
-        private BadgeService $badgeService,
         private OpeningHoursPeriodService $openingHoursPeriods,
         private PricePeriodService $pricePeriods,
     ) {
@@ -212,8 +210,6 @@ class ChangeRequestApplyService
                     'created_at' => $now,
                 ]);
 
-                $this->xpService->awardApprovedPlaceChange($request, (int) $resultRecordId, $placeName);
-                $this->badgeService->recordApprovedPlaceChange($request, (int) $resultRecordId, $placeName);
             }
         });
     }
