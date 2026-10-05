@@ -1,6 +1,6 @@
 # Favon – Project Context
 
-_Last updated: 2026-10-05_
+_Last updated: 2026-10-05 – handoff before repository inventory_
 
 This file is the authoritative working context for **Favon**.
 
@@ -1068,3 +1068,169 @@ Unless explicitly reconsidered later:
 13. Favon remains technically separate from Camperwolf.
 14. Favon development never writes to the Camperwolf repository.
 15. Prefer simplicity over inherited Camperwolf complexity.
+
+
+---
+
+# 30. Next session plan: full repository inventory before deletion
+
+The next development session should **not start by deleting code immediately**.
+
+First perform a structured inventory of the current Favon repository and classify the inherited Camperwolf codebase.
+
+## Inventory scope
+
+Inspect at least:
+
+- `app/`
+- `routes/`
+- `database/migrations/`
+- `database/seeders/`
+- `database/factories/`
+- `resources/views/`
+- `resources/js/`
+- `resources/css/`
+- `config/`
+- `tests/`
+- `.github/workflows/`
+- `docs/`
+- scheduler registrations
+- console commands
+- queued jobs
+- services
+- models and relationships
+- policies/middleware
+- notifications/mail
+- admin controllers/pages
+- localization files
+
+## Classification model
+
+Every meaningful subsystem should be placed into one of three categories:
+
+### KEEP / ADAPT
+
+Infrastructure that is useful for Favon and should be retained, simplified or renamed.
+
+Likely examples:
+
+- Laravel core
+- public place browse/search foundation
+- map/geolocation code
+- place profile shell
+- favorites
+- admin/roles base
+- abuse/security base
+- locale infrastructure
+- basic legal/privacy page infrastructure
+
+### REMOVE
+
+Subsystems that are clearly Camperwolf-specific and not part of Favon.
+
+Likely examples:
+
+- all Open Data imports
+- import center/staging/external source pipeline
+- photo system
+- image processing
+- camping prices/seasons
+- vehicle suitability
+- XP/badges/achievements
+- owner verification
+- camping-specific review implementation
+- camping-specific help/content
+- obsolete scheduled jobs/commands
+- workflows/tests that exist only for removed functionality
+
+### REBUILD
+
+Areas where inherited Camperwolf code may provide technical ideas, but the Favon behavior should be redesigned instead of merely renamed.
+
+Likely examples:
+
+- authentication
+- place type model
+- stable attribute voting
+- variable feature/health-check model
+- check-ins
+- structured ratings
+- Favon-specific moderation/content rules
+
+## Output expected from the inventory
+
+Before deleting anything, produce a subsystem-level plan similar to:
+
+```
+PHOTO SYSTEM
+Status: REMOVE
+
+Includes:
+- controllers
+- models/services
+- migrations
+- routes
+- views
+- queue jobs
+- admin pages
+- tests
+
+Dependencies / cleanup:
+- user relationships
+- admin counters
+- navigation
+- scheduled jobs
+- translation keys
+```
+
+The purpose is to understand **complete dependency groups**, not just identify individual files.
+
+---
+
+# 31. Removal strategy after inventory
+
+Once the inventory is complete, cleanup should happen **subsystem by subsystem**.
+
+Do not remove isolated files without checking all references.
+
+For every subsystem removal, verify:
+
+- routes
+- controllers
+- services
+- models
+- model relationships
+- migrations
+- foreign keys
+- seeders/factories
+- Blade templates/components
+- JavaScript/CSS references
+- navigation links
+- admin dashboard counters/cards
+- policies/middleware
+- notifications/mail
+- scheduled commands
+- queued jobs
+- service provider/container bindings
+- translation keys
+- GitHub Actions
+- feature/unit tests
+
+After each major removal group, the application should remain bootable and testable.
+
+The intended sequence is:
+
+1. complete inventory
+2. produce KEEP / REMOVE / REBUILD matrix
+3. identify dependency order for removals
+4. remove the safest isolated Camperwolf-only subsystems first
+5. run tests/build
+6. continue with larger coupled subsystems
+7. only after the codebase is substantially slimmed down, redesign the Favon domain model
+8. then implement Telegram auth, place types, voting, check-ins, health checks and structured ratings
+
+The immediate next task for the new session is therefore:
+
+> **Analyze the complete `WulfieWolf/favon` repository and create a structured subsystem inventory with KEEP / REMOVE / REBUILD classification and dependency notes. Do not delete anything yet.**
+
+Camperwolf remains read-only reference during this analysis.
