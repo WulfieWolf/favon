@@ -117,7 +117,6 @@ class PlaceSuggestionController extends Controller
                     'longitude' => $data['longitude'],
                     'publication_status' => $publicationStatus,
                     'legal_status' => 'unclear',
-                    'opening_status' => 'unclear',
                     'is_active' => true,
                     'internal_comment' => $isDraft
                         ? 'Vom Nutzer als Entwurf angelegt.'
@@ -582,7 +581,6 @@ class PlaceSuggestionController extends Controller
 
         $detailValues = [
             'operator_name' => $data['operator_name'] ?? null,
-            'pitch_count' => $data['pitch_count'] ?? null,
         ];
 
         $details = DB::table('place_details')
