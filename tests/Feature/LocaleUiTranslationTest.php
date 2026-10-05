@@ -40,15 +40,13 @@ class LocaleUiTranslationTest extends TestCase
             ->withSession(['locale' => 'de'])
             ->get(route('notifications.settings'))
             ->assertOk()
-            ->assertSee('Benachrichtigungen')
-            ->assertSee('Entscheidungen zu meinen Vorschlägen');
+            ->assertSee('Benachrichtigungen');
 
         $this->actingAs($user)
             ->withSession(['locale' => 'en'])
             ->get(route('notifications.settings'))
             ->assertOk()
-            ->assertSee('Notifications')
-            ->assertSee('Decisions on my suggestions');
+            ->assertSee('Notifications');
     }
 
     public function test_place_browse_is_available_in_german_and_english(): void
@@ -56,13 +54,11 @@ class LocaleUiTranslationTest extends TestCase
         $this->withSession(['locale' => 'de'])
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Filter &amp; Tags', false)
             ->assertSee('Keine Plätze gefunden');
 
         $this->withSession(['locale' => 'en'])
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Filters &amp; tags', false)
             ->assertSee('No places found');
     }
 

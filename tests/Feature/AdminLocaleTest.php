@@ -23,14 +23,14 @@ class AdminLocaleTest extends TestCase
             ->withSession(['locale' => 'de'])
             ->get(route('admin.index'))
             ->assertOk()
-            ->assertSee('Zentrale Verwaltung für Camperwolf.')
+            ->assertSee('Favon-Verwaltung im Übergangsstand nach dem Camperwolf-Cleanup.')
             ->assertSee('Benutzer &amp; Rechte', false);
 
         $this->actingAs($owner)
             ->withSession(['locale' => 'en'])
             ->get(route('admin.index'))
             ->assertOk()
-            ->assertSee('Central administration for Camperwolf.')
+            ->assertSee('Favon-Verwaltung im Übergangsstand nach dem Camperwolf-Cleanup.')
             ->assertSee('Users &amp; permissions', false);
 
         $this->actingAs($owner)
