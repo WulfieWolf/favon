@@ -53,16 +53,6 @@ return new class extends Migration
             $table->unique(['feature_id', 'slug']);
         });
 
-        Schema::create('vehicle_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('slug', 100)->unique();
-            $table->foreignId('icon_id')->nullable()->constrained('icons')->restrictOnDelete();
-            $table->integer('sort_order')->default(10);
-            $table->boolean('is_active')->default(true);
-            $table->boolean('is_searchable')->default(true);
-            $table->text('internal_comment')->nullable();
-            $table->timestamps();
-        });
 
         Schema::create('place_types', function (Blueprint $table) {
             $table->id();
@@ -96,7 +86,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('translations');
         Schema::dropIfExists('place_types');
-        Schema::dropIfExists('vehicle_types');
         Schema::dropIfExists('feature_options');
         Schema::dropIfExists('features');
         Schema::dropIfExists('feature_categories');
