@@ -44,8 +44,6 @@ class PlaceHistoryService
             'created_at' => now(),
         ]);
 
-        app(PlaceDataScoreService::class)->markDirty($placeId);
-
         return $historyId;
     }
 }
