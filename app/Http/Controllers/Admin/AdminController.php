@@ -200,9 +200,8 @@ class AdminController extends Controller
         $changedFields = [];
         if ($user->name !== $data['name']) $changedFields[] = 'name';
         if (strcasecmp($user->email, $data['email']) !== 0) $changedFields[] = 'email';
-        if (($user->profile?->public_alias ?? null) !== ($data['public_alias'] ?: null)) $changedFields[] = 'public_alias';
         $emailChanged = in_array('email', $changedFields, true);
-        DB::transaction(function () use ($user,$data,$emailChanged): void { DB::table('users')->where('id',$user->id)->update(['name'=>$data['name'],'email'=>$data['email'],'email_verified_at'=>$emailChanged ? null : $user->email_verified_at,'updated_at'=>now()]); DB::table('user_profiles')->updateOrInsert(['user_id'=>$user->id],['public_handle'=>app(PublicHandleService::class)->automaticForUserId((int)$user->id),'public_alias'=>$data['public_alias'] ?: null,'updated_at'=>now(),'created_at'=>now()]); });
+        DB::table('users')->where('id', $user->id)->update(['name' => $data['name'], 'email' => $data['email'], 'email_verified_at' => $emailChanged ? null : $user->email_verified_at, 'updated_at' => now()]);
         $this->auditAccount($request->user(), (int) $user->id, 'account_updated', null, [
             'changed_fields' => $changedFields,
             'email_verification_reset' => $emailChanged,
