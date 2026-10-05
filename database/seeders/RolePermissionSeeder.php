@@ -51,16 +51,6 @@ class RolePermissionSeeder extends Seeder
             ['reviews', 'reviews.vote_helpful', 'Bewertungen als hilfreich markieren', 'Eine Helpful-Stimme abgeben.'],
             ['reviews', 'reviews.remove_own_helpful_vote', 'Helpful-Stimme entfernen', 'Eigene Helpful-Stimme entfernen.'],
 
-            ['photos', 'photos.upload', 'Fotos hochladen', 'Fotos zu Plätzen oder Bewertungen hochladen.'],
-            ['photos', 'photos.delete_own', 'Eigene Fotos entfernen', 'Eigene Fotos deaktivieren.'],
-            ['photos', 'photos.view_pending', 'Offene Fotos ansehen', 'Noch nicht freigegebene Fotos sehen.'],
-            ['photos', 'photos.moderate', 'Fotos moderieren', 'Fotos freigeben oder ablehnen.'],
-            ['photos', 'photos.delete_any', 'Fremde Fotos entfernen', 'Fremde Fotos deaktivieren.'],
-            ['photos', 'photos.restore', 'Fotos wiederherstellen', 'Deaktivierte Fotos wiederherstellen.'],
-            ['photos', 'photos.purge', 'Fotos endgültig löschen', 'Bilddateien physisch aus dem Storage löschen; DB-Historie bleibt erhalten.'],
-            ['photos', 'photos.set_place_order', 'Foto-Reihenfolge ändern', 'Reihenfolge der Platzfotos ändern.'],
-            ['photos', 'photos.set_cover', 'Titelbild festlegen', 'Das Hauptbild eines Platzes festlegen.'],
-
             ['users', 'users.view', 'Benutzerverzeichnis ansehen', 'Registrierte Benutzer finden und Basisdaten sehen.'],
             ['users', 'users.view_profile', 'Benutzerprofile ansehen', 'Öffentliche Profile anderer Community-Mitglieder öffnen.'],
             ['users', 'users.view_details', 'Benutzerdetails ansehen', 'Erweiterte Moderations- und Accountinformationen sehen.'],
@@ -74,7 +64,6 @@ class RolePermissionSeeder extends Seeder
             ['users', 'users.delete_account', 'Accounts administrativ deaktivieren', 'Benutzeraccounts administrativ deaktivieren bzw. löschen.'],
             ['users', 'users.assign_roles', 'Rollen zuweisen', 'Nicht-Admin-Rollen zuweisen oder entziehen.'],
             ['users', 'users.override_permissions', 'Benutzerrechte überschreiben', 'Individuelle Permission-Overrides setzen oder entfernen.'],
-            ['users', 'users.manage_badges', 'Manuelle Auszeichnungen verwalten', 'Manuelle Badges und Auszeichnungen vergeben oder entziehen.'],
 
             ['reports', 'reports.create', 'Meldungen erstellen', 'Missbrauch oder problematische Inhalte melden.'],
             ['reports', 'reports.view_own', 'Eigene Meldungen ansehen', 'Eigene Meldungen und deren Status sehen.'],
@@ -197,7 +186,6 @@ class RolePermissionSeeder extends Seeder
         $user = array_merge($guest, [
             'places.suggest', 'places.edit_own_suggestion',
             'reviews.create', 'reviews.edit_own', 'reviews.delete_own', 'reviews.vote_helpful', 'reviews.remove_own_helpful_vote',
-            'photos.upload', 'photos.delete_own',
             'users.view', 'users.view_profile',
             'reports.view_own',
             'audit.view_own',
@@ -213,7 +201,6 @@ class RolePermissionSeeder extends Seeder
         $mod = array_merge($user, [
             'places.view_unpublished', 'places.approve_changes', 'places.deactivate', 'places.restore',
             'reviews.view_pending', 'reviews.moderate', 'reviews.delete_any', 'reviews.restore', 'reviews.mark_verified_visit',
-            'photos.view_pending', 'photos.moderate', 'photos.delete_any', 'photos.set_place_order', 'photos.set_cover',
             'users.view_details', 'users.warn', 'users.suspend', 'users.unsuspend',
             'reports.view_all', 'reports.handle', 'reports.assign', 'reports.add_internal_note',
             'audit.view_moderation',
