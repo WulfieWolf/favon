@@ -64,6 +64,10 @@ class TelegramLoginService
             return User::query()->findOrFail((int) $existingUserId);
         }
 
+        if (app(SiteAccessService::class)->registrationClosed()) {
+            throw new RuntimeException('Favon registration is currently closed.');
+        }
+
         return DB::transaction(function () use ($telegramUserId, $locale): User {
             $existing = DB::table('community_accounts')
                 ->where('telegram_user_id', $telegramUserId)
