@@ -169,10 +169,10 @@ class UsageAnalyticsTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.index'))
             ->assertOk()
-            ->assertSee(__('admin.overview.sections.administration'))
-            ->assertSee(__('admin.overview.sections.moderation'))
-            ->assertSee(__('admin.overview.sections.information'))
-            ->assertSee(__('admin.overview.statistics'));
+            ->assertSee(__('admin.overview.users_rights'))
+            ->assertSee(__('admin.overview.support'))
+            ->assertSee(__('admin.overview.statistics'))
+            ->assertSee(__('admin.overview.system_tools'));
 
         $this->actingAs($moderator)
             ->get(route('admin.index'))
