@@ -20,12 +20,19 @@ use App\Http\Controllers\PlaceProfileController;
 use App\Http\Controllers\RolePreviewController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\TelegramAuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
-Route::get('/', PlaceBrowseController::class)->middleware(['harden-browse', 'throttle:public-read'])->name('home');
-Route::get('dashboard', PlaceBrowseController::class)->middleware(['harden-browse', 'throttle:public-read', 'limit-filtered-browse'])->name('dashboard');
-Route::get('places/{slug}', PlaceProfileController::class)->middleware('throttle:public-read')->name('places.show');
+Route::get('/', function () {
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : view('auth.gateway');
+})->name('home');
+
+Route::get('auth/telegram/callback', [TelegramAuthController::class, 'callback'])
+    ->middleware('throttle:10,1')
+    ->name('telegram.callback');
+
 Route::post('locale', [LocaleController::class, 'update'])->name('locale.update');
 
 if (app()->environment('local')) {
@@ -38,17 +45,23 @@ Route::get('impressum', [LegalController::class, 'imprint'])->name('legal.imprin
 Route::get('datenschutz', [LegalController::class, 'privacy'])->name('legal.privacy');
 Route::get('nutzungsbedingungen', [LegalController::class, 'terms'])->name('legal.terms');
 
-Route::get('help', [HelpController::class, 'index'])->name('help.index');
-Route::get('help/context', [HelpController::class, 'context'])->name('help.context');
-Route::get('help/{slug}', [HelpController::class, 'show'])->name('help.show');
-Route::get('roadmap', [HelpController::class, 'roadmap'])->name('roadmap');
-
 Route::get('support/report', [SupportTicketController::class, 'create'])->name('support.report');
 Route::get('support/datenschutz-recht', [SupportTicketController::class, 'privacyLegal'])->name('support.privacy-legal');
 Route::post('support/report', [SupportTicketController::class, 'store'])->middleware('throttle:support-submit')->name('support.store');
 Route::get('support/thanks', [SupportTicketController::class, 'thanks'])->name('support.thanks');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
+    Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
+    Route::get('dashboard', PlaceBrowseController::class)
+        ->middleware(['harden-browse', 'limit-filtered-browse'])
+        ->name('dashboard');
+    Route::get('places/{slug}', PlaceProfileController::class)->name('places.show');
+
+    Route::get('help', [HelpController::class, 'index'])->name('help.index');
+    Route::get('help/context', [HelpController::class, 'context'])->name('help.context');
+    Route::get('help/{slug}', [HelpController::class, 'show'])->name('help.show');
+    Route::get('roadmap', [HelpController::class, 'roadmap'])->name('roadmap');
+
     Route::middleware('permission:favorites.manage_own')->group(function () {
         Route::get('favorites', fn () => redirect()->route('dashboard', ['favorites' => 1]))->name('favorites.index');
         Route::post('places/{slug}/favorite', [FavoriteController::class, 'store'])->middleware('throttle:engagement-write')->name('favorites.store');
