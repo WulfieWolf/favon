@@ -14,25 +14,32 @@ class SiteAccessModeTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_closed_keeps_guest_frontend_available_but_blocks_registration(): void
+    public function test_registration_closed_keeps_gateway_available_and_blocks_new_telegram_accounts(): void
     {
+        $this->seed(RolePermissionSeeder::class);
+        config(['telegram.bot_token' => '123456:TEST_TOKEN']);
+
         app(SiteAccessService::class)->set(SiteAccessService::REGISTRATION_CLOSED, 'Testphase');
 
         $this->get(route('home'))->assertOk();
 
-        $this->get(route('register'))
-            ->assertOk()
-            ->assertSee('Testphase');
+        $payload = [
+            'id' => '99887766',
+            'auth_date' => now()->timestamp,
+        ];
+        ksort($payload);
+        $check = collect($payload)->map(fn ($value, $key) => $key.'='.$value)->implode("\n");
+        $payload['hash'] = hash_hmac(
+            'sha256',
+            $check,
+            hash('sha256', (string) config('telegram.bot_token'), true),
+        );
 
-        $this->post(route('register.store'), [
-            'name' => 'Blocked User',
-            'email' => 'blocked@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-            'legal_acceptance' => '1',
-        ])->assertRedirect(route('register'));
+        $this->get(route('telegram.callback', $payload))
+            ->assertRedirect(route('home'))
+            ->assertSessionHasErrors('telegram');
 
-        $this->assertDatabaseMissing('users', ['email' => 'blocked@example.com']);
+        $this->assertDatabaseCount('community_accounts', 0);
     }
 
     public function test_lockdown_blocks_guests_but_keeps_login_available(): void
