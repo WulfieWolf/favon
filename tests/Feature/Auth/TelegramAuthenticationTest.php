@@ -40,7 +40,7 @@ class TelegramAuthenticationTest extends TestCase
     {
         $payload = $this->signedPayload('987654321');
 
-        $this->get(route('telegram.callback', $payload))
+        $this->post(route('telegram.callback'), $payload)
             ->assertRedirect(route('dashboard'));
 
         $this->assertAuthenticated();
@@ -65,7 +65,7 @@ class TelegramAuthenticationTest extends TestCase
         $this->post(route('logout'))->assertRedirect(route('home'));
         $this->assertGuest();
 
-        $this->get(route('telegram.callback', $this->signedPayload('987654321')))
+        $this->post(route('telegram.callback'), $this->signedPayload('987654321'))
             ->assertRedirect(route('dashboard'));
 
         $this->assertAuthenticatedAs($user);
@@ -78,7 +78,7 @@ class TelegramAuthenticationTest extends TestCase
         $tampered = $this->signedPayload('111111111');
         $tampered['id'] = '222222222';
 
-        $this->get(route('telegram.callback', $tampered))
+        $this->post(route('telegram.callback'), $tampered)
             ->assertRedirect(route('home'))
             ->assertSessionHasErrors('telegram');
 
@@ -87,7 +87,7 @@ class TelegramAuthenticationTest extends TestCase
 
         $stale = $this->signedPayload('333333333', now()->subMinutes(10)->timestamp);
 
-        $this->get(route('telegram.callback', $stale))
+        $this->post(route('telegram.callback'), $stale)
             ->assertRedirect(route('home'))
             ->assertSessionHasErrors('telegram');
 
