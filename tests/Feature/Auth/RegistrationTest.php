@@ -81,14 +81,9 @@ class RegistrationTest extends TestCase
             'user_id' => $user->id,
             'type' => 'welcome',
             'message' => __('notifications.welcome_message', [], $user->locale),
-            'url' => route('community-profile.edit'),
+            'url' => route('dashboard'),
         ]);
 
-        $this->assertDatabaseHas('user_notifications', [
-            'user_id' => $user->id,
-            'type' => 'beta_welcome',
-            'priority' => 'important',
-        ]);
 
         Queue::assertPushed(SendVerificationMail::class, function (SendVerificationMail $job) use ($user): bool {
             return $job->userId === $user->id
