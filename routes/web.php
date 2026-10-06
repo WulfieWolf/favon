@@ -29,7 +29,11 @@ Route::get('/', function () {
         : view('auth.gateway');
 })->name('home');
 
-Route::post('auth/telegram/callback', [TelegramAuthController::class, 'callback'])
+Route::get('auth/telegram', [TelegramAuthController::class, 'redirect'])
+    ->middleware('throttle:10,1')
+    ->name('telegram.redirect');
+
+Route::get('auth/telegram/callback', [TelegramAuthController::class, 'callback'])
     ->middleware('throttle:10,1')
     ->name('telegram.callback');
 

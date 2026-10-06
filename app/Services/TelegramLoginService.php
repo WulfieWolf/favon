@@ -3,55 +3,75 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
 class TelegramLoginService
 {
-    /**
-     * @param array<string, mixed> $payload
-     */
-    public function verify(array $payload): string
+    public function authorizationUrl(Request $request, string $redirectUri): string
     {
-        $token = (string) config('telegram.bot_token');
-        if ($token === '') {
+        $clientId = trim((string) config('telegram.client_id'));
+        if ($clientId === '') {
             throw new RuntimeException('Telegram login is not configured.');
         }
 
-        $receivedHash = strtolower((string) ($payload['hash'] ?? ''));
-        $authDate = filter_var($payload['auth_date'] ?? null, FILTER_VALIDATE_INT);
-        $telegramId = trim((string) ($payload['id'] ?? ''));
+        $state = $this->base64UrlEncode(random_bytes(32));
+        $nonce = $this->base64UrlEncode(random_bytes(32));
+        $verifier = $this->base64UrlEncode(random_bytes(64));
+        $challenge = $this->base64UrlEncode(hash('sha256', $verifier, true));
 
-        if ($receivedHash === '' || $authDate === false || $telegramId === '' || ! ctype_digit($telegramId)) {
-            throw new RuntimeException('Invalid Telegram login payload.');
+        $request->session()->put([
+            'telegram_oidc_state' => $state,
+            'telegram_oidc_nonce' => $nonce,
+            'telegram_oidc_verifier' => $verifier,
+            'telegram_oidc_redirect_uri' => $redirectUri,
+        ]);
+
+        return rtrim((string) config('telegram.authorization_url'), '?').'?'.http_build_query([
+            'client_id' => $clientId,
+            'redirect_uri' => $redirectUri,
+            'response_type' => 'code',
+            'scope' => 'openid',
+            'state' => $state,
+            'nonce' => $nonce,
+            'code_challenge' => $challenge,
+            'code_challenge_method' => 'S256',
+        ], '', '&', PHP_QUERY_RFC3986);
+    }
+
+    public function verifyAuthorizationResponse(Request $request): string
+    {
+        if ($request->filled('error')) {
+            throw new RuntimeException('Telegram rejected the authorization request.');
         }
 
-        $maxAge = max(30, (int) config('telegram.auth_max_age_seconds', 300));
-        $now = now()->timestamp;
-        if ($authDate > $now + 60 || ($now - $authDate) > $maxAge) {
-            throw new RuntimeException('Telegram login payload has expired.');
+        $code = trim((string) $request->query('code', ''));
+        $state = trim((string) $request->query('state', ''));
+
+        $expectedState = (string) $request->session()->pull('telegram_oidc_state', '');
+        $nonce = (string) $request->session()->pull('telegram_oidc_nonce', '');
+        $verifier = (string) $request->session()->pull('telegram_oidc_verifier', '');
+        $redirectUri = (string) $request->session()->pull('telegram_oidc_redirect_uri', '');
+
+        if (
+            $code === ''
+            || $state === ''
+            || $expectedState === ''
+            || ! hash_equals($expectedState, $state)
+            || $nonce === ''
+            || $verifier === ''
+            || $redirectUri === ''
+        ) {
+            throw new RuntimeException('Invalid Telegram authorization response.');
         }
 
-        $signedFields = [];
-        foreach (['auth_date', 'first_name', 'id', 'last_name', 'photo_url', 'username'] as $key) {
-            if (array_key_exists($key, $payload) && $payload[$key] !== null) {
-                $signedFields[$key] = (string) $payload[$key];
-            }
-        }
+        $idToken = $this->exchangeCode($code, $verifier, $redirectUri);
 
-        ksort($signedFields);
-        $dataCheckString = collect($signedFields)
-            ->map(fn (string $value, string $key): string => $key.'='.$value)
-            ->implode("\n");
-
-        $secretKey = hash('sha256', $token, true);
-        $expectedHash = hash_hmac('sha256', $dataCheckString, $secretKey);
-
-        if (! hash_equals($expectedHash, $receivedHash)) {
-            throw new RuntimeException('Telegram login signature is invalid.');
-        }
-
-        return $telegramId;
+        return $this->verifyIdToken($idToken, $nonce);
     }
 
     public function resolveUser(string $telegramUserId, string $locale): User
@@ -116,6 +136,230 @@ class TelegramLoginService
 
             return $user->fresh();
         });
+    }
+
+    private function exchangeCode(string $code, string $verifier, string $redirectUri): string
+    {
+        $clientId = trim((string) config('telegram.client_id'));
+        $clientSecret = (string) config('telegram.client_secret');
+
+        if ($clientId === '' || $clientSecret === '') {
+            throw new RuntimeException('Telegram login is not configured.');
+        }
+
+        try {
+            $response = Http::asForm()
+                ->acceptJson()
+                ->withBasicAuth($clientId, $clientSecret)
+                ->timeout(8)
+                ->post((string) config('telegram.token_url'), [
+                    'grant_type' => 'authorization_code',
+                    'code' => $code,
+                    'redirect_uri' => $redirectUri,
+                    'client_id' => $clientId,
+                    'code_verifier' => $verifier,
+                ])
+                ->throw();
+        } catch (RequestException $exception) {
+            throw new RuntimeException('Telegram token exchange failed.', 0, $exception);
+        }
+
+        $idToken = trim((string) $response->json('id_token', ''));
+        if ($idToken === '') {
+            throw new RuntimeException('Telegram did not return an ID token.');
+        }
+
+        return $idToken;
+    }
+
+    private function verifyIdToken(string $idToken, string $expectedNonce): string
+    {
+        $parts = explode('.', $idToken);
+        if (count($parts) !== 3) {
+            throw new RuntimeException('Invalid Telegram ID token.');
+        }
+
+        [$encodedHeader, $encodedPayload, $encodedSignature] = $parts;
+
+        $header = json_decode($this->base64UrlDecode($encodedHeader), true);
+        $payload = json_decode($this->base64UrlDecode($encodedPayload), true);
+        $signature = $this->base64UrlDecode($encodedSignature);
+
+        if (! is_array($header) || ! is_array($payload)) {
+            throw new RuntimeException('Invalid Telegram ID token.');
+        }
+
+        if (($header['alg'] ?? null) !== 'RS256' || ! is_string($header['kid'] ?? null)) {
+            throw new RuntimeException('Unsupported Telegram ID token.');
+        }
+
+        $jwk = collect($this->jwks())
+            ->first(fn (array $key): bool => ($key['kid'] ?? null) === $header['kid'] && ($key['kty'] ?? null) === 'RSA');
+
+        if (! is_array($jwk)) {
+            Cache::forget('telegram_oidc_jwks');
+            $jwk = collect($this->jwks())
+                ->first(fn (array $key): bool => ($key['kid'] ?? null) === $header['kid'] && ($key['kty'] ?? null) === 'RSA');
+        }
+
+        if (! is_array($jwk)) {
+            throw new RuntimeException('Telegram signing key was not found.');
+        }
+
+        $verified = openssl_verify(
+            $encodedHeader.'.'.$encodedPayload,
+            $signature,
+            $this->rsaJwkToPem($jwk),
+            OPENSSL_ALGO_SHA256,
+        );
+
+        if ($verified !== 1) {
+            throw new RuntimeException('Telegram ID token signature is invalid.');
+        }
+
+        $now = now()->timestamp;
+        $issuer = (string) config('telegram.issuer');
+        $clientId = (string) config('telegram.client_id');
+
+        if (($payload['iss'] ?? null) !== $issuer) {
+            throw new RuntimeException('Telegram ID token issuer is invalid.');
+        }
+
+        $audience = $payload['aud'] ?? null;
+        $audiences = is_array($audience) ? array_map('strval', $audience) : [(string) $audience];
+        if (! in_array($clientId, $audiences, true)) {
+            throw new RuntimeException('Telegram ID token audience is invalid.');
+        }
+
+        $expiresAt = filter_var($payload['exp'] ?? null, FILTER_VALIDATE_INT);
+        $issuedAt = filter_var($payload['iat'] ?? null, FILTER_VALIDATE_INT);
+        if ($expiresAt === false || $issuedAt === false || $expiresAt <= $now || $issuedAt > $now + 60) {
+            throw new RuntimeException('Telegram ID token has expired or is not yet valid.');
+        }
+
+        $nonce = (string) ($payload['nonce'] ?? '');
+        if ($nonce === '' || ! hash_equals($expectedNonce, $nonce)) {
+            throw new RuntimeException('Telegram ID token nonce is invalid.');
+        }
+
+        $telegramId = trim((string) ($payload['sub'] ?? ''));
+        if ($telegramId === '' || ! ctype_digit($telegramId)) {
+            throw new RuntimeException('Telegram ID token subject is invalid.');
+        }
+
+        return $telegramId;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function jwks(): array
+    {
+        return Cache::remember('telegram_oidc_jwks', now()->addHour(), function (): array {
+            try {
+                $response = Http::acceptJson()
+                    ->timeout(8)
+                    ->get((string) config('telegram.jwks_url'))
+                    ->throw();
+            } catch (RequestException $exception) {
+                throw new RuntimeException('Telegram signing keys could not be loaded.', 0, $exception);
+            }
+
+            $keys = $response->json('keys');
+
+            if (! is_array($keys)) {
+                throw new RuntimeException('Telegram signing keys are invalid.');
+            }
+
+            return array_values(array_filter($keys, 'is_array'));
+        });
+    }
+
+    /**
+     * @param array<string, mixed> $jwk
+     */
+    private function rsaJwkToPem(array $jwk): string
+    {
+        $modulus = $this->base64UrlDecode((string) ($jwk['n'] ?? ''));
+        $exponent = $this->base64UrlDecode((string) ($jwk['e'] ?? ''));
+
+        if ($modulus === '' || $exponent === '') {
+            throw new RuntimeException('Telegram RSA signing key is invalid.');
+        }
+
+        $rsaPublicKey = $this->asn1Sequence(
+            $this->asn1Integer($modulus).
+            $this->asn1Integer($exponent),
+        );
+
+        $algorithmIdentifier = $this->asn1Sequence(
+            "\x06\x09\x2a\x86\x48\x86\xf7\x0d\x01\x01\x01".
+            "\x05\x00",
+        );
+
+        $subjectPublicKeyInfo = $this->asn1Sequence(
+            $algorithmIdentifier.
+            "\x03".$this->asn1Length(strlen($rsaPublicKey) + 1)."\x00".$rsaPublicKey,
+        );
+
+        return "-----BEGIN PUBLIC KEY-----\n".
+            chunk_split(base64_encode($subjectPublicKeyInfo), 64, "\n").
+            "-----END PUBLIC KEY-----\n";
+    }
+
+    private function asn1Sequence(string $value): string
+    {
+        return "\x30".$this->asn1Length(strlen($value)).$value;
+    }
+
+    private function asn1Integer(string $value): string
+    {
+        $value = ltrim($value, "\x00");
+        if ($value === '') {
+            $value = "\x00";
+        }
+
+        if ((ord($value[0]) & 0x80) !== 0) {
+            $value = "\x00".$value;
+        }
+
+        return "\x02".$this->asn1Length(strlen($value)).$value;
+    }
+
+    private function asn1Length(int $length): string
+    {
+        if ($length < 128) {
+            return chr($length);
+        }
+
+        $encoded = '';
+        while ($length > 0) {
+            $encoded = chr($length & 0xff).$encoded;
+            $length >>= 8;
+        }
+
+        return chr(0x80 | strlen($encoded)).$encoded;
+    }
+
+    private function base64UrlEncode(string $value): string
+    {
+        return rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
+    }
+
+    private function base64UrlDecode(string $value): string
+    {
+        $remainder = strlen($value) % 4;
+        if ($remainder !== 0) {
+            $value .= str_repeat('=', 4 - $remainder);
+        }
+
+        $decoded = base64_decode(strtr($value, '-_', '+/'), true);
+
+        if ($decoded === false) {
+            throw new RuntimeException('Invalid base64url value.');
+        }
+
+        return $decoded;
     }
 
     private function recordInitialConsent(int $userId): void
