@@ -16,6 +16,8 @@ class SupportContentSeeder extends Seeder
             'platz-details-bearbeiten',
             'merkmale-eines-platzes-eintragen',
             'platzvorschlag-pruefen-und-einreichen',
+            'level-und-xp',
+            'badges-und-achievements',
         ];
 
         $obsoleteArticleIds = DB::table('support_articles')
@@ -72,7 +74,6 @@ Dazu gehören zum Beispiel:
 
 - einer deiner Vorschläge wurde geprüft oder freigeschaltet
 - eines deiner Fotos wurde als hilfreich bewertet - bei häufig bewerteten Fotos erhältst du nicht für jeden einzelnen Klick eine Meldung, sondern nur bei bestimmten Meilensteinen
-- du hast ein Achievement, eine neue Badge-Stufe oder eine besondere Auszeichnung erhalten
 - eine deiner Änderungen oder anderen Beiträge wurde moderiert
 - wichtige Informationen von Camperwolf, zum Beispiel über geplante Wartungsarbeiten, neue Funktionen oder Community-Aktionen
 
@@ -481,14 +482,6 @@ Wir möchten mit Camperwolf eine Community-Plattform betreiben und kein Geschäf
 
 Welche Daten verarbeitet werden und wofür sie benötigt werden, erklären wir ausführlicher in unserer Datenschutzerklärung.
 
-## Warum gibt es XP, Level, Badges und Achievements?
-
-Sie sollen die Mitarbeit an Camperwolf etwas interessanter machen und Beiträge zur Community sichtbar anerkennen.
-
-Für verschiedene Aktivitäten kannst du XP sammeln sowie Badges und Achievements freischalten. Daraus entstehen aber keine kostenpflichtigen Vorteile oder exklusiven Funktionen.
-
-Mehr dazu findest du in unseren Hilfeseiten zu [[level-und-xp|Level und XP]] und [[badges-achievements|Badges & Achievements]].
-
 ## Können Platzbetreiber ihren Eintrag selbst verwalten?
 
 Eine eigene Verifizierung für Platzbetreiber ist geplant, aber noch nicht verfügbar.
@@ -572,7 +565,6 @@ Bei der endgültigen Löschung werden deine persönlichen Kontodaten entfernt od
 - Kontoeinstellungen und Einwilligungen
 - Favoriten
 - Benachrichtigungen
-- XP, Badge-Fortschritte und freigeschaltete Badges
 - Passkeys und Daten der Zwei-Faktor-Authentifizierung
 - vorhandene Datenexporte
 - deine hochgeladenen Fotos und die dazu gespeicherten Dateien
@@ -623,7 +615,6 @@ Der Export enthält deine bei Camperwolf gespeicherten Daten und Aktivitäten. D
 - Rezensionen und andere Beiträge
 - Favoriten und weitere Interaktionen
 - Fotos einschließlich der dazu gespeicherten Informationen
-- XP, Badges und andere Gamification-Daten
 - Benachrichtigungen
 - deine Supportmeldungen und Nachrichten
 
@@ -652,130 +643,6 @@ Der Download gehört zu deinem Benutzerkonto. Andere Camperwolf-Nutzer können d
 Der Datenexport hilft dir dabei, die zu deinem Camperwolf-Konto gespeicherten Daten einzusehen und in einem maschinenlesbaren Format zu erhalten.
 
 Weitere Informationen zu deinen Datenschutzrechten findest du in unserer **Datenschutzerklärung**. Dort findest du auch Informationen zum Auskunftsrecht nach **Art. 15 DSGVO** und zum Recht auf Datenübertragbarkeit nach **Art. 20 DSGVO**.
-TEXT,
-            ],
-            [
-                'slug' => 'level-und-xp',
-                'title' => 'Level und XP',
-                'summary' => 'So funktioniert das freiwillige Level- und XP-System von Camperwolf.',
-                'context_key' => 'gamification',
-                'sort_order' => 60,
-                'body' => <<<'TEXT'
-Wenn du Camperwolf mit Informationen, Bewertungen, Fotos oder anderen Beiträgen hilfst, kannst du dafür **Erfahrungspunkte (XP)** bekommen.
-
-Mit den XP steigt nach und nach dein **Level**. Das zeigt, wie viel du bereits zur Community beigetragen hast.
-
-Wichtig dabei: Ein höheres Level bringt **keine besonderen Rechte oder Vorteile**. Es beeinflusst auch keine Bewertungen oder die Reihenfolge von Plätzen.
-
-## Wie bekomme ich XP?
-
-XP bekommst du für hilfreiche Beiträge zu Camperwolf.
-
-Wenn ein Beitrag erst von einem Moderator geprüft werden muss, werden die XP vergeben, sobald der Beitrag freigegeben wurde.
-
-Aktuell bekommst du zum Beispiel:
-
-- **+1 XP** für eine zusätzliche Information oder ein Merkmal zu einem Platz
-- **+2 XP** für größere Texte, zum Beispiel eine Beschreibung oder Hinweise zur Anfahrt
-- **+1 XP** für jede beantwortete Frage bei einer Bewertung
-- **+1 XP** für ein Foto - maximal 5 Foto-XP pro Platz
-- **+2 XP** für eine Rezension
-- **+4 XP insgesamt** für eine ausführliche Rezension mit mindestens 300 Zeichen
-- **+1 XP**, wenn jemand dein Foto als hilfreich bewertet - maximal 10 XP pro Foto
-
-Die Angaben, die unbedingt benötigt werden, um einen neuen Platz anzulegen - zum Beispiel Name, Platztyp und Position - bringen keine zusätzlichen XP.
-
-Wenn du freiwillig weitere Informationen zum neuen Platz einträgst, kannst du dafür aber XP bekommen.
-
-## Kann ich für dieselbe Information mehrfach XP bekommen?
-
-Nein. Für dieselbe Information zu einem Platz bekommst du normalerweise nur einmal XP.
-
-Wenn du zum Beispiel ein Merkmal ergänzt und dafür XP erhalten hast, bekommst du nicht erneut XP, wenn du dieses Merkmal später selbst aktualisierst.
-
-Ergänzt oder aktualisiert ein anderer Nutzer diese Information zum ersten Mal, kann dieser dafür ebenfalls XP bekommen.
-
-## Was passiert, wenn ich etwas lösche und neu eintrage?
-
-Bereits erhaltene XP lassen sich dadurch nicht erneut verdienen.
-
-Ein Beispiel: Du hast für fünf Fotos eines Platzes bereits die maximalen 5 Foto-XP bekommen. Wenn du diese Fotos löschst und neue hochlädst, bekommst du dafür nicht noch einmal Foto-XP.
-
-## Wie funktionieren die Level?
-
-Du startest mit **Level 1 bei 0 XP**.
-
-Die ersten Level kannst du relativ schnell erreichen. Mit jedem weiteren Level brauchst du mehr XP für den nächsten Aufstieg.
-
-Deine bereits verdienten XP bleiben dabei erhalten.
-
-## Wo sehe ich meine XP?
-
-In deinem Profil kannst du deinen **XP-Verlauf** ansehen.
-
-Dort siehst du, wann du XP bekommen hast und wofür. Auch Korrekturen werden dort angezeigt.
-
-Zum Beispiel:
-
-`01.01.2026, 20:32 - Ausführliche Rezension geschrieben: +4 XP`
-
-`02.01.2026, 11:32 - Merkmal eines Platzes ergänzt: +1 XP`
-
-## Was sind Sonder-XP und Korrekturen?
-
-Manchmal kann es zusätzliche XP geben - zum Beispiel für besondere Community-Aktionen, Veranstaltungen oder Auszeichnungen.
-
-Es kann auch vorkommen, dass bereits vergebene XP korrigiert werden müssen. Wird zum Beispiel ein Beitrag von einem Moderator gelöscht, für den du zuvor XP bekommen hast, können die dafür vergebenen XP wieder abgezogen werden.
-
-Solche Änderungen erscheinen ebenfalls in deinem XP-Verlauf.
-
-## Ich möchte das nicht. Kann ich Level und XP ausblenden?
-
-Ja. In deinen Profileinstellungen kannst du festlegen, dass deine **Gamification nicht öffentlich angezeigt** wird.
-
-Dann sehen andere Nutzer dein Level, deine Fortschrittsanzeige, deine Badges und deinen XP-Verlauf nicht mehr.
-
-Deine XP gehen dadurch **nicht verloren**. Camperwolf zählt sie im Hintergrund weiter und dein Level kann weiterhin steigen.
-
-Die Einstellung betrifft nur dein eigenes Profil. Level und Badges anderer Nutzer werden dir weiterhin angezeigt, sofern diese ihre Gamification öffentlich anzeigen.\n\nMehr über die anderen Community-Auszeichnungen findest du unter [[badges-und-achievements|Badges & Achievements]].
-TEXT,
-            ],
-            [
-                'slug' => 'badges-und-achievements',
-                'title' => 'Badges & Achievements',
-                'summary' => 'Auszeichnungen und besondere Erfolge für deine Beiträge zur Camperwolf-Community.',
-                'context_key' => 'gamification',
-                'sort_order' => 61,
-                'body' => <<<'TEXT'
-Bei Camperwolf kannst du durch deine Mitarbeit **Badges und Achievements** freischalten.
-
-Sie sind kleine Auszeichnungen für unterschiedliche Beiträge zur Community - zum Beispiel für neue Plätze, hilfreiche Informationen, Rezensionen, Fotos oder andere Aktivitäten.
-
-## Badges
-
-Badges begleiten dich über längere Zeit. Bei vielen von ihnen kannst du verschiedene Stufen erreichen, während du Camperwolf weiter mit deinen Beiträgen unterstützt.
-
-Was für einen bestimmten Badge zählt und was du für die nächste Stufe brauchst, kannst du direkt beim jeweiligen Badge sehen.
-
-## Achievements
-
-Achievements sind besondere Erfolge, die du durch bestimmte Aktivitäten freischalten kannst.
-
-Was du dafür tun musst, steht direkt beim jeweiligen Achievement. Einige Achievements bringen dir zusätzlich **XP**.
-
-Es gibt außerdem ein paar **versteckte Achievements**. Was du dafür tun musst, verraten wir natürlich nicht. :)
-
-## Besondere Auszeichnungen
-
-Manche Auszeichnungen kannst du nicht selbst freischalten. Sie werden zum Beispiel für besondere Aktionen, Veranstaltungen oder Unterstützung der Community vergeben.
-
-## Badge als Profil-Titel
-
-Freigeschaltete Badges und Auszeichnungen kannst du in deinem Nutzerprofil ganz unten als **Profil-Titel** auswählen. Der ausgewählte Titel wird anschließend in deinem Profil angezeigt.
-
-Wenn du ein Achievement, eine neue Badge-Stufe oder eine besondere Auszeichnung erhältst, informiert dich Camperwolf außerdem über die [[benachrichtigungen|Benachrichtigungen]]. Reine XP-Änderungen erzeugen keine eigene Benachrichtigung.
-
-Mehr über Level und Erfahrungspunkte findest du unter [[level-und-xp|Level und XP]].
 TEXT,
             ],
             [
