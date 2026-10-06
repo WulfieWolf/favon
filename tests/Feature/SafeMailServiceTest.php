@@ -18,6 +18,13 @@ class SafeMailServiceTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config()->set('camperwolf.mail.enabled', true);
+    }
+
     public function test_mail_is_blocked_when_the_circuit_breaker_is_disabled(): void
     {
         Mail::fake();
