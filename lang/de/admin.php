@@ -3,7 +3,7 @@
 return [
     'title' => 'Administration',
     'overview' => [
-        'intro' => 'Zentrale Verwaltung für Camperwolf.',
+        'intro' => 'Zentrale Verwaltung für Favon.',
         'owner_title' => 'System Owner',
         'owner_help' => 'Dein Account verwendet den globalen Owner-Bypass und ist nicht von Rollen oder Permission-Overrides abhängig.',
         'users' => 'Benutzer',
@@ -47,7 +47,7 @@ return [
         'import_candidates_count' => ':count neue',
         'import_reviews_count' => ':count zu prüfen',
         'statistics' => 'Statistik',
-        'statistics_help' => 'Bestand, Aktivität und anonyme Nutzung von Camperwolf auswerten.',
+        'statistics_help' => 'Bestand, Aktivität und anonyme Nutzung von Favon auswerten.',
         'sections' => [
             'administration' => 'Administration',
             'administration_help' => 'Systemweite Verwaltung, Stammdaten und technische Werkzeuge.',
