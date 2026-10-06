@@ -216,9 +216,13 @@ class StatisticsController extends Controller
     private function groupedActivityValues(string $table, string $column, bool $daily, ?CarbonInterface $start)
     {
         $format = $daily ? '%Y-%m-%d' : '%Y-%m';
+        $driver = DB::connection()->getDriverName();
+        $periodExpression = $driver === 'sqlite'
+            ? "strftime(?, {$column})"
+            : "DATE_FORMAT({$column}, ?)";
 
         return $this->periodQuery(DB::table($table), $start, $column)
-            ->selectRaw("DATE_FORMAT({$column}, ?) as period_key, COUNT(*) as count", [$format])
+            ->selectRaw("{$periodExpression} as period_key, COUNT(*) as count", [$format])
             ->groupBy('period_key')
             ->pluck('count', 'period_key')
             ->map(fn ($count) => (int) $count);
