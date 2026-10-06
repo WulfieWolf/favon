@@ -13,7 +13,7 @@ class TelegramAuthController extends Controller
     public function callback(Request $request, TelegramLoginService $telegram): RedirectResponse
     {
         try {
-            $telegramUserId = $telegram->verify($request->query());
+            $telegramUserId = $telegram->verify($request->all());
             $user = $telegram->resolveUser($telegramUserId, app()->getLocale());
         } catch (RuntimeException $exception) {
             report($exception);
