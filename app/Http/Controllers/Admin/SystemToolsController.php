@@ -7,7 +7,6 @@ use App\Services\AdminDebugService;
 use App\Services\SiteAccessService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -23,11 +22,6 @@ class SystemToolsController extends Controller
             'debugEnabled' => $debug->enabled($request->user()),
             'accessMode' => app(SiteAccessService::class)->mode(),
             'accessMessage' => app(SiteAccessService::class)->message(),
-            'dataScoreMetrics' => [
-                'total' => DB::table('places')->count(),
-                'calculated' => DB::table('places')->whereNotNull('data_score_calculated_at')->count(),
-                'dirty' => DB::table('places')->where('data_score_dirty', true)->count(),
-            ],
             'securityMetrics' => [
                 'quarantined' => DB::table('abuse_flags')
                     ->where('entity_type', 'place')
@@ -78,15 +72,6 @@ class SystemToolsController extends Controller
         $access->set($data['mode'], $data['message'] ?? null);
 
         return back()->with('ui_toast', __('admin.system.access_updated'));
-    }
-
-    public function rebuildDataScores(Request $request, AdminDebugService $debug): RedirectResponse
-    {
-        abort_unless($debug->canManage($request->user()), 403);
-
-        Artisan::queue('places:recalculate-data-scores');
-
-        return back()->with('ui_toast', __('admin.system.data_scores_started'));
     }
 
     public function updateDebug(Request $request, AdminDebugService $debug): RedirectResponse

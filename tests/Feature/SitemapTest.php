@@ -16,6 +16,17 @@ class SitemapTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $placeTypeId = (int) DB::table('place_types')->value('id');
+        if ($placeTypeId === 0) {
+            $placeTypeId = (int) DB::table('place_types')->insertGetId([
+                'slug' => 'sitemap-test',
+                'icon_id' => null,
+                'sort_order' => 10,
+                'is_active' => true,
+                'is_searchable' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         foreach ([
             ['name' => 'Public Place', 'slug' => 'public-place', 'publication_status' => 'published', 'is_active' => true],

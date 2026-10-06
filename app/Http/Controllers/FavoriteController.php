@@ -7,44 +7,9 @@ use App\Services\UsageAnalyticsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\View\View;
 
 class FavoriteController extends Controller
 {
-    public function index(Request $request): View
-    {
-        $favorites = DB::table('place_favorites as pf')
-            ->join('places as p', 'p.id', '=', 'pf.place_id')
-            ->join('place_types as pt', 'pt.id', '=', 'p.place_type_id')
-            ->leftJoin('place_addresses as pa', function ($join): void {
-                $join->on('pa.place_id', '=', 'p.id')
-                    ->where('pa.is_active', true)
-                    ->whereNull('pa.version_valid_until');
-            })
-            ->where('pf.user_id', $request->user()->id)
-            ->where('p.is_active', true)
-            ->where('p.publication_status', 'published')
-            ->orderByDesc('pf.created_at')
-            ->select([
-                'pf.id as favorite_id',
-                'pf.notify_changes',
-                'pf.created_at as favorited_at',
-                'p.id',
-                'p.name',
-                'p.slug',
-                'p.legal_status',
-                'p.opening_status',
-                'pt.slug as place_type_slug',
-                'pa.postal_code',
-                'pa.city',
-                'pa.country_code',
-            ])
-            ->paginate(24)
-            ->withQueryString();
-
-        return view('favorites.index', compact('favorites'));
-    }
-
     public function store(
         Request $request,
         string $slug,

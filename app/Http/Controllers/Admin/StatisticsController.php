@@ -8,7 +8,6 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class StatisticsController extends Controller
@@ -31,10 +30,10 @@ class StatisticsController extends Controller
             ->where('pt.is_active', true)
             ->groupBy('pt.id', 'pt.slug', 'pt.sort_order')
             ->orderBy('pt.sort_order')
-            ->selectRaw('pt.id, pt.slug, COUNT(p.id) as count')
+            ->selectRaw('pt.slug, COUNT(p.id) as count')
             ->get()
             ->map(fn ($row) => [
-                'label' => $this->translatedReferenceName('place_type', (int) $row->id, (string) $row->slug),
+                'label' => str((string) $row->slug)->replace('-', ' ')->headline()->toString(),
                 'count' => (int) $row->count,
             ]);
 
@@ -56,18 +55,6 @@ class StatisticsController extends Controller
             ->selectRaw('status, COUNT(*) as count')
             ->groupBy('status')
             ->orderBy('status')
-            ->pluck('count', 'status')
-            ->map(fn ($count) => (int) $count);
-
-        $changeStatuses = DB::table('change_requests')
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->map(fn ($count) => (int) $count);
-
-        $photoStatuses = DB::table('photos')
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
             ->pluck('count', 'status')
             ->map(fn ($count) => (int) $count);
 
@@ -138,18 +125,6 @@ class StatisticsController extends Controller
                 'views' => (int) $row->views,
             ]);
 
-        $currentReviewCount = DB::table('place_reviews')
-            ->where('status', 'active')
-            ->count();
-
-        $reviewTextCount = DB::table('place_reviews as pr')
-            ->join('place_review_versions as prv', 'prv.id', '=', 'pr.current_version_id')
-            ->where('pr.status', 'active')
-            ->where('prv.is_public', true)
-            ->whereNotNull('prv.review_text')
-            ->where('prv.review_text', '!=', '')
-            ->count();
-
         $inventory = [
             'places_total' => DB::table('places')->count(),
             'places_published' => DB::table('places')->where('is_active', true)->where('publication_status', 'published')->count(),
@@ -157,22 +132,8 @@ class StatisticsController extends Controller
             'users_total' => DB::table('users')->count(),
             'users_active' => DB::table('users')->where('account_status', 'active')->count(),
             'users_verified' => DB::table('users')->whereNotNull('email_verified_at')->count(),
-            'reviews_total' => $currentReviewCount,
-            'review_texts' => $reviewTextCount,
-            'rating_values' => $currentReviewCount * 5,
-            'photos_total' => DB::table('photos')->count(),
-            'photos_community' => DB::table('photos')->whereNotNull('user_id')->count(),
-            'photos_external' => DB::table('photos')->whereNotNull('external_source_id')->count(),
-            'features_active' => DB::table('features')->where('is_active', true)->count(),
-            'feature_categories_active' => DB::table('feature_categories')->where('is_active', true)->count(),
-            'place_features_active' => DB::table('place_features')->where('is_active', true)->count(),
             'favorites' => DB::table('place_favorites')->count(),
-            'change_requests' => DB::table('change_requests')->count(),
             'support_tickets' => DB::table('support_tickets')->count(),
-            'external_sources' => DB::table('external_sources')->count(),
-            'external_records' => DB::table('external_records')->count(),
-            'external_linked' => DB::table('external_records')->whereNotNull('place_id')->count(),
-            'import_runs' => DB::table('external_import_runs')->count(),
             'audit_events' => DB::table('audit_logs')->count(),
             'merges' => DB::table('place_merges')->count(),
         ];
@@ -187,13 +148,10 @@ class StatisticsController extends Controller
 
         return view('admin.statistics.index', compact(
             'period',
-            'periodStart',
             'inventory',
             'placeTypes',
             'roles',
             'supportStatuses',
-            'changeStatuses',
-            'photoStatuses',
             'userStatuses',
             'usageTotal',
             'usageByAudience',
@@ -216,9 +174,7 @@ class StatisticsController extends Controller
         $tables = [
             'users' => ['table' => 'users', 'column' => 'created_at'],
             'places' => ['table' => 'places', 'column' => 'created_at'],
-            'reviews' => ['table' => 'place_reviews', 'column' => 'created_at'],
-            'photos' => ['table' => 'photos', 'column' => 'created_at'],
-            'changes' => ['table' => 'change_requests', 'column' => 'created_at'],
+            'favorites' => ['table' => 'place_favorites', 'column' => 'created_at'],
             'support' => ['table' => 'support_tickets', 'column' => 'created_at'],
             'usage' => ['table' => 'usage_events', 'column' => 'created_at'],
         ];
@@ -250,89 +206,42 @@ class StatisticsController extends Controller
                 'label' => $daily ? $date->format('d.m.') : $date->format('m/Y'),
                 'users' => (int) ($series['users'][$key] ?? 0),
                 'places' => (int) ($series['places'][$key] ?? 0),
-                'reviews' => (int) ($series['reviews'][$key] ?? 0),
-                'photos' => (int) ($series['photos'][$key] ?? 0),
-                'changes' => (int) ($series['changes'][$key] ?? 0),
+                'favorites' => (int) ($series['favorites'][$key] ?? 0),
                 'support' => (int) ($series['support'][$key] ?? 0),
                 'usage' => (int) ($series['usage'][$key] ?? 0),
             ];
-        })->all();
+        })->values()->all();
     }
 
-    private function groupedActivityValues(
-        string $table,
-        string $column,
-        bool $daily,
-        ?CarbonInterface $start,
-    ) {
+    private function groupedActivityValues(string $table, string $column, bool $daily, ?CarbonInterface $start)
+    {
+        $format = $daily ? '%Y-%m-%d' : '%Y-%m';
         $driver = DB::connection()->getDriverName();
+        $periodExpression = $driver === 'sqlite'
+            ? "strftime(?, {$column})"
+            : "DATE_FORMAT({$column}, ?)";
 
-        $bucketExpression = match ($driver) {
-            'sqlite' => $daily
-                ? "strftime('%Y-%m-%d', {$column})"
-                : "strftime('%Y-%m', {$column})",
-            default => $daily
-                ? "DATE_FORMAT({$column}, '%Y-%m-%d')"
-                : "DATE_FORMAT({$column}, '%Y-%m')",
-        };
-
-        $query = DB::table($table)
-            ->whereNotNull($column)
-            ->selectRaw($bucketExpression.' as bucket, COUNT(*) as count')
-            ->groupByRaw($bucketExpression)
-            ->orderBy('bucket');
-
-        if ($start) {
-            $query->where($column, '>=', $start);
-        }
-
-        return $query
-            ->get()
-            ->filter(fn ($row) => is_string($row->bucket) && $row->bucket !== '')
-            ->mapWithKeys(fn ($row) => [(string) $row->bucket => (int) $row->count]);
+        return $this->periodQuery(DB::table($table), $start, $column)
+            ->selectRaw("{$periodExpression} as period_key, COUNT(*) as count", [$format])
+            ->groupBy('period_key')
+            ->pluck('count', 'period_key')
+            ->map(fn ($count) => (int) $count);
     }
 
-    private function periodKeys(string $period, ?CarbonInterface $start, array $existingKeys): array
+    private function periodKeys(string $period, ?CarbonInterface $start, array $existing): array
     {
         if ($period === '30d' && $start) {
-            $keys = [];
-            $cursor = $start->copy()->startOfDay();
-            while ($cursor->lte(now())) {
-                $keys[] = $cursor->format('Y-m-d');
-                $cursor = $cursor->addDay();
-            }
-
-            return $keys;
+            return collect(range(0, 29))
+                ->map(fn ($offset) => $start->copy()->addDays($offset)->format('Y-m-d'))
+                ->all();
         }
 
         if ($period === '12m' && $start) {
-            $keys = [];
-            $cursor = $start->copy()->startOfMonth();
-            while ($cursor->lte(now()->startOfMonth())) {
-                $keys[] = $cursor->format('Y-m');
-                $cursor = $cursor->addMonth();
-            }
-
-            return $keys;
+            return collect(range(0, 11))
+                ->map(fn ($offset) => $start->copy()->addMonthsNoOverflow($offset)->format('Y-m'))
+                ->all();
         }
 
-        return $existingKeys;
-    }
-
-    private function translatedReferenceName(string $entityType, int $entityId, string $fallback): string
-    {
-        $locale = app()->getLocale();
-
-        $value = DB::table('translations')
-            ->where('entity_type', $entityType)
-            ->where('entity_id', $entityId)
-            ->where('field', 'name')
-            ->where('locale', $locale)
-            ->where('is_active', true)
-            ->value('value');
-
-        return is_string($value) && $value !== ''
-            ? $value
-            : Str::headline(str_replace('-', ' ', $fallback));
+        return $existing;
     }
 }

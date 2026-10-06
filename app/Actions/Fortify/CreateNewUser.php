@@ -5,7 +5,6 @@ namespace App\Actions\Fortify;
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
 use App\Models\User;
-use App\Services\DevReleaseService;
 use App\Services\SecurityEventService;
 use App\Services\PublicHandleService;
 use Illuminate\Support\Facades\DB;
@@ -117,22 +116,10 @@ class CreateNewUser implements CreatesNewUsers
             'welcome',
             __('notifications.welcome_title', [], $locale),
             __('notifications.welcome_message', [], $locale),
-            route('community-profile.edit'),
+            route('dashboard'),
             'normal',
             'bell',
         );
-
-        if (app(DevReleaseService::class)->current()?->stage === 'beta') {
-            $notifications->createImmediate(
-                (int) $user->id,
-                'beta_welcome',
-                __('notifications.beta_welcome_title', [], $locale),
-                __('notifications.beta_welcome_message', [], $locale),
-                null,
-                'important',
-                'info-circle',
-            );
-        }
 
         Session::flash('verification_modal', 'registration_pending');
 

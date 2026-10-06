@@ -93,8 +93,6 @@ class AccountDeletionService
 
         $oldEmail = (string) $user->email;
         $now = now();
-
-        $this->deleteUserPhotos($userId, $now);
         $this->deleteDataExports($userId);
         $this->retireReviews($userId, $now);
 
@@ -188,27 +186,6 @@ class AccountDeletionService
                 'current_expires_at' => $now,
                 'updated_at' => $now,
             ]);
-        }
-    }
-
-    private function deleteUserPhotos(int $userId, $now): void
-    {
-        if (! Schema::hasTable('photos')) {
-            return;
-        }
-
-        $photoIds = DB::table('photos')
-            ->where('user_id', $userId)
-            ->pluck('id')
-            ->map(fn ($id) => (int) $id);
-
-        foreach ($photoIds as $photoId) {
-            app(PhotoDeletionService::class)->deactivate(
-                $photoId,
-                'deleted',
-                null,
-                'Account permanently deleted.',
-            );
         }
     }
 

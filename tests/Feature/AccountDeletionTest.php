@@ -12,24 +12,15 @@ class AccountDeletionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_grace_period_hides_profile_and_can_be_cancelled(): void
+    public function test_grace_period_can_be_cancelled(): void
     {
         $user = User::factory()->create();
-        DB::table('user_profiles')->insert([
-            'user_id' => $user->id,
-            'public_handle' => 'CW-DELETE-TEST',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         $service = app(AccountDeletionService::class);
         $service->request($user, false);
 
         $user->refresh();
         $this->assertSame('pending_deletion', $user->account_status);
         $this->assertNotNull($user->deletion_scheduled_for);
-        $this->get(route('users.profile', 'CW-DELETE-TEST'))->assertNotFound();
-
         $this->assertTrue($service->cancel($user));
         $this->assertDatabaseHas('users', [
             'id' => $user->id,

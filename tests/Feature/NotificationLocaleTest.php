@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Services\UserNotificationService;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -81,62 +80,21 @@ class NotificationLocaleTest extends TestCase
         ]);
     }
 
-    public function test_moderation_decisions_group_by_user_place_and_decision_for_five_minutes(): void
-    {
-        Carbon::setTestNow('2026-09-29 17:00:00');
-
-        $user = User::factory()->create(['locale' => 'de']);
-        $placeId = $this->createPlace($user);
-        $notifications = app(UserNotificationService::class);
-        $url = route('places.show', 'notification-testplatz');
-
-        $firstId = $notifications->upsertModerationDecision(
-            $user->id,
-            $placeId,
-            'Notification Testplatz',
-            $url,
-            'approved',
-        );
-
-        Carbon::setTestNow('2026-09-29 17:04:59');
-
-        $secondId = $notifications->upsertModerationDecision(
-            $user->id,
-            $placeId,
-            'Notification Testplatz',
-            $url,
-            'approved',
-            2,
-        );
-
-        $this->assertSame($firstId, $secondId);
-        $this->assertDatabaseHas('user_notifications', [
-            'id' => $firstId,
-            'message' => '3 deiner Vorschläge zu "Notification Testplatz" wurden freigegeben.',
-        ]);
-
-        Carbon::setTestNow('2026-09-29 17:05:01');
-
-        $thirdId = $notifications->upsertModerationDecision(
-            $user->id,
-            $placeId,
-            'Notification Testplatz',
-            $url,
-            'approved',
-        );
-
-        $this->assertNotSame($firstId, $thirdId);
-        $this->assertSame(2, DB::table('user_notifications')
-            ->where('user_id', $user->id)
-            ->where('type', 'moderation_decision')
-            ->count());
-
-        Carbon::setTestNow();
-    }
-
     private function createPlace(User $user): int
     {
         $placeTypeId = DB::table('place_types')->where('is_active', true)->value('id');
+
+        if (! $placeTypeId) {
+            $placeTypeId = DB::table('place_types')->insertGetId([
+                'slug' => 'notification-test',
+                'icon_id' => null,
+                'sort_order' => 10,
+                'is_active' => true,
+                'is_searchable' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         return DB::table('places')->insertGetId([
             'place_type_id' => $placeTypeId,

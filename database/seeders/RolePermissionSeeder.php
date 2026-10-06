@@ -27,42 +27,17 @@ class RolePermissionSeeder extends Seeder
 
         $permissions = [
             ['places', 'places.view', 'Plätze ansehen', 'Öffentlich sichtbare Plätze ansehen.'],
-            ['places', 'places.suggest', 'Plätze vorschlagen', 'Neue Plätze zur Prüfung vorschlagen.'],
             ['places', 'places.view_unpublished', 'Unveröffentlichte Plätze ansehen', 'Noch nicht veröffentlichte Plätze sehen.'],
-            ['places', 'places.edit_own_suggestion', 'Eigene Platzvorschläge bearbeiten', 'Eigene noch offene Vorschläge bearbeiten.'],
             ['places', 'places.edit', 'Plätze direkt bearbeiten', 'Bestehende Plätze ohne Vorschlagsworkflow direkt ändern.'],
             ['places', 'places.create_direct', 'Plätze direkt anlegen', 'Plätze ohne Freigabeworkflow anlegen.'],
             ['places', 'places.deactivate', 'Plätze deaktivieren', 'Plätze redaktionell aus dem aktiven Listing nehmen.'],
             ['places', 'places.restore', 'Plätze wiederherstellen', 'Redaktionell deaktivierte Plätze wieder aktivieren.'],
-            ['places', 'places.approve_changes', 'Platzänderungen freigeben', 'Änderungsvorschläge genehmigen oder ablehnen.'],
             ['places', 'places.merge', 'Plätze zusammenführen', 'Duplikate in einen Zielplatz zusammenführen.'],
             ['places', 'places.delete_permanently', 'Plätze endgültig löschen', 'Platzdaten vollständig entfernen und nur einen internen Tombstone behalten.'],
             ['places', 'places.change_publication_status', 'Publikationsstatus ändern', 'Den redaktionellen Veröffentlichungsstatus eines Platzes ändern.'],
             ['places', 'places.change_legal_status', 'Rechtsstatus ändern', 'Den rechtlichen Nutzungsstatus eines Platzes ändern.'],
 
-            ['reviews', 'reviews.create', 'Bewertungen erstellen', 'Eigene Bewertungen abgeben.'],
-            ['reviews', 'reviews.edit_own', 'Eigene Bewertungen bearbeiten', 'Eigene Bewertungen bearbeiten.'],
-            ['reviews', 'reviews.delete_own', 'Eigene Bewertungen löschen', 'Eigene Bewertungen deaktivieren.'],
-            ['reviews', 'reviews.view_pending', 'Offene Bewertungen ansehen', 'Noch nicht freigegebene Bewertungen sehen.'],
-            ['reviews', 'reviews.moderate', 'Bewertungen moderieren', 'Bewertungen freigeben oder ablehnen.'],
-            ['reviews', 'reviews.delete_any', 'Fremde Bewertungen entfernen', 'Fremde Bewertungen deaktivieren.'],
-            ['reviews', 'reviews.restore', 'Bewertungen wiederherstellen', 'Entfernte Bewertungen wieder aktivieren.'],
-            ['reviews', 'reviews.mark_verified_visit', 'Besuch verifizieren', 'Eine Bewertung als verifizierten Besuch markieren.'],
-            ['reviews', 'reviews.vote_helpful', 'Bewertungen als hilfreich markieren', 'Eine Helpful-Stimme abgeben.'],
-            ['reviews', 'reviews.remove_own_helpful_vote', 'Helpful-Stimme entfernen', 'Eigene Helpful-Stimme entfernen.'],
-
-            ['photos', 'photos.upload', 'Fotos hochladen', 'Fotos zu Plätzen oder Bewertungen hochladen.'],
-            ['photos', 'photos.delete_own', 'Eigene Fotos entfernen', 'Eigene Fotos deaktivieren.'],
-            ['photos', 'photos.view_pending', 'Offene Fotos ansehen', 'Noch nicht freigegebene Fotos sehen.'],
-            ['photos', 'photos.moderate', 'Fotos moderieren', 'Fotos freigeben oder ablehnen.'],
-            ['photos', 'photos.delete_any', 'Fremde Fotos entfernen', 'Fremde Fotos deaktivieren.'],
-            ['photos', 'photos.restore', 'Fotos wiederherstellen', 'Deaktivierte Fotos wiederherstellen.'],
-            ['photos', 'photos.purge', 'Fotos endgültig löschen', 'Bilddateien physisch aus dem Storage löschen; DB-Historie bleibt erhalten.'],
-            ['photos', 'photos.set_place_order', 'Foto-Reihenfolge ändern', 'Reihenfolge der Platzfotos ändern.'],
-            ['photos', 'photos.set_cover', 'Titelbild festlegen', 'Das Hauptbild eines Platzes festlegen.'],
-
             ['users', 'users.view', 'Benutzerverzeichnis ansehen', 'Registrierte Benutzer finden und Basisdaten sehen.'],
-            ['users', 'users.view_profile', 'Benutzerprofile ansehen', 'Öffentliche Profile anderer Community-Mitglieder öffnen.'],
             ['users', 'users.view_details', 'Benutzerdetails ansehen', 'Erweiterte Moderations- und Accountinformationen sehen.'],
             ['users', 'users.edit_profile', 'Fremde Profile bearbeiten', 'Profildaten anderer Benutzer administrativ ändern.'],
             ['users', 'users.verify_email', 'E-Mail manuell bestätigen', 'Eine Benutzer-E-Mail administrativ als bestätigt markieren.'],
@@ -74,7 +49,6 @@ class RolePermissionSeeder extends Seeder
             ['users', 'users.delete_account', 'Accounts administrativ deaktivieren', 'Benutzeraccounts administrativ deaktivieren bzw. löschen.'],
             ['users', 'users.assign_roles', 'Rollen zuweisen', 'Nicht-Admin-Rollen zuweisen oder entziehen.'],
             ['users', 'users.override_permissions', 'Benutzerrechte überschreiben', 'Individuelle Permission-Overrides setzen oder entfernen.'],
-            ['users', 'users.manage_badges', 'Manuelle Auszeichnungen verwalten', 'Manuelle Badges und Auszeichnungen vergeben oder entziehen.'],
 
             ['reports', 'reports.create', 'Meldungen erstellen', 'Missbrauch oder problematische Inhalte melden.'],
             ['reports', 'reports.view_own', 'Eigene Meldungen ansehen', 'Eigene Meldungen und deren Status sehen.'],
@@ -111,21 +85,12 @@ class RolePermissionSeeder extends Seeder
             ['community', 'owner_replies.moderate', 'Betreiberantworten moderieren', 'Betreiberantworten ausblenden oder freigeben.'],
 
             ['reference', 'reference.view', 'Stammdaten ansehen', 'Referenz- und Stammdaten im Adminbereich ansehen.'],
-            ['reference', 'features.manage', 'Features verwalten', 'Features und Tags anlegen, ändern oder deaktivieren.'],
-            ['reference', 'features.suggest', 'Features vorschlagen', 'Neue Features bzw. Tags vorschlagen.'],
-            ['reference', 'features.view_suggestions', 'Feature-Vorschläge ansehen', 'Vorschläge für neue Features sehen.'],
-            ['reference', 'features.approve_suggestions', 'Feature-Vorschläge freigeben', 'Feature-Vorschläge genehmigen oder ablehnen.'],
-            ['reference', 'feature_categories.manage', 'Feature-Kategorien verwalten', 'Feature-Kategorien verwalten.'],
-            ['reference', 'feature_options.manage', 'Feature-Optionen verwalten', 'Auswahloptionen von Features verwalten.'],
             ['reference', 'units.manage', 'Einheiten verwalten', 'Einheiten und Einheitentypen verwalten.'],
-            ['reference', 'price_types.manage', 'Preisarten verwalten', 'Preisarten verwalten.'],
-            ['reference', 'vehicle_types.manage', 'Fahrzeugtypen verwalten', 'Fahrzeugtypen verwalten.'],
             ['reference', 'place_types.manage', 'Platztypen verwalten', 'Platztypen verwalten.'],
             ['reference', 'countries.manage', 'Länder verwalten', 'Länder verwalten.'],
             ['reference', 'regions.manage', 'Regionen verwalten', 'Regionen verwalten.'],
             ['reference', 'translations.manage', 'Übersetzungen verwalten', 'Zentrale Übersetzungen pflegen.'],
             ['reference', 'icons.manage', 'Icons verwalten', 'Icon-Katalog verwalten.'],
-            ['reference', 'suggestable_fields.manage', 'Vorschlagbare Felder verwalten', 'Steuern, welche Felder vorgeschlagen werden dürfen.'],
 
             ['sources', 'sources.view_public', 'Öffentliche Quellen ansehen', 'Öffentliche Quellenhinweise zu Platzdaten sehen.'],
             ['sources', 'sources.add', 'Quellen hinzufügen', 'Quellen zu Platzdaten oder Vorschlägen hinzufügen.'],
@@ -154,8 +119,6 @@ class RolePermissionSeeder extends Seeder
             ['support', 'support.assign', 'Supportmeldungen zuweisen', 'Supportmeldungen Mitarbeitern zuweisen.'],
             ['support', 'support.manage_content', 'Hilfe und Roadmap pflegen', 'Hilfeartikel, Known Bugs und Roadmap-Einträge redaktionell verwalten.'],
 
-            ['features', 'features.manage_catalog', 'Merkmalskatalog verwalten', 'Kategorien, Merkmale, Workflows und Platztyp-Zuordnungen administrativ pflegen.'],
-
             ['security', 'security.view_own_sessions', 'Eigene Sessions ansehen', 'Eigene aktive Sessions sehen.'],
             ['security', 'security.revoke_own_sessions', 'Eigene Sessions beenden', 'Eigene Sessions beenden.'],
             ['security', 'security.manage_own_2fa', 'Eigene 2FA verwalten', 'Eigene Zwei-Faktor-Authentifizierung verwalten.'],
@@ -171,8 +134,6 @@ class RolePermissionSeeder extends Seeder
             ['statistics', 'statistics.view', 'Statistik ansehen', 'Aggregierte Bestands-, Aktivitäts- und Nutzungsstatistiken ansehen.'],
 
             ['system', 'settings.manage', 'Systemeinstellungen verwalten', 'Allgemeine Systemeinstellungen ändern.'],
-            ['system', 'imports.run', 'Datenimporte ausführen', 'Administrativ Datenimporte starten.'],
-            ['system', 'imports.view_history', 'Importhistorie ansehen', 'Importläufe und deren Ergebnis ansehen.'],
         ];
 
         $sort = 10;
@@ -197,11 +158,7 @@ class RolePermissionSeeder extends Seeder
         ];
 
         $user = array_merge($guest, [
-            'places.suggest', 'places.edit_own_suggestion',
-            'reviews.create', 'reviews.edit_own', 'reviews.delete_own', 'reviews.vote_helpful', 'reviews.remove_own_helpful_vote',
-            'photos.upload', 'photos.delete_own',
-            'users.view', 'users.view_profile',
-            'reports.view_own',
+            'users.view', 'reports.view_own',
             'audit.view_own',
             'owners.request_verification', 'owners.view_own_requests',
             'favorites.manage_own',
@@ -213,9 +170,7 @@ class RolePermissionSeeder extends Seeder
         ]);
 
         $mod = array_merge($user, [
-            'places.view_unpublished', 'places.approve_changes', 'places.deactivate', 'places.restore',
-            'reviews.view_pending', 'reviews.moderate', 'reviews.delete_any', 'reviews.restore', 'reviews.mark_verified_visit',
-            'photos.view_pending', 'photos.moderate', 'photos.delete_any', 'photos.set_place_order', 'photos.set_cover',
+            'places.view_unpublished', 'places.deactivate', 'places.restore',
             'users.view_details', 'users.warn', 'users.suspend', 'users.unsuspend',
             'reports.view_all', 'reports.handle', 'reports.assign', 'reports.add_internal_note',
             'audit.view_moderation',

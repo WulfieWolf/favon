@@ -2,9 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Services\PlaceTombstoneService;
-use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -39,33 +37,6 @@ class PlaceTombstoneServiceTest extends TestCase
 
         $far = $service->check(51.4520000, 7.0100000, $campground);
         $this->assertSame(PlaceTombstoneService::NONE, $far['status']);
-    }
-
-    public function test_regular_user_cannot_submit_same_type_on_tombstone_position(): void
-    {
-        config([
-            'place_tombstones.block_radius_m' => 20,
-            'place_tombstones.warning_radius_m' => 100,
-        ]);
-
-        $typeId = $this->placeType('blocked-user-test');
-        $this->tombstone($typeId, 51.4500000, 7.0100000, 'manual_block');
-
-        $this->seed(RolePermissionSeeder::class);
-        $user = User::factory()->create(['email_verified_at' => now()]);
-        $response = $this->actingAs($user)->post(route('places.suggest.store'), [
-            'name' => 'Attempted recreation',
-            'place_type_id' => $typeId,
-            'latitude' => 51.4500100,
-            'longitude' => 7.0100000,
-            'country_code' => 'DE',
-            'intent' => 'submit',
-        ]);
-
-        $response->assertSessionHasErrors('suggestion');
-        $this->assertDatabaseMissing('places', [
-            'name' => 'Attempted recreation',
-        ]);
     }
 
     private function placeType(string $slug): int

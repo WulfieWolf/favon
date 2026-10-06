@@ -5,14 +5,12 @@ namespace App\Models;
 use App\Jobs\SendPasswordResetMail;
 use App\Jobs\SendVerificationMail;
 use App\Services\PermissionService;
-use App\Services\XpService;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -31,7 +29,6 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $locale
  * @property Carbon|null $email_verified_at
  * @property string $password
- * @property int|null $profile_photo_id
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
@@ -42,7 +39,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string|null $suspension_reason
  * @property Carbon|null $suspended_until
  */
-#[Fillable(['name', 'email', 'password', 'locale', 'profile_photo_id'])]
+#[Fillable(['name', 'email', 'password', 'locale'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements HasLocalePreference, MustVerifyEmail, PasskeyUser
 {
@@ -68,10 +65,6 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
         return $this->hasOne(UserProfile::class);
     }
 
-    public function profilePhoto(): BelongsTo
-    {
-        return $this->belongsTo(Photo::class, 'profile_photo_id');
-    }
 
     public function roles(): BelongsToMany
     {
@@ -113,45 +106,7 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
         return $this->profile?->public_alias ?: $this->profile?->public_handle ?: $this->name;
     }
 
-    public function publicProfileUrl(): ?string
-    {
-        if (($this->account_status ?? 'active') !== 'active') {
-            return null;
-        }
 
-        $profile = $this->profile;
-        $handle = $profile?->public_alias ?: $profile?->public_handle;
-
-        return $handle ? route('users.profile', $handle) : null;
-    }
-
-    public function publicProfilePhotoUrl(): ?string
-    {
-        if (($this->account_status ?? 'active') !== 'active') {
-            return null;
-        }
-
-        $profile = $this->profile;
-        $handle = $profile?->public_alias ?: $profile?->public_handle;
-
-        return $this->profile_photo_id && $handle
-            ? route('users.profile.photo', $handle)
-            : null;
-    }
-
-    public function gamificationVisible(): bool
-    {
-        return (bool) (DB::table('user_settings')
-            ->where('user_id', $this->id)
-            ->value('show_gamification') ?? true);
-    }
-
-    public function gamificationSummary(): ?array
-    {
-        return $this->gamificationVisible()
-            ? app(XpService::class)->summaryForUser((int) $this->id)
-            : null;
-    }
 
     public function hasPermission(string $permissionSlug): bool
     {

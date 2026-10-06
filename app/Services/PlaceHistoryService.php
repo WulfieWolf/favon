@@ -9,17 +9,12 @@ class PlaceHistoryService
 {
     public function addUser(int $placeId, User $user, string $action, string $summary, array $metadata = [], bool $public = true): int
     {
-        return $this->insert($placeId, 'user', $action, $summary, $metadata, $public, $user->id, null);
+        return $this->insert($placeId, 'user', $action, $summary, $metadata, $public, $user->id);
     }
 
     public function addSystem(int $placeId, string $action, string $summary, array $metadata = [], bool $public = true): int
     {
-        return $this->insert($placeId, 'system', $action, $summary, $metadata, $public, null, null);
-    }
-
-    public function addExternalSource(int $placeId, int $sourceId, string $action, string $summary, array $metadata = [], bool $public = true): int
-    {
-        return $this->insert($placeId, 'external_source', $action, $summary, $metadata, $public, null, $sourceId);
+        return $this->insert($placeId, 'system', $action, $summary, $metadata, $public, null);
     }
 
     private function insert(
@@ -30,12 +25,10 @@ class PlaceHistoryService
         array $metadata,
         bool $public,
         ?int $userId,
-        ?int $sourceId,
     ): int {
-        $historyId = (int) DB::table('place_history')->insertGetId([
+        return (int) DB::table('place_history')->insertGetId([
             'place_id' => $placeId,
             'user_id' => $userId,
-            'external_source_id' => $sourceId,
             'actor_type' => $actorType,
             'action' => $action,
             'summary' => $summary,
@@ -43,9 +36,5 @@ class PlaceHistoryService
             'is_public' => $public,
             'created_at' => now(),
         ]);
-
-        app(PlaceDataScoreService::class)->markDirty($placeId);
-
-        return $historyId;
     }
 }

@@ -15,6 +15,13 @@ class QueuedPasswordResetMailTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config()->set('camperwolf.mail.enabled', true);
+    }
+
     public function test_identical_password_reset_jobs_are_unique_at_queue_level(): void
     {
         Queue::fake();

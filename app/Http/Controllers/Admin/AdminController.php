@@ -5,17 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\AccountDeletionService;
-use App\Services\BadgeService;
 use App\Services\PermissionService;
 use App\Services\PublicHandleService;
 use App\Services\RolePermissionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use RuntimeException;
 
 class AdminController extends Controller
@@ -24,46 +21,16 @@ class AdminController extends Controller
     {
         $user = auth()->user();
 
-        $supportStatusCounts = DB::table('support_tickets')
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->map(fn ($count) => (int) $count)
-            ->all();
-
         return view('admin.index', [
             'isOwner' => $permissions->isOwner($user),
             'canUseSystemTools' => $permissions->can($user, 'admin.access'),
-            'canApproveChanges' => $permissions->can($user, 'places.approve_changes'),
             'canMergePlaces' => $permissions->can($user, 'places.merge'),
             'canViewUsers' => $permissions->can($user, 'users.view'),
-            'canViewReviewReports' => $permissions->can($user, 'reports.view_all'),
             'canViewAuditLogs' => $permissions->can($user, 'audit.view_all'),
             'canViewStatistics' => $permissions->can($user, 'statistics.view'),
             'canSendSystemNotifications' => $permissions->can($user, 'notifications.send_system'),
             'canManageSupport' => $permissions->can($user, 'support.view_all'),
-            'canModeratePhotos' => $permissions->can($user, 'photos.view_pending'),
-            'canManageFeatures' => $permissions->can($user, 'features.manage_catalog'),
-            'canViewImports' => $permissions->can($user, 'imports.view_history'),
             'userCount' => User::count(),
-            'pendingChangeRequestCount' => DB::table('change_requests')->where('status', 'pending')->count(),
-            'quarantinedPlaceSubmissionCount' => DB::table('abuse_flags')
-                ->where('entity_type', 'place')
-                ->where('status', 'open')
-                ->distinct('entity_id')
-                ->count('entity_id'),
-            'pendingReviewReportCount' => DB::table('place_review_reports')->where('status', 'pending')->count(),
-            'pendingPhotoCount' => DB::table('photos')->where('status', 'pending')->where('is_active', true)->count(),
-            'pendingPhotoReportCount' => DB::table('photo_reports')->where('status', 'pending')->count(),
-            'photoCount' => DB::table('photos')->count(),
-            'featureCount' => DB::table('features')->where('is_active', true)->count(),
-            'supportStatusCounts' => $supportStatusCounts,
-            'pendingImportReviewCount' => DB::table('external_import_review_items')->where('status', 'pending')->count(),
-            'newImportCandidateCount' => DB::table('external_records')
-                ->where('status', 'active')
-                ->where('classification', 'new_candidate')
-                ->whereNull('place_id')
-                ->count(),
             'auditLogCount' => DB::table('audit_logs')->count(),
         ]);
     }
@@ -83,7 +50,7 @@ class AdminController extends Controller
 
         $usersQuery = User::query()
             ->leftJoin('user_profiles as up', 'up.user_id', '=', 'users.id')
-            ->select(['users.id','users.name','users.email','users.email_verified_at','users.account_status','users.last_seen_at','users.profile_photo_id','users.created_at','up.public_handle','up.public_alias'])
+            ->select(['users.id','users.name','users.email','users.email_verified_at','users.account_status','users.last_seen_at','users.created_at','up.public_handle','up.public_alias'])
             ->when($search !== '', function ($query) use ($search): void { $query->where(function ($query) use ($search): void { $query->where('users.name','like','%'.$search.'%')->orWhere('users.email','like','%'.$search.'%')->orWhere('users.id', ctype_digit($search) ? (int) $search : -1)->orWhereHas('profile', fn ($profile) => $profile->where('public_handle','like','%'.$search.'%')->orWhere('public_alias','like','%'.$search.'%')); }); })
             ->when(in_array($status, ['active','suspended','pending_deletion','deleted'], true), fn ($query) => $query->where('users.account_status',$status))
             ->when($verification === 'verified', fn ($query) => $query->whereNotNull('users.email_verified_at'))
@@ -179,29 +146,6 @@ class AdminController extends Controller
             })
             ->values();
 
-        $manualBadges = DB::table('badge_definitions')
-            ->where('type', 'manual')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
-
-        $manualBadgeUnlocks = DB::table('user_badge_unlocks as ubu')
-            ->join('badge_definitions as bd', 'bd.id', '=', 'ubu.badge_id')
-            ->where('ubu.user_id', $user->id)
-            ->where('bd.type', 'manual')
-            ->whereNull('ubu.revoked_at')
-            ->orderByDesc('ubu.unlocked_at')
-            ->get([
-                'ubu.id',
-                'ubu.badge_id',
-                'ubu.award_comment',
-                'ubu.unlocked_at',
-                'bd.name',
-                'bd.description',
-                'bd.xp_reward',
-            ])
-            ->keyBy('badge_id');
-
         return view('admin.users.show', [
             'targetUser' => $user,
             'roleCards' => $roleCards,
@@ -211,9 +155,6 @@ class AdminController extends Controller
             'actorIsOwner' => $actorIsOwner,
             'actorCanAssignRoles' => $actorCanAssignRoles,
             'actorCanOverridePermissions' => $actorCanOverridePermissions,
-            'actorCanManageBadges' => $permissions->can($actor, 'users.manage_badges'),
-            'manualBadges' => $manualBadges,
-            'manualBadgeUnlocks' => $manualBadgeUnlocks,
             'profile' => $user->profile,
             'statistics' => app(AccountDeletionService::class)->statistics((int) $user->id),
             'actorCanEditProfile' => $permissions->can($actor, 'users.edit_profile'),
@@ -222,31 +163,6 @@ class AdminController extends Controller
             'actorCanUnsuspend' => $permissions->can($actor, 'users.unsuspend'),
             'actorCanDelete' => $permissions->can($actor, 'users.delete_account'),
         ]);
-    }
-
-    public function userPhoto(User $user): StreamedResponse
-    {
-        abort_unless($user->profile_photo_id, 404);
-
-        $photo = DB::table('photos')
-            ->where('id', $user->profile_photo_id)
-            ->where('is_active', true)
-            ->first(['storage_path', 'mime_type']);
-
-        abort_unless($photo?->storage_path, 404);
-
-        $disk = Storage::disk('local');
-        abort_unless($disk->exists($photo->storage_path), 404);
-
-        return $disk->response(
-            $photo->storage_path,
-            null,
-            [
-                'Content-Type' => $photo->mime_type ?: 'application/octet-stream',
-                'Cache-Control' => 'private, max-age=300',
-                'X-Content-Type-Options' => 'nosniff',
-            ],
-        );
     }
 
     public function updateAccount(Request $request, User $user, PermissionService $permissions): RedirectResponse
@@ -359,34 +275,6 @@ class AdminController extends Controller
         }
 
         return back()->with('ui_toast', __('admin.users.status_role_removed'));
-    }
-
-    public function grantBadge(Request $request, User $user, BadgeService $badges): RedirectResponse
-    {
-        $data = $request->validate([
-            'badge_id' => ['required', 'integer', 'exists:badge_definitions,id'],
-            'comment' => ['nullable', 'string', 'max:1000'],
-        ]);
-
-        $granted = $badges->grantManualBadge(
-            $user,
-            (int) $data['badge_id'],
-            $data['comment'] ?? null,
-            $request->user(),
-        );
-
-        return back()->with('ui_toast', $granted
-            ? __('admin.users.status_badge_granted')
-            : __('admin.users.status_badge_updated'));
-    }
-
-    public function revokeBadge(Request $request, User $user, int $badge, BadgeService $badges): RedirectResponse
-    {
-        $revoked = $badges->revokeManualBadge($user, $badge, $request->user());
-
-        return back()->with('ui_toast', $revoked
-            ? __('admin.users.status_badge_revoked')
-            : __('admin.users.status_badge_missing'));
     }
 
     public function setOverride(Request $request, User $user, RolePermissionService $access): RedirectResponse

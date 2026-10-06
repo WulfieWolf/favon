@@ -3,7 +3,7 @@
 return [
     'title' => 'Administration',
     'overview' => [
-        'intro' => 'Zentrale Verwaltung für Camperwolf.',
+        'intro' => 'Zentrale Verwaltung für Favon.',
         'owner_title' => 'System Owner',
         'owner_help' => 'Dein Account verwendet den globalen Owner-Bypass und ist nicht von Rollen oder Permission-Overrides abhängig.',
         'users' => 'Benutzer',
@@ -47,7 +47,7 @@ return [
         'import_candidates_count' => ':count neue',
         'import_reviews_count' => ':count zu prüfen',
         'statistics' => 'Statistik',
-        'statistics_help' => 'Bestand, Aktivität und anonyme Nutzung von Camperwolf auswerten.',
+        'statistics_help' => 'Bestand, Aktivität und anonyme Nutzung von Favon auswerten.',
         'sections' => [
             'administration' => 'Administration',
             'administration_help' => 'Systemweite Verwaltung, Stammdaten und technische Werkzeuge.',
@@ -185,7 +185,7 @@ return [
         'access_message_label' => 'Hinweis für Besucher',
         'access_message_placeholder' => 'Optionaler Hinweis, der bei gesperrter Registrierung bzw. im Lockdown angezeigt wird.',
         'access_message_help' => 'Leer lassen, um den Standardhinweis zu verwenden.',
-        'lockdown_warning' => 'Im Lockdown sehen Gäste und normale Benutzer nur den Hinweis. Login bleibt erreichbar; Admins und der System Owner können sich weiterhin anmelden. Notfall-Rückweg per SSH: php artisan camperwolf:mode normal',
+        'lockdown_warning' => 'Im Lockdown sehen Gäste und normale Benutzer nur den Hinweis. Login bleibt erreichbar; Admins und der System Owner können sich weiterhin anmelden. Notfall-Rückweg per SSH: php artisan favon:mode normal',
         'save_access' => 'Betriebsmodus speichern',
         'access_updated' => 'Website-Zugriff wurde aktualisiert.',
         'registration_closed_title' => 'Registrierung derzeit geschlossen',

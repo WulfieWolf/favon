@@ -24,13 +24,6 @@
                 <a href="{{ route('legal.privacy') }}" class="hover:text-zinc-950 dark:hover:text-white">{{ __('legal.labels.privacy') }}</a>
                 <a href="{{ route('legal.terms') }}" class="hover:text-zinc-950 dark:hover:text-white">{{ __('legal.labels.terms') }}</a>
             </div>
-            <a
-                href="{{ route('devlog') }}"
-                class="shrink-0 font-medium hover:text-zinc-950 dark:hover:text-white"
-                title="{{ __('ui.devlog') }}"
-            >
-                {{ app(\App\Services\DevReleaseService::class)->label() }}
-            </a>
         </div>
     </footer>
 

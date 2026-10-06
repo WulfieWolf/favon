@@ -31,22 +31,9 @@ class ConsentAndExternalServicesTest extends TestCase
         foreach ([
             resource_path('views/dashboard.blade.php'),
             resource_path('views/places/show.blade.php'),
-            resource_path('views/places/suggest.blade.php'),
-            resource_path('views/places/suggest-info.blade.php'),
         ] as $view) {
             $this->assertStringNotContainsString('unpkg.com', file_get_contents($view));
         }
     }
 
-    public function test_welcome_splash_persists_only_the_explicit_do_not_show_again_choice(): void
-    {
-        $header = file_get_contents(resource_path('views/layouts/app/header.blade.php'));
-
-        $this->assertStringContainsString('data-welcome-dismiss', $header);
-        $this->assertStringContainsString("localStorage.setItem(storageKey, '1')", $header);
-        $this->assertStringContainsString("splash.querySelectorAll('[data-welcome-close]')", $header);
-        $this->assertStringContainsString("splash.querySelectorAll('[data-welcome-dismiss]')", $header);
-        $this->assertStringContainsString("route('legal.privacy')", $header);
-        $this->assertStringContainsString("route('help.show', 'ueber-camperwolf')", $header);
-    }
 }

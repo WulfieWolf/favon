@@ -7,7 +7,6 @@
 <div class="flex items-start max-md:flex-col">
     <div class="me-10 w-full pb-4 md:w-[220px]">
         <flux:navlist aria-label="{{ __('Settings') }}">
-            <flux:navlist.item :href="route('community-profile.edit')" wire:navigate>{{ __('community_profile.settings.title') }}</flux:navlist.item>
             <flux:navlist.item :href="route('profile.edit')" wire:navigate>{{ __('community_profile.settings.account') }}</flux:navlist.item>
             <flux:navlist.item :href="route('security.edit')" wire:navigate>{{ __('community_profile.settings.security') }}</flux:navlist.item>
             <flux:navlist.item :href="route('notifications.settings')" wire:navigate>{{ __('community_profile.settings.notifications') }}</flux:navlist.item>

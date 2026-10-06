@@ -11,4 +11,4 @@ L.Icon.Default.mergeOptions({
 });
 
 window.L = L;
-window.dispatchEvent(new CustomEvent('camperwolf:leaflet-ready'));
+window.dispatchEvent(new CustomEvent('favon:leaflet-ready'));

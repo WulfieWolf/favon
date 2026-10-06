@@ -74,8 +74,7 @@ class LegalPagesTest extends TestCase
                 ->assertSee('fixed inset-x-0 bottom-0', false)
                 ->assertSee(route('legal.imprint'), false)
                 ->assertSee(route('legal.privacy'), false)
-                ->assertSee(route('legal.terms'), false)
-                ->assertSee(route('devlog'), false);
+                ->assertSee(route('legal.terms'), false);
         }
     }
 }
