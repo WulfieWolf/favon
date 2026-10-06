@@ -10,10 +10,25 @@ use RuntimeException;
 
 class TelegramAuthController extends Controller
 {
+    public function redirect(Request $request, TelegramLoginService $telegram): RedirectResponse
+    {
+        try {
+            return redirect()->away(
+                $telegram->authorizationUrl($request, route('telegram.callback')),
+            );
+        } catch (RuntimeException $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('home')
+                ->withErrors(['telegram' => __('auth.telegram_failed')]);
+        }
+    }
+
     public function callback(Request $request, TelegramLoginService $telegram): RedirectResponse
     {
         try {
-            $telegramUserId = $telegram->verify($request->all());
+            $telegramUserId = $telegram->verifyAuthorizationResponse($request);
             $user = $telegram->resolveUser($telegramUserId, app()->getLocale());
         } catch (RuntimeException $exception) {
             report($exception);
