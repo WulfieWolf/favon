@@ -21,6 +21,17 @@ class PlaceMergeAdminLocaleTest extends TestCase
         config(['camperwolf.owner_email' => $owner->email]);
 
         $typeId = (int) DB::table('place_types')->where('is_active', true)->value('id');
+        if ($typeId === 0) {
+            $typeId = (int) DB::table('place_types')->insertGetId([
+                'slug' => 'merge-admin-test',
+                'icon_id' => null,
+                'sort_order' => 10,
+                'is_active' => true,
+                'is_searchable' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
         $mainId = $this->place($typeId, $owner, 'Untranslated Main Place', '51.0000');
         $duplicateId = $this->place($typeId, $owner, 'Untranslated Duplicate Place', '51.1000');
 
