@@ -38,6 +38,8 @@ class SecurityHeaders
     private function shouldNotIndex(Request $request): bool
     {
         return $request->is(
+            '/',
+            'auth/telegram/callback',
             'admin',
             'admin/*',
             'login',
