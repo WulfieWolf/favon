@@ -58,9 +58,9 @@ class LegalPagesTest extends TestCase
             ->assertSee('Terms of use');
     }
 
-    public function test_registration_links_to_terms_and_privacy(): void
+    public function test_login_gateway_links_to_terms_and_privacy(): void
     {
-        $this->get(route('register'))
+        $this->get(route('home'))
             ->assertOk()
             ->assertSee(route('legal.terms'), false)
             ->assertSee(route('legal.privacy'), false);
@@ -68,7 +68,7 @@ class LegalPagesTest extends TestCase
 
     public function test_fixed_footer_is_available_on_app_and_auth_pages(): void
     {
-        foreach ([route('legal.imprint'), route('register')] as $url) {
+        foreach ([route('legal.imprint'), route('home')] as $url) {
             $this->get($url)
                 ->assertOk()
                 ->assertSee('fixed inset-x-0 bottom-0', false)

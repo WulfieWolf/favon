@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
@@ -10,20 +11,22 @@ class SecurityHardeningTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_public_browse_accepts_normal_queries_and_sends_security_headers(): void
+    public function test_login_gateway_sends_security_headers_and_is_not_indexable(): void
     {
-        $response = $this->get(route('home', ['q' => 'Essen']));
+        $response = $this->get(route('home'));
 
         $response->assertOk()
             ->assertHeader('X-Content-Type-Options', 'nosniff')
             ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
             ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
-            ->assertHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self), payment=()');
+            ->assertHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self), payment=()')
+            ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
     }
 
-    public function test_public_browse_rejects_excessively_long_search_terms(): void
+    public function test_private_browse_rejects_excessively_long_search_terms(): void
     {
-        $this->get(route('home', ['q' => str_repeat('x', 121)]))
+        $this->actingAs(User::factory()->create())
+            ->get(route('dashboard', ['q' => str_repeat('x', 121)]))
             ->assertStatus(422);
 
         $this->assertDatabaseHas('security_events', [
@@ -31,7 +34,7 @@ class SecurityHardeningTest extends TestCase
         ]);
     }
 
-    public function test_public_browse_rejects_excessive_query_complexity(): void
+    public function test_private_browse_rejects_excessive_query_complexity(): void
     {
         $query = [];
 
@@ -39,11 +42,12 @@ class SecurityHardeningTest extends TestCase
             $query['features']['feature-'.$i] = 'yes';
         }
 
-        $this->get(route('home', $query))
+        $this->actingAs(User::factory()->create())
+            ->get(route('dashboard', $query))
             ->assertStatus(414);
     }
 
-    public function test_private_auth_surface_is_marked_noindex(): void
+    public function test_admin_login_surface_is_marked_noindex(): void
     {
         $this->get(route('login'))
             ->assertOk()
@@ -61,20 +65,13 @@ class SecurityHardeningTest extends TestCase
             ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
     }
 
-    public function test_public_home_is_not_marked_noindex(): void
-    {
-        $response = $this->get(route('home'));
-
-        $response->assertOk();
-        $this->assertFalse($response->headers->has('X-Robots-Tag'));
-    }
-
-    public function test_robots_disallows_filtered_dashboard_but_keeps_public_places_crawlable(): void
+    public function test_robots_disallows_authenticated_directory_content(): void
     {
         $robots = file_get_contents(public_path('robots.txt'));
 
-        $this->assertStringContainsString('Disallow: /dashboard?', $robots);
-        $this->assertStringNotContainsString('Disallow: /places/', $robots);
+        $this->assertStringContainsString('Disallow: /dashboard', $robots);
+        $this->assertStringContainsString('Disallow: /places/', $robots);
+        $this->assertStringNotContainsString('camperwolf.de/sitemap.xml', $robots);
     }
 
     public function test_filtered_dashboard_requests_are_rate_limited_but_plain_dashboard_is_not(): void
@@ -82,6 +79,7 @@ class SecurityHardeningTest extends TestCase
         config(['camperwolf.security.filtered_browse_per_minute' => 2]);
 
         RateLimiter::clear('filtered-browse:127.0.0.1');
+        $this->actingAs(User::factory()->create());
 
         $this->get(route('dashboard', ['q' => 'Essen']))->assertOk();
         $this->get(route('dashboard', ['q' => 'Bochum']))->assertOk();
@@ -114,5 +112,4 @@ class SecurityHardeningTest extends TestCase
             'event_type' => 'rate_limited',
         ]);
     }
-
 }

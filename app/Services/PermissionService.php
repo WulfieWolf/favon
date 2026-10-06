@@ -20,7 +20,7 @@ class PermissionService
 
         return is_string($ownerEmail)
             && $ownerEmail !== ''
-            && Str::lower(trim($user->email)) === Str::lower(trim($ownerEmail));
+            && Str::lower(trim((string) $user->email)) === Str::lower(trim($ownerEmail));
     }
 
     public function activeRolePreview(?User $user): ?string

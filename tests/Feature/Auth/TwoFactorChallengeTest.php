@@ -33,6 +33,7 @@ class TwoFactorChallengeTest extends TestCase
         ]);
 
         $user = User::factory()->withTwoFactor()->create();
+        config(['camperwolf.owner_email' => $user->email]);
 
         $this->post(route('login.store'), [
             'email' => $user->email,

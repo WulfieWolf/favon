@@ -21,6 +21,7 @@ class AuthenticationTest extends TestCase
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         $user = User::factory()->create();
+        config(['camperwolf.owner_email' => $user->email]);
 
         $response = $this->post(route('login.store'), [
             'email' => $user->email,
@@ -34,13 +35,13 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticated();
     }
 
-    public function test_users_can_not_authenticate_with_invalid_password(): void
+    public function test_non_admin_users_cannot_use_password_login(): void
     {
         $user = User::factory()->create();
 
         $response = $this->post(route('login.store'), [
             'email' => $user->email,
-            'password' => 'wrong-password',
+            'password' => 'password',
         ]);
 
         $response->assertSessionHasErrorsIn('email');
@@ -58,6 +59,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $user = User::factory()->withTwoFactor()->create();
+        config(['camperwolf.owner_email' => $user->email]);
 
         $response = $this->post(route('login.store'), [
             'email' => $user->email,

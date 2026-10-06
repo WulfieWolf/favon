@@ -22,13 +22,13 @@ class LocaleUiTranslationTest extends TestCase
         $this->withSession(['locale' => 'de'])
             ->get(route('login'))
             ->assertOk()
-            ->assertSee('Bei deinem Konto anmelden')
+            ->assertSee('Admin-Login')
             ->assertSee('Angemeldet bleiben');
 
         $this->withSession(['locale' => 'en'])
             ->get(route('login'))
             ->assertOk()
-            ->assertSee('Log in to your account')
+            ->assertSee('Admin login')
             ->assertSee('Remember me');
     }
 
@@ -51,12 +51,14 @@ class LocaleUiTranslationTest extends TestCase
 
     public function test_place_browse_is_available_in_german_and_english(): void
     {
-        $this->withSession(['locale' => 'de'])
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->withSession(['locale' => 'de'])
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('Keine Plätze gefunden');
 
-        $this->withSession(['locale' => 'en'])
+        $this->actingAs($user)->withSession(['locale' => 'en'])
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('No places found');
