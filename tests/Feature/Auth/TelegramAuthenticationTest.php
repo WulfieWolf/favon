@@ -73,10 +73,14 @@ class TelegramAuthenticationTest extends TestCase
         $state = (string) session('telegram_oidc_state');
         $nonce = (string) session('telegram_oidc_nonce');
 
+        $currentNonce = $nonce;
+
         Http::fake([
-            'https://oauth.telegram.org/token' => Http::response([
-                'id_token' => $this->idToken('987654321', $nonce, $privateKey),
-            ]),
+            'https://oauth.telegram.org/token' => function () use (&$currentNonce, $privateKey) {
+                return Http::response([
+                    'id_token' => $this->idToken('987654321', $currentNonce, $privateKey),
+                ]);
+            },
             'https://oauth.telegram.org/.well-known/jwks.json' => Http::response([
                 'keys' => [$jwk],
             ]),
@@ -111,14 +115,7 @@ class TelegramAuthenticationTest extends TestCase
         $state = (string) session('telegram_oidc_state');
         $nonce = (string) session('telegram_oidc_nonce');
 
-        Http::fake([
-            'https://oauth.telegram.org/token' => Http::response([
-                'id_token' => $this->idToken('987654321', $nonce, $privateKey),
-            ]),
-            'https://oauth.telegram.org/.well-known/jwks.json' => Http::response([
-                'keys' => [$jwk],
-            ]),
-        ]);
+        $currentNonce = $nonce;
 
         $this->get(route('telegram.callback', ['code' => 'second-code', 'state' => $state]))
             ->assertRedirect(route('dashboard'));
