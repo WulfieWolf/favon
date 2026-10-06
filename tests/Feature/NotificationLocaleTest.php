@@ -138,6 +138,18 @@ class NotificationLocaleTest extends TestCase
     {
         $placeTypeId = DB::table('place_types')->where('is_active', true)->value('id');
 
+        if (! $placeTypeId) {
+            $placeTypeId = DB::table('place_types')->insertGetId([
+                'slug' => 'notification-test',
+                'icon_id' => null,
+                'sort_order' => 10,
+                'is_active' => true,
+                'is_searchable' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         return DB::table('places')->insertGetId([
             'place_type_id' => $placeTypeId,
             'name' => 'Notification Testplatz',
