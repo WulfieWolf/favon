@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -12,13 +13,15 @@ class SupportLocaleTest extends TestCase
 
     public function test_help_and_support_interface_is_available_in_german_and_english(): void
     {
-        $this->withSession(['locale' => 'de'])
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->withSession(['locale' => 'de'])
             ->get(route('help.index'))
             ->assertOk()
             ->assertSee('Hilfe &amp; Support', false)
             ->assertSee('Meldung erstellen');
 
-        $this->withSession(['locale' => 'en'])
+        $this->actingAs($user)->withSession(['locale' => 'en'])
             ->get(route('help.index'))
             ->assertOk()
             ->assertSee('Help &amp; support', false)
@@ -62,7 +65,7 @@ class SupportLocaleTest extends TestCase
             ],
         ]);
 
-        $this->get(route('help.show', 'source-article'))
+        $this->actingAs(User::factory()->create())->get(route('help.show', 'source-article'))
             ->assertOk()
             ->assertSee('the related guide')
             ->assertSee(route('help.show', 'target-article'), false)
@@ -106,13 +109,15 @@ class SupportLocaleTest extends TestCase
             ],
         ]);
 
-        $this->withSession(['locale' => 'de'])
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->withSession(['locale' => 'de'])
             ->get(route('help.show', 'translation-test'))
             ->assertOk()
             ->assertSee('Deutscher Hilfetitel')
             ->assertSee('Deutscher Hilfetext');
 
-        $this->withSession(['locale' => 'en'])
+        $this->actingAs($user)->withSession(['locale' => 'en'])
             ->get(route('help.show', 'translation-test'))
             ->assertOk()
             ->assertSee('English help title')
