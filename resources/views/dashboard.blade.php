@@ -57,15 +57,19 @@
         {{ $places->links() }}
     </div>
 
+    @php
+        $mapPoints = $places->getCollection()->map(fn ($place) => [
+            'name' => $place->name,
+            'lat' => (float) $place->latitude,
+            'lng' => (float) $place->longitude,
+            'url' => route('places.show', $place->slug),
+        ])->values();
+    @endphp
+
     @push('scripts')
         <script>
             (() => {
-                const points = @json($places->getCollection()->map(fn ($place) => [
-                    'name' => $place->name,
-                    'lat' => (float) $place->latitude,
-                    'lng' => (float) $place->longitude,
-                    'url' => route('places.show', $place->slug),
-                ])->values());
+                const points = @json($mapPoints);
 
                 const init = () => {
                     const element = document.getElementById('favon-map');
