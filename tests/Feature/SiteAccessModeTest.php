@@ -4,10 +4,12 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Services\SiteAccessService;
+use App\Services\TelegramLoginService;
 use Database\Seeders\AdminAccessPermissionSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 use Tests\TestCase;
 
 class SiteAccessModeTest extends TestCase
@@ -17,29 +19,20 @@ class SiteAccessModeTest extends TestCase
     public function test_registration_closed_keeps_gateway_available_and_blocks_new_telegram_accounts(): void
     {
         $this->seed(RolePermissionSeeder::class);
-        config(['telegram.bot_token' => '123456:TEST_TOKEN']);
 
         app(SiteAccessService::class)->set(SiteAccessService::REGISTRATION_CLOSED, 'Testphase');
 
         $this->get(route('home'))->assertOk();
 
-        $payload = [
-            'id' => '99887766',
-            'auth_date' => now()->timestamp,
-        ];
-        ksort($payload);
-        $check = collect($payload)->map(fn ($value, $key) => $key.'='.$value)->implode("\n");
-        $payload['hash'] = hash_hmac(
-            'sha256',
-            $check,
-            hash('sha256', (string) config('telegram.bot_token'), true),
-        );
-
-        $this->post(route('telegram.callback'), $payload)
-            ->assertRedirect(route('home'))
-            ->assertSessionHasErrors('telegram');
+        try {
+            app(TelegramLoginService::class)->resolveUser('99887766', 'de');
+            $this->fail('A new Telegram account was created while registration was closed.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('Favon registration is currently closed.', $exception->getMessage());
+        }
 
         $this->assertDatabaseCount('community_accounts', 0);
+        $this->assertDatabaseCount('users', 0);
     }
 
     public function test_lockdown_blocks_guests_but_keeps_login_available(): void
