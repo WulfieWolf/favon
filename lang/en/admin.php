@@ -185,7 +185,7 @@ return [
         'access_message_label' => 'Visitor notice',
         'access_message_placeholder' => 'Optional notice shown when registration is closed or the site is in lockdown.',
         'access_message_help' => 'Leave empty to use the default notice.',
-        'lockdown_warning' => 'During lockdown, guests and regular users only see the notice. Login remains available; admins and the system owner can still sign in. Emergency recovery via SSH: php artisan camperwolf:mode normal',
+        'lockdown_warning' => 'During lockdown, guests and regular users only see the notice. Login remains available; admins and the system owner can still sign in. Emergency recovery via SSH: php artisan favon:mode normal',
         'save_access' => 'Save operating mode',
         'access_updated' => 'Website access updated.',
         'registration_closed_title' => 'Registration is currently closed',
