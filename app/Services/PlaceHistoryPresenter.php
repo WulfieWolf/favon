@@ -15,7 +15,6 @@ class PlaceHistoryPresenter
         return DB::table('place_history as ph')
             ->leftJoin('users as u', 'u.id', '=', 'ph.user_id')
             ->leftJoin('user_profiles as up', 'up.user_id', '=', 'u.id')
-            ->leftJoin('external_sources as es', 'es.id', '=', 'ph.external_source_id')
             ->where('ph.place_id', $placeId)
             ->where('ph.is_public', true)
             ->orderByDesc('ph.created_at')
@@ -23,7 +22,6 @@ class PlaceHistoryPresenter
             ->get([
                 'ph.id', 'ph.actor_type', 'ph.action', 'ph.summary', 'ph.metadata', 'ph.created_at',
                 'u.name as user_name', 'u.account_status', 'up.public_alias', 'up.public_handle',
-                'es.name as source_name',
             ])
             ->map(function ($row) {
                 $metadata = json_decode((string) ($row->metadata ?? ''), true) ?: [];
@@ -31,7 +29,6 @@ class PlaceHistoryPresenter
                 $row->actor = $metadataAuthor !== ''
                     ? $metadataAuthor
                     : match ($row->actor_type) {
-                        'external_source' => __('place_profile.history.external_source'),
                         'user' => (($row->account_status ?? 'active') === 'active')
                             ? ($row->public_alias ?: $row->public_handle ?: $row->user_name ?: __('place_profile.history.user'))
                             : ($row->user_name ?: __('place_profile.history.user')),
@@ -48,7 +45,7 @@ class PlaceHistoryPresenter
                 $metadataSourceUrl = trim((string) ($metadata['source_url'] ?? ''));
                 $row->source_label = $metadataSourceLabel !== ''
                     ? $metadataSourceLabel
-                    : ($row->actor_type === 'external_source' ? $row->source_name : null);
+                    : null;
                 $row->source_url = $this->safeHttpUrl($metadataSourceUrl);
 
                 $actionKey = 'place_profile.history.actions.'.(string) $row->action;
