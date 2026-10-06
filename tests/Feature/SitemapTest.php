@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +49,7 @@ class SitemapTest extends TestCase
             ]);
         }
 
-        $response = $this->get('/sitemap.xml');
+        $response = $this->actingAs(User::factory()->create())->get('/sitemap.xml');
 
         $response->assertOk();
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
