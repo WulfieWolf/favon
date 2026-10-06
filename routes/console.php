@@ -74,3 +74,23 @@ Artisan::command('data-exports:cleanup', function (UserDataExportService $export
 Schedule::command('data-exports:cleanup')
     ->hourly()
     ->withoutOverlapping();
+
+
+Artisan::command('favon:mode {mode} {--message=}', function (string $mode) {
+    $allowed = [
+        \App\Services\SiteAccessService::NORMAL,
+        \App\Services\SiteAccessService::REGISTRATION_CLOSED,
+        \App\Services\SiteAccessService::LOCKDOWN,
+    ];
+
+    if (! in_array($mode, $allowed, true)) {
+        $this->error('Unknown mode. Use normal, registration_closed or lockdown.');
+
+        return 1;
+    }
+
+    app(\App\Services\SiteAccessService::class)->set($mode, $this->option('message'));
+    $this->info('Favon access mode set to '.$mode.'.');
+
+    return 0;
+})->purpose('Sets the Favon website access mode.');
