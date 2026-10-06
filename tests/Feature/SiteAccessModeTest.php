@@ -74,7 +74,7 @@ class SiteAccessModeTest extends TestCase
     {
         app(SiteAccessService::class)->set(SiteAccessService::LOCKDOWN, 'Wartung');
 
-        $this->artisan('camperwolf:mode normal')
+        $this->artisan('favon:mode normal')
             ->assertSuccessful();
 
         $this->assertSame(SiteAccessService::NORMAL, app(SiteAccessService::class)->mode());
