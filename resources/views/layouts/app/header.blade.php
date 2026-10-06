@@ -38,7 +38,7 @@
                     <form method="POST" action="{{ route('locale.update') }}">
                         @csrf
                         <select name="locale" onchange="this.form.submit()" class="h-9 rounded-lg border border-zinc-300 bg-white px-2 text-xs dark:border-zinc-700 dark:bg-zinc-900">
-                            @foreach (AppSupportLocaleConfiguration::enabled() as $localeCode => $localeConfig)
+                            @foreach (\App\Support\LocaleConfiguration::enabled() as $localeCode => $localeConfig)
                                 <option value="{{ $localeCode }}" @selected(app()->getLocale() === $localeCode)>
                                     {{ trim(($localeConfig['flag'] ?? '').' '.($localeConfig['native_name'] ?? strtoupper($localeCode))) }}
                                 </option>
