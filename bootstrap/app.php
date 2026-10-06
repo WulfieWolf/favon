@@ -41,7 +41,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 abort(404);
             }
 
-            return route('login');
+            return route('home');
         });
 
         $middleware->alias([
