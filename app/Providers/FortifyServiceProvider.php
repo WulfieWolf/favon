@@ -6,10 +6,12 @@ namespace App\Providers;
 use App\Actions\Fortify\CreateNewUser;
 /* @end-chisel-registration */
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
@@ -33,6 +35,7 @@ class FortifyServiceProvider extends ServiceProvider
     {
         $this->configureActions();
         $this->configureViews();
+        $this->configureAuthentication();
         $this->configureRateLimiting();
         $this->configureEmailVerificationCleanup();
     }
@@ -90,6 +93,22 @@ class FortifyServiceProvider extends ServiceProvider
                 'verification_modal',
                 $reason === 'email_change' ? 'email_change_verified' : 'registration_verified',
             );
+        });
+    }
+
+    private function configureAuthentication(): void
+    {
+        Fortify::authenticateUsing(function (Request $request): ?User {
+            $email = mb_strtolower(trim((string) $request->input('email')));
+            $user = User::query()->whereRaw('LOWER(email) = ?', [$email])->first();
+
+            if (! $user || ! is_string($user->password) || ! Hash::check((string) $request->input('password'), $user->password)) {
+                return null;
+            }
+
+            return ($user->isSystemOwner() || $user->hasRole('admin'))
+                ? $user
+                : null;
         });
     }
 
