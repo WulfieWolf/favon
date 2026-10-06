@@ -167,15 +167,39 @@ class TelegramAuthenticationTest extends TestCase
      */
     private function rsaSigningKey(): array
     {
-        $resource = openssl_pkey_new([
-            'private_key_bits' => 2048,
-            'private_key_type' => OPENSSL_KEYTYPE_RSA,
-        ]);
+        $privateKey = <<<'PEM'
+-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCr0zZYfdxqb0n3
+tk7/+FjP0svEGHHyGDtD4/gsIRvGynHfiPwaE0mlG0I/rhcOggeDClXIZGeCFEQu
+fLCyOacKDBTNstlkjdjhiGRWsPPkKFPgfiqMzJq8+KANXUDAAJfjpdFf5KPzzZKP
+VcNpZjMaw8XY3tOfDoEYpqkE0SjkH4i9ppSexMTUOYHw5mzZEc+pwyp5ppDhQvWU
+zO5O6djAmHrQF/Xx14rZpxkkXQav+07klQlIHjZpeFrtCnoADCl8Q8/Ar7W+z9P9
+EyIIpbmVpe5XKDejZnEfDFX84uwP/HifgQ2hgJFYz/Naslx/HwLA2s034AXnCI8+
+xlNIAYVdAgMBAAECggEAJv8mxGq8TcO4S+oqf9nDfldfO8A4jDOHr97bglh5T2K+
++XbDkL9z5W8MWBuQzBAi2FDOK07uVw12c/6Es8515MfdKNpAkJvI71bfPvWmRNAK
+SVcZHR+KtvzOhnn1qh34WwhVPqhLtZegfbt/QDqbuqVYD+JysRS/o/KfRaKa3zsQ
+3L5NIQH5f8yx6QVQJXQX+wjFbh9x9b1PoTl0Fos2aFM8om8XTLmCXkjgF0Qt/Ye+
+1Oimb+c5tuilOfXiiNAAgBa5I15RzgmHeQAVPdfbdceRgX34ezz35Hwin5ruH2J2
+8l3D/1tbSUFta14RTieo/hE0HfBFQxP6g1LwasI3QQKBgQDwa8gP2JdH+cqN8d/G
+GjF4IUd31ILjTIejp6mDc0sP7MoD7O1gINea2DhghRgd9XXIX90w5OTPCv0C6/HI
+5rEe3NKJakfpWW+UxLYXFKXFrDOgnaAxECbuKPwS+FMgLWVQdbnzoWJYKFEGonFD
+TeGZp1PEh673jzL8lMNjH8YF1QKBgQC29Ycw5f/eg4Nnse7YZ3Bo5abj2pUZRL8V
+OvLtj2LxHBC+3tV2h5ALr1BANbmmBdeviezDjW6X1WfBSs9uptKjFBRHTL343Rvb
+oHb1cLpcza8sw6BLQvv9V69pioHcKVpcb8fjE8jPZgt+lqqx68sKEF4jCUU0+fFb
+4CIPfKAdaQKBgQCHxiampEfTEwNMJEOeqd40HH8y8iW03dxgFOiLXsoORUhU7TGl
+Lwbz4JX+FEvpZ1zL+y98VFfPgUIfq0XRkk6Gwmh3yDiyVJrKJkk7QaLYvoYtd7cm
+3htONoEc6XZwXpKv3LxWFVbnuGUB3S0fuFTmpHOPMp0iG5HMyOqLCT+YvQKBgFhE
+iF6c+B7gEAt9GqAo92CEO0n+cKRqOE4DzKOz46YzRhjv5Mh0ipg4kl0IDnL8qpwz
+zJhjqZFzEcV9VCosLb8jtszXR2fDNOd2uS2cnyyaxwKvtqvYuz30ido/SntvL/sc
+qrDxIJZ+wtjl06BXA/PtBZ2doVf3pewPbB9QnubRAoGBAICoiAC1LaKHdzS8X3/s
+TvayU5xxU+zcEgB+Ky94FW/C2H0CNtcxamoc5ju7Ffm1U6Mb+mUfvoVjJe9XEYFc
+GGqo0uVI111NQXr3NtXMJl9TZ/bYPxG1fMfSLTMCnVBeI51VioAyIaOFp73kR+uU
+6QRJuD0D6eM3fJQCMt1azdqb
+-----END PRIVATE KEY-----
+PEM;
 
+        $resource = openssl_pkey_get_private($privateKey);
         $this->assertNotFalse($resource);
-
-        $privateKey = '';
-        $this->assertTrue(openssl_pkey_export($resource, $privateKey));
 
         $details = openssl_pkey_get_details($resource);
         $this->assertIsArray($details);
