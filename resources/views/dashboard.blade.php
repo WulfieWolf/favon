@@ -2,18 +2,18 @@
     <div class="mx-auto w-full max-w-7xl space-y-5 px-4 py-6">
         <div>
             <h1 class="text-2xl font-semibold">Favon</h1>
-            <p class="mt-1 text-sm text-zinc-500">Übergangsansicht nach dem Camperwolf-Cleanup.</p>
+            <p class="mt-1 text-sm text-zinc-500">{{ __('ui.transition.intro') }}</p>
         </div>
 
         <form method="GET" action="{{ route('dashboard') }}" class="grid gap-3 rounded-xl border border-zinc-200 bg-white p-4 md:grid-cols-[1fr_auto_auto] dark:border-zinc-800 dark:bg-zinc-900">
-            <input name="q" value="{{ $queryText }}" placeholder="Ort oder Name suchen" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
+            <input name="q" value="{{ $queryText }}" placeholder="{{ __('ui.transition.search_placeholder') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
             @auth
                 <label class="flex items-center gap-2 text-sm">
                     <input type="checkbox" name="favorites" value="1" @checked($favoritesOnly)>
-                    Nur Favoriten
+                    {{ __('ui.transition.favorites_only') }}
                 </label>
             @endauth
-            <button class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">Suchen</button>
+            <button class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">{{ __('ui.transition.search') }}</button>
 
             @if ($placeTypes->isNotEmpty())
                 <div class="flex flex-wrap gap-2 md:col-span-3">
@@ -41,7 +41,7 @@
                             <form method="POST" action="{{ in_array((int) $place->id, $favoriteIds, true) ? route('favorites.destroy', $place->slug) : route('favorites.store', $place->slug) }}">
                                 @csrf
                                 @if (in_array((int) $place->id, $favoriteIds, true)) @method('DELETE') @endif
-                                <button class="text-lg" title="Favorit">{{ in_array((int) $place->id, $favoriteIds, true) ? '★' : '☆' }}</button>
+                                <button class="text-lg" title="{{ __('ui.transition.favorite') }}">{{ in_array((int) $place->id, $favoriteIds, true) ? '★' : '☆' }}</button>
                             </form>
                         @endauth
                     </div>
@@ -50,7 +50,7 @@
                     @endif
                 </article>
             @empty
-                <div class="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-zinc-500 md:col-span-2 xl:col-span-3 dark:border-zinc-700">Keine Plätze gefunden.</div>
+                <div class="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-zinc-500 md:col-span-2 xl:col-span-3 dark:border-zinc-700">{{ __('ui.transition.no_places') }}</div>
             @endforelse
         </div>
 
