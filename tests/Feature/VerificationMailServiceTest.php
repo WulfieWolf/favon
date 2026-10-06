@@ -20,11 +20,12 @@ class VerificationMailServiceTest extends TestCase
         parent::setUp();
 
         Mail::fake();
+        config()->set('camperwolf.mail.enabled', true);
         RateLimiter::clear('mail:global:minute');
         RateLimiter::clear('mail:global:hour');
     }
 
-    public function test_unverified_user_gets_localized_camperwolf_verification_mail(): void
+    public function test_unverified_user_gets_localized_verification_mail(): void
     {
         $user = User::factory()->unverified()->create([
             'name' => 'Sascha Schwarz',
