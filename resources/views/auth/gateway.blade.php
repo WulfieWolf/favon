@@ -1,4 +1,4 @@
-<x-layouts::auth title="Favon">
+<x-layouts::auth.simple title="Favon">
     <div class="flex flex-col gap-6 text-center">
         <h1 class="text-2xl font-semibold">Favon</h1>
 
@@ -54,4 +54,4 @@
             </a>
         </div>
     </div>
-</x-layouts::auth>
+</x-layouts::auth.simple>
