@@ -35,7 +35,7 @@ class SiteAccessModeTest extends TestCase
             hash('sha256', (string) config('telegram.bot_token'), true),
         );
 
-        $this->get(route('telegram.callback', $payload))
+        $this->post(route('telegram.callback'), $payload)
             ->assertRedirect(route('home'))
             ->assertSessionHasErrors('telegram');
 
