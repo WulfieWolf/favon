@@ -117,8 +117,8 @@ Primary goals:
 
 - mobile-first
 - very low interaction friction
-- public search/map without login
-- login required only for community actions
+- site content is login-gated; unauthenticated visitors see only the access gateway plus required public legal/support entry points
+- community users authenticate via Telegram; classic password login is reserved for admins/system owner
 - minimal forms
 - no public user identities
 - no user profiles as social objects
@@ -179,26 +179,32 @@ Favon must describe **where a place is and what kind of place it is**, not provi
 
 # 6. Authentication and account model
 
-Preferred model: **Telegram-based login**, potentially without e-mail/password accounts at all.
+Implemented V1 model: **Telegram-only login for community users**, while the existing e-mail/password login remains available only for administrators/system owner.
 
-## Intended login flow
+## Implemented login flow
 
-- user selects “Mit Telegram anmelden”
-- Telegram provides a stable unique account identity
-- Favon stores the stable Telegram subject/ID needed to recognize the account
-- Favon creates its own internal user record
-- an internal generated handle may exist for administration, but is not intended to be publicly visible
+- unauthenticated visitors land on the Favon access gateway
+- gateway offers “Mit Telegram anmelden” and a separate “Admin-Login”
+- Telegram Login Widget authenticates community users
+- Favon verifies the signed Telegram payload server-side with the bot token
+- only the stable Telegram numeric ID is persisted for community authentication
+- Telegram first name, last name, username and profile photo are not stored
+- callback data is POSTed to Favon rather than placed in the callback URL, reducing the risk of profile fields appearing in access logs
+- unknown Telegram ID -> a minimal Favon account is created automatically
+- known Telegram ID -> the existing Favon account is reused
+- public Fortify registration is disabled
+- password login is rejected for normal community users even if password credentials were ever present
 
 Do not rely on Telegram username because it can change.
 
 ## Minimal account data
 
-Preferred minimum:
+Implemented/current minimum direction:
 
 - internal Favon user ID
-- stable Telegram identity / subject
-- generated internal handle if needed
-- role
+- stable Telegram numeric ID in a separate `community_accounts` mapping
+- generated readable internal name such as `User-0000001`
+- role / permissions
 - ban/abuse state
 - timestamps
 
@@ -801,8 +807,8 @@ Favon V1 should remain intentionally small.
 
 Target:
 
-- public map
-- public search
+- authenticated map
+- authenticated search
 - near-me discovery
 - simple place-type filters
 - place profile
@@ -961,7 +967,6 @@ Still not finalized:
 
 - Final Favon place-type catalogue or demo/place seed data.
 - Clean Favon-first schema/migration baseline.
-- Telegram authentication and minimal pseudonymous user model.
 - Favon production deployment on Plesk; local readiness does not mean the site is live.
 - Final privacy treatment for OSM tiles, place-level analytics references and retained transitional account/history code.
 
@@ -1012,8 +1017,6 @@ Still intentionally undecided:
 - when consensus may auto-update vs. require moderation
 - exact rating dimensions
 - whether aggregate activity should be exact counts or coarse categories
-- exact Telegram/OIDC implementation
-- whether any e-mail capability remains for administration
 - final operator/legal structure
 - final youth-protection implementation
 - final privacy-retention schedule
@@ -1027,8 +1030,8 @@ Do not silently treat these as settled.
 Unless explicitly reconsidered later:
 
 1. **Places, not people.**
-2. Public browsing without login.
-3. Login required for contributions.
+2. Favon content is login-gated; guests only see the access gateway and required public legal/support entry points.
+3. Community authentication is Telegram-only; classic password login is reserved for admins/system owner.
 4. No public contributor identity.
 5. No “who is here”.
 6. No public visit histories.
@@ -1140,9 +1143,14 @@ The following inherited product areas were classified as Camperwolf-specific and
 # 31. Cleanup branch and verified implementation status
 
 Repository: `WulfieWolf/favon`  
-Branch: `cleanup/remove-camperwolf-subsystems`  
-Draft PR: `https://github.com/WulfieWolf/favon/pull/2`  
-**`main` remains unchanged; do not merge until validated.** All cleanup writes were Favon-only.
+Cleanup PR #2 was validated and squash-merged into `main` on 2026-10-06.  
+Merge commit: `2ff79304a3d3203e5e7bf736cd17a539e8365398`.
+
+Current feature branch:
+
+`feature/telegram-auth-gateway`
+
+All writes remain Favon-only; Camperwolf is untouched.
 
 ## Initial slimming commits
 
@@ -1191,7 +1199,7 @@ Remaining issues:
 
 - The **68 successful migrations still create many obsolete Camperwolf tables** (photos, reviews, prices, features, XP, etc.). They need a deliberate clean Favon schema replacement; migration success alone is not final cleanup.
 - `PlaceMergeService`, `PlaceDeletionService`, account deletion/export still assume older tables.
-- Fortify/email/password/passkey and `UserProfile`/`PublicHandleService` remain transitional pending Telegram login.
+- Fortify/email/password/passkey remain transitional for administrative access only; normal community authentication is now Telegram-only on the feature branch. `UserProfile`/`PublicHandleService` still require later schema cleanup.
 - Place-history presenter still contains inherited public handle/author logic: must honor **no public contributor identity** before public history is exposed.
 - `TouchLastSeen`, notifications, mail/support `camperwolf.*` configs, some permissions and branding/docs need review.
 - Map currently uses external OSM tiles; privacy-safe final approach TBD.
@@ -1206,7 +1214,7 @@ Avoid restoring removed Camperwolf subsystems merely to make tests pass. Address
 
 # 32. Exact continuation point – 2026-10-06
 
-**Current state:** Favon is on branch `cleanup/remove-camperwolf-subsystems`. The isolated local MySQL database builds successfully with `php artisan migrate:fresh --seed`; Herd serves the app at `favon.test`; the Vite frontend build succeeds; core browser smoke checks pass; and the Laravel/PHPUnit suite is fully green with **148 passed, 0 failed**. PR #2 remains draft and `main` remains unchanged.
+**Current state:** Cleanup PR #2 is merged into `main`. Active development continues on `feature/telegram-auth-gateway`. The Telegram auth migration was applied locally with normal `php artisan migrate`, and after the final 2FA test adaptation the complete local Laravel/PHPUnit suite is green again. Herd continues to serve Favon independently at `favon.test`.
 
 Important cleanup/runtime fixes made during this validation pass include:
 
@@ -1223,18 +1231,39 @@ Important cleanup/runtime fixes made during this validation pass include:
 - aligned registration welcome flow with Favon's non-public-profile direction
 - kept guarded mail behavior while explicitly enabling it inside delivery tests only
 
+## Current Telegram-auth implementation
+
+- new branch `feature/telegram-auth-gateway`
+- Telegram bot/domain configured externally through BotFather; local secret is stored only in Favon `.env` as `TELEGRAM_BOT_TOKEN`
+- `config/telegram.php` defines bot username, token and authentication payload max age
+- `community_accounts` maps one internal Favon user to one unique Telegram ID
+- normal Telegram users have nullable `email` and `password`
+- automatically generated internal names use a readable sequential format: `User-0000001`, `User-0000002`, ...
+- the sequence is based on the community-account row, independent of admin user IDs
+- Telegram first/last name, username, profile photo and phone number are not persisted
+- signed payload verification rejects invalid or stale login data
+- public Fortify registration is disabled
+- classic e-mail/password login is allowed only for administrator/system-owner accounts
+- `registration_closed` mode blocks creation of new Telegram accounts while allowing the gateway itself to remain available
+- Favon directory/map/help/place routes are authentication-gated
+- legal pages and selected public support/legal entry points remain public
+- robots policy now disallows authenticated directory content
+- full local test suite is green after the auth changes
+
 ## Next concrete steps
 
-1. Review `composer.lock` consistency and the reported npm vulnerabilities (1 high, 3 critical); do **not** blindly run `npm audit fix --force`.
-2. Decide whether cleanup PR #2 is ready to merge now that migration, build, browser smoke and tests are green.
-3. Design the clean Favon-first schema/migration baseline. The current inherited migration set is only a transitional bootable baseline and still creates obsolete Camperwolf tables.
-4. Build the minimal pseudonymous user/account model and implement Telegram authentication; current Fortify/email/password/passkey, `UserProfile` and `PublicHandleService` remain transitional.
-5. Define and seed the Favon place-type catalogue.
-6. Implement Favon-native stable attribute voting and variable feature freshness/health checks.
-7. Implement proximity-validated short-lived check-ins without retaining raw GPS.
-8. Implement structured ratings and privacy-safe moderation/reporting.
-9. Refactor merge, statistics, account deletion/export and place history against the new Favon schema; ensure no public contributor identity is exposed.
-10. Review final privacy treatment for OSM tiles, analytics content references, retention and any remaining `camperwolf.*` configuration names before production deployment.
+1. Browser-smoke-test the new gateway locally: guest landing page, Admin-Login, redirects from dashboard/place/help, public legal pages.
+2. Real Telegram widget round-trip must be tested on the configured `https://favon.de` domain; `favon.test` is not registered with BotFather.
+3. Review account deletion/ban semantics for Telegram IDs: ordinary voluntary deletion versus abuse-ban retention.
+4. Review whether admin password reset, passkeys, e-mail verification and 2FA should all remain for administrators or be reduced further.
+5. Review `composer.lock` consistency and the reported npm vulnerabilities (1 high, 3 critical); do **not** blindly run `npm audit fix --force`.
+6. Design the clean Favon-first schema/migration baseline. The inherited migration set is still only a transitional bootable baseline.
+7. Define and seed the Favon place-type catalogue.
+8. Implement Favon-native stable attribute voting and variable feature freshness/health checks.
+9. Implement proximity-validated short-lived check-ins without retaining raw GPS.
+10. Implement structured ratings and privacy-safe moderation/reporting.
+11. Refactor merge, statistics, account deletion/export and place history against the new Favon schema; ensure no public contributor identity is exposed.
+12. Review final privacy treatment for OSM tiles, analytics content references, retention and remaining `camperwolf.*` configuration names before production deployment.
 
 ## Safety / working style
 
