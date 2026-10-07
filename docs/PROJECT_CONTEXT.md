@@ -1275,7 +1275,7 @@ Important cleanup/runtime fixes made during this validation pass include:
 9. Implement proximity-validated short-lived check-ins without retaining raw GPS.
 10. Implement structured ratings and privacy-safe moderation/reporting.
 11. Refactor merge, statistics, account deletion/export and place history against the new Favon schema; ensure no public contributor identity is exposed.
-12. Review final privacy treatment for OSM tiles, analytics content references, retention and remaining `camperwolf.*` configuration names before production deployment.
+12. Review final privacy treatment for OSM tiles, analytics content references and retention before broader public rollout. Active application config namespaces have already been migrated to Favon names.
 
 ## Safety / working style
 
