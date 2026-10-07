@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class PermissionService
 {
-    public const ROLE_PREVIEW_SESSION_KEY = 'camperwolf.role_preview';
+    public const ROLE_PREVIEW_SESSION_KEY = 'favon.role_preview';
 
     public function isOwner(?User $user): bool
     {
@@ -16,7 +16,7 @@ class PermissionService
             return false;
         }
 
-        $ownerEmail = config('camperwolf.owner_email');
+        $ownerEmail = config('favon.owner_email');
 
         return is_string($ownerEmail)
             && $ownerEmail !== ''
