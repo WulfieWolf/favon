@@ -127,7 +127,7 @@ return [
                 'title' => '9. Cookies, sessions and internal statistics',
                 'paragraphs' => [
                     'Favon uses technically necessary session and security cookies for sign-in, session handling and protection against abusive requests. Your selected language may also be stored.',
-                    'Favon currently uses no advertising, marketing or external analytics trackers.',
+                    'Favon currently uses no advertising, marketing or external analytics trackers. No general consent or cookie banner is therefore planned for the browser storage currently required for technical operation.',
                     'For internal usage statistics, page views and selected feature events may be stored without user ID, raw IP address, session ID, persistent visitor identifier or fingerprint.',
                 ],
             ],
