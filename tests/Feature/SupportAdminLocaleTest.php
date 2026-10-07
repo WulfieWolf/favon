@@ -18,7 +18,7 @@ class SupportAdminLocaleTest extends TestCase
 
         $owner = User::factory()->create(['email_verified_at' => now()]);
         $reporter = User::factory()->create(['name' => 'Support Reporter']);
-        config(['camperwolf.owner_email' => $owner->email]);
+        config(['favon.owner_email' => $owner->email]);
 
         $ticketId = DB::table('support_tickets')->insertGetId([
             'user_id' => $reporter->id,
