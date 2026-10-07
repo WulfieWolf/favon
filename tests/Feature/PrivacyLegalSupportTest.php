@@ -131,7 +131,7 @@ class PrivacyLegalSupportTest extends TestCase
         Carbon::setTestNow(Carbon::parse('2026-09-24 08:00:00'));
 
         $owner = User::factory()->create(['email_verified_at' => now()]);
-        config(['camperwolf.owner_email' => $owner->email]);
+        config(['favon.owner_email' => $owner->email]);
 
         $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.13'])
             ->post(route('support.store'), [
@@ -175,7 +175,7 @@ class PrivacyLegalSupportTest extends TestCase
         Carbon::setTestNow(Carbon::parse('2026-09-24 08:00:00'));
 
         $owner = User::factory()->create(['email_verified_at' => now()]);
-        config(['camperwolf.owner_email' => $owner->email]);
+        config(['favon.owner_email' => $owner->email]);
 
         $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.14'])
             ->post(route('support.store'), [
