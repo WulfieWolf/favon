@@ -20,13 +20,17 @@
 <meta property="og:site_name" content="{{ config('app.name', 'Favon') }}">
 <meta property="og:title" content="{{ $resolvedSocialTitle }}">
 <meta property="og:description" content="{{ $resolvedDescription }}">
-@if (filled($resolvedSocialImage))\n<meta property="og:image" content="{{ $resolvedSocialImage }}">\n@endif
+@if (filled($resolvedSocialImage))
+<meta property="og:image" content="{{ $resolvedSocialImage }}">
+@endif
 <meta property="og:url" content="{{ $resolvedCanonicalUrl }}">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $resolvedSocialTitle }}">
 <meta name="twitter:description" content="{{ $resolvedDescription }}">
-@if (filled($resolvedSocialImage))\n<meta name="twitter:image" content="{{ $resolvedSocialImage }}">\n@endif
+@if (filled($resolvedSocialImage))
+<meta name="twitter:image" content="{{ $resolvedSocialImage }}">
+@endif
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
