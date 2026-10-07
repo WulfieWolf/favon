@@ -4,11 +4,11 @@
 @php
     $resolvedTitle = \App\Support\PageTitle::resolve($title ?? null);
     $browserTitle = filled($resolvedTitle)
-        ? $resolvedTitle.' - '.config('app.name', 'Camperwolf')
-        : config('app.name', 'Camperwolf');
+        ? $resolvedTitle.' - '.config('app.name', 'Favon')
+        : config('app.name', 'Favon');
     $resolvedSocialTitle = $socialTitle ?? $browserTitle;
     $resolvedDescription = $metaDescription ?? __('ui.social.default_description');
-    $resolvedSocialImage = $socialImage ?? asset('images/camperwolf-placeholder.png');
+    $resolvedSocialImage = $socialImage ?? null;
     $resolvedCanonicalUrl = $canonicalUrl ?? request()->url();
 @endphp
 
@@ -17,16 +17,16 @@
 <link rel="canonical" href="{{ $resolvedCanonicalUrl }}">
 
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Camperwolf.de">
+<meta property="og:site_name" content="{{ config('app.name', 'Favon') }}">
 <meta property="og:title" content="{{ $resolvedSocialTitle }}">
 <meta property="og:description" content="{{ $resolvedDescription }}">
-<meta property="og:image" content="{{ $resolvedSocialImage }}">
+@if (filled($resolvedSocialImage))\n<meta property="og:image" content="{{ $resolvedSocialImage }}">\n@endif
 <meta property="og:url" content="{{ $resolvedCanonicalUrl }}">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $resolvedSocialTitle }}">
 <meta name="twitter:description" content="{{ $resolvedDescription }}">
-<meta name="twitter:image" content="{{ $resolvedSocialImage }}">
+@if (filled($resolvedSocialImage))\n<meta name="twitter:image" content="{{ $resolvedSocialImage }}">\n@endif
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
