@@ -127,7 +127,7 @@ return [
                 'title' => '9. Cookies, Sitzungen und interne Statistik',
                 'paragraphs' => [
                     'Favon verwendet technisch erforderliche Session- und Sicherheits-Cookies für Anmeldung, Sitzungsverwaltung und Schutz vor missbräuchlichen Anfragen. Eine von dir gewählte Sprache kann ebenfalls gespeichert werden.',
-                    'Favon setzt derzeit keine Werbe-, Marketing- oder externen Analyse-Tracker ein.',
+                    'Favon setzt derzeit keine Werbe-, Marketing- oder externen Analyse-Tracker ein. Für die aktuell ausschließlich technisch erforderlichen Browser-Speicherungen ist daher kein allgemeiner Einwilligungs- oder Cookie-Banner vorgesehen.',
                     'Für interne Nutzungsstatistiken können Seitenaufrufe und ausgewählte Funktionsereignisse ohne User-ID, rohe IP-Adresse, Session-ID, dauerhafte Besucherkennung oder Fingerprint gespeichert werden.',
                 ],
             ],
