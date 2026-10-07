@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'camperwolf_id' => 'Favon ID',
+    'favon_id' => 'Favon ID',
     'public_title' => 'Profile',
     'edit_profile' => 'Edit profile',
     'member_since' => 'Member since :date',
