@@ -20,7 +20,7 @@ class AdminUserPresentationTest extends TestCase
             'name' => 'Middle Owner',
             'email_verified_at' => now(),
         ]);
-        config(['camperwolf.owner_email' => $owner->email]);
+        config(['favon.owner_email' => $owner->email]);
 
         User::factory()->create([
             'name' => 'Alpha User',
@@ -54,7 +54,7 @@ class AdminUserPresentationTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $owner = User::factory()->create(['email_verified_at' => now()]);
-        config(['camperwolf.owner_email' => $owner->email]);
+        config(['favon.owner_email' => $owner->email]);
 
         $withAlias = User::factory()->create(['name' => 'Alias Account']);
         $withoutAlias = User::factory()->create(['name' => 'Handle Account']);
