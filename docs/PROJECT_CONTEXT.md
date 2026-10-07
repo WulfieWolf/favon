@@ -1,6 +1,6 @@
 # Favon – Project Context
 
-_Last updated: 2026-10-06 – local runtime/build/test validation complete for cleanup baseline_
+_Last updated: 2026-10-07 – Telegram OIDC and owner/admin access live; Favon config namespace cleanup completed_
 
 This file is the authoritative working context for **Favon**.
 
@@ -181,15 +181,27 @@ Favon must describe **where a place is and what kind of place it is**, not provi
 
 Implemented V1 model: **Telegram-only login for community users**, while the existing e-mail/password login remains available only for administrators/system owner.
 
+### Production verification (2026-10-07)
+
+- Telegram OIDC login is live on `favon.de`.
+- First community login created `User-0000001`.
+- The community account has no e-mail address and no password.
+- Exactly one `community_accounts` row maps the account to a stable Telegram numeric ID.
+- The system-owner account is separate from Telegram community accounts.
+- Classic e-mail/password login works for the system owner via `FAVON_OWNER_EMAIL`.
+- Public registration remains disabled.
+- Active Favon config and environment namespaces use `favon.*` and `FAVON_*`.
+
 ## Implemented login flow
 
 - unauthenticated visitors land on the Favon access gateway
 - gateway offers “Mit Telegram anmelden” and a separate “Admin-Login”
-- Telegram Login Widget authenticates community users
-- Favon verifies the signed Telegram payload server-side with the bot token
-- only the stable Telegram numeric ID is persisted for community authentication
-- Telegram first name, last name, username and profile photo are not stored
-- callback data is POSTed to Favon rather than placed in the callback URL, reducing the risk of profile fields appearing in access logs
+- Telegram OIDC authenticates community users through the authorization-code flow with PKCE
+- Favon validates state, nonce, issuer, audience, expiry, RS256 signature and Telegram JWKS before accepting the identity
+- the authorization code is exchanged server-side using the Telegram client ID/client secret and PKCE verifier
+- only the stable Telegram numeric ID from the validated OIDC subject is persisted for community authentication
+- Telegram first name, last name, username, profile photo and phone number are not stored
+- the callback contains only OIDC protocol data; Telegram profile fields are not placed in Favon's URLs
 - unknown Telegram ID -> a minimal Favon account is created automatically
 - known Telegram ID -> the existing Favon account is reused
 - public Fortify registration is disabled
@@ -1201,7 +1213,7 @@ Remaining issues:
 - `PlaceMergeService`, `PlaceDeletionService`, account deletion/export still assume older tables.
 - Fortify/email/password/passkey remain transitional for administrative access only; normal community authentication is now Telegram-only on the feature branch. `UserProfile`/`PublicHandleService` still require later schema cleanup.
 - Place-history presenter still contains inherited public handle/author logic: must honor **no public contributor identity** before public history is exposed.
-- `TouchLastSeen`, notifications, mail/support `camperwolf.*` configs, some permissions and branding/docs need review.
+- `TouchLastSeen` and other inherited infrastructure remain under review; active application config namespaces have been renamed from `camperwolf.*` / `CAMPERWOLF_*` to `favon.*` / `FAVON_*`; some permissions and branding/docs need review.
 - Map currently uses external OSM tiles; privacy-safe final approach TBD.
 - Pulse/Telescope and other dependencies need final need/security audit.
 - Actual Favon place types/seeder, voting, check-ins, structured ratings and reporting are **not yet implemented**.
