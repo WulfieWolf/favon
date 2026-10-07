@@ -2,7 +2,7 @@
 
 return [
     'registration' => [
-        'notice' => 'When registering, please review our',
+        'notice' => 'When signing in, please review our',
         'and' => 'and our',
         'accept_prefix' => 'I accept the',
         'and_acknowledge' => 'and acknowledge the',
@@ -13,21 +13,21 @@ return [
         'imprint' => 'Legal notice',
         'privacy' => 'Privacy',
         'terms' => 'Terms of use',
-        'photo_rules' => 'Photo rules',
-        'review_rules' => 'Review rules',
+        'photo_rules' => 'Content rules',
+        'review_rules' => 'Rating rules',
         'last_updated' => 'Last updated: :date',
     ],
 
     'imprint' => [
         'title' => 'Legal notice',
-        'subtitle' => 'Provider information for Camperwolf.de',
+        'subtitle' => 'Provider information for Favon',
         'version' => config('legal.versions.imprint'),
         'sections' => [
             [
                 'title' => 'Provider',
                 'paragraphs' => [
                     config('legal.operator.name')."\n".config('legal.operator.street')."\n".config('legal.operator.postal_code').' '.config('legal.operator.city')."\n".config('legal.operator.country'),
-                    'Current status: privately operated project',
+                    config('legal.operator.status'),
                 ],
             ],
             [
@@ -37,13 +37,13 @@ return [
             [
                 'title' => 'About the project',
                 'paragraphs' => [
-                    'Camperwolf is currently operated privately and without a registered business. If the legal or organisational form changes, these details will be updated.',
+                    'Favon is currently operated as a private project. These details will be updated if its legal or organisational form changes.',
                 ],
             ],
             [
                 'title' => 'Responsibility for content',
                 'paragraphs' => [
-                    'Camperwolf provides both its own content and information contributed by users. Community content is moderated under the applicable rules. Potentially unlawful, incorrect or otherwise problematic content can be reported through the reporting and support functions.',
+                    'Favon provides its own content and factual place information contributed by users. Potentially unlawful, incorrect or otherwise problematic content can be reported through the available reporting and support channels.',
                 ],
             ],
             [
@@ -57,7 +57,7 @@ return [
 
     'privacy' => [
         'title' => 'Privacy policy',
-        'subtitle' => 'Information about how Camperwolf processes personal data.',
+        'subtitle' => 'Information about how Favon processes personal data.',
         'version' => config('legal.versions.privacy'),
         'sections' => [
             [
@@ -69,119 +69,100 @@ return [
             [
                 'title' => '2. General principles',
                 'paragraphs' => [
-                    'Camperwolf processes personal data only where necessary to operate the website and community features, where you provide data yourself, or where another legal basis applies.',
-                    'Depending on the processing, the legal basis may in particular be Article 6(1)(b) GDPR for requested account and community functions, Article 6(1)(c) GDPR for legal obligations, or Article 6(1)(f) GDPR for secure, reliable and abuse-resistant operation of the service.',
+                    'Favon processes personal data only where necessary to operate the service, provide functions you use, protect the system or comply with legal obligations.',
+                    'Favon follows the principle “Places, not people”. Public user profiles, visitor lists, movement profiles and public attribution of contributions to individual people are not intended features.',
                 ],
             ],
             [
                 'title' => '3. Website access and technical logs',
                 'paragraphs' => [
-                    'When you access Camperwolf, technically necessary connection data may be processed, including IP address, access time, requested address, browser or device information and technical error data. These data are used to deliver the website, maintain security, diagnose errors and prevent abuse.',
-                    'Where provided, Camperwolf stores security events using a hashed rather than a raw IP address. Retention periods for production web server and hosting logs will be finalised before public launch.',
+                    'When Favon is accessed, technically necessary connection data may be processed, including IP address, access time, requested address, browser or device information and technical error data. These data are used for delivery, system security, troubleshooting and abuse prevention.',
+                    'Where implemented, application security events use a hash derived from the source IP rather than storing the raw IP address. Technically necessary server and hosting logs may exist independently of these application events.',
                 ],
             ],
             [
-                'title' => '4. Account and authentication',
+                'title' => '4. Community accounts and Telegram sign-in',
                 'paragraphs' => [
-                    'Registration and account use involve data such as your name, email address, password hash, language setting, verification status and technical session information. Your password itself is not stored in plain text.',
-                    'Technically necessary session and security information is used for signed-in sessions. Password reset and email verification process the contact and token information required for those functions.',
+                    'Community users sign in through Telegram using OpenID Connect (OIDC). For account mapping, Favon stores only the stable numeric Telegram ID together with the necessary internal account, role, status and timestamp information.',
+                    'Favon does not store the Telegram display name, username, profile photo or phone number as part of community sign-in. When Telegram sign-in is opened, your browser is redirected to Telegram, which processes technically necessary connection and authentication data under its own responsibility.',
+                    'Administrators and the system owner may additionally use a classic email/password login. Passwords are stored only as hashes.',
+                ],
+                'external_links' => [
+                    ['label' => 'Telegram privacy policy', 'url' => 'https://telegram.org/privacy'],
                 ],
             ],
             [
-                'title' => '5. Community profile',
+                'title' => '5. Contributions and interactions',
                 'paragraphs' => [
-                    'You can voluntarily add a profile photo, bio, hometown, date of birth, gender and vehicle information. For many profile fields you can choose whether they are public, visible only to registered users or private.',
-                    'Your full date of birth is not displayed to other users. If you choose to show your age, only the calculated age is displayed.',
+                    'When you contribute place data, submit structured ratings, use favourites, file reports or use other available community functions, Favon processes the records required for those functions with an internal account reference.',
+                    'Favon does not publicly show who created, edited, rated, favourited or reported a place. Favon does not provide free-text reviews or community photo uploads as place or user features.',
                 ],
             ],
             [
-                'title' => '6. Contributions, reviews and photos',
+                'title' => '6. Location functions',
                 'paragraphs' => [
-                    'When you add places, contribute information, publish ratings or reviews, upload photos or use other community features, Camperwolf processes the respective content together with your user reference and necessary timestamps and status information.',
-                    'Reviews are currently published immediately and may be moderated after a report. Photos are processed and moderated before becoming public. Published photo variants have embedded image metadata, including EXIF/GPS metadata, removed during processing.',
-                    'Additional content rules apply to photos and reviews and are available in Help & Support.',
-                ],
-                'links' => [
-                    ['label' => 'Photo rules', 'route' => 'help.show', 'parameter' => 'regeln-und-empfehlungen-fuer-fotouploads'],
-                    ['label' => 'Review rules', 'route' => 'help.show', 'parameter' => 'regeln-und-empfehlungen-fuer-rezensionen'],
+                    'If you explicitly use a location function, your browser asks for permission to access your location. Favon is designed to use raw coordinates only for the requested location or proximity check and not to build a persistent movement or visit history.',
+                    'Where the current map calculates distance to places directly in the browser, your current location is not stored as an account field.',
                 ],
             ],
             [
-                'title' => '7. Favourites, interactions, gamification and notifications',
+                'title' => '7. OpenStreetMap maps',
                 'paragraphs' => [
-                    'Camperwolf stores account-related interactions such as favourites and helpful votes as well as XP, badge and activity data required for optional community features. Notifications and related events are processed to inform you about activity relevant to your account.',
-                ],
-            ],
-            [
-                'title' => '8. Support and reports',
-                'paragraphs' => [
-                    'Support requests and reports contain the information you submit. Requests by signed-in users may be linked to their account. Guest requests may include name, email address and an optional phone number. Technical page context and browser information may also be submitted for troubleshooting.',
-                    'Support information is retained only as long as needed for handling, traceability and, where applicable, legal obligations or the establishment, exercise or defence of legal claims. Specific retention periods will be defined in the operating process.',
-                ],
-            ],
-            [
-                'title' => '9. OpenStreetMap maps',
-                'paragraphs' => [
-                    'Camperwolf loads map tiles directly from servers of the OpenStreetMap Foundation (OSMF). When a map is displayed, your browser therefore connects directly to those servers. This technically transmits information including your IP address, browser information and the referring website.',
-                    'The maps are used to provide a clear geographic view of camping and parking places. Camperwolf relies on its legitimate interest in providing this map functionality under Article 6(1)(f) GDPR.',
-                    'If you explicitly use a location function such as "My location" or "Places nearby" on the map, your browser asks for permission to access your location. The resulting coordinates are used by Camperwolf only within your browser to show your position and approximate accuracy on the map or to determine matching filtered places by their distance from your location. Your current location is not sent to the Camperwolf server, is not linked to your user account and is not stored by Camperwolf. Moving the map continues to load OpenStreetMap tiles as described above.',
+                    'Favon uses OpenStreetMap-based maps. If map tiles are loaded directly from servers of the OpenStreetMap Foundation or another map provider, your browser connects directly to that provider and technically necessary connection data such as your IP address are transmitted.',
                 ],
                 'external_links' => [
                     ['label' => 'OpenStreetMap Foundation privacy policy', 'url' => 'https://osmfoundation.org/wiki/Privacy_Policy'],
                 ],
             ],
             [
-                'title' => '10. Address and place search via Photon',
+                'title' => '8. Place and address search',
                 'paragraphs' => [
-                    'Camperwolf currently uses Photon at photon.komoot.io for address suggestions, reverse lookup and hometown selection. Requests are sent directly from your browser. Search terms or coordinates, as well as technically required IP address and browser information, are transmitted to the service provider.',
-                    'Photon is provided by komoot GmbH and is only contacted when you use the relevant address or place search.',
+                    'Where Favon uses an external geocoding service such as Photon for place or address search, search terms or coordinates and technically necessary connection data are transmitted to that service. Such requests are made only in connection with the relevant search function.',
                 ],
                 'external_links' => [
                     ['label' => 'komoot GmbH privacy policy', 'url' => 'https://www.komoot.com/privacy'],
                 ],
             ],
             [
-                'title' => '11. Cookies and browser storage',
+                'title' => '9. Cookies, sessions and internal statistics',
                 'paragraphs' => [
-                    'Camperwolf uses technically necessary session and security cookies for sign-in, session handling and protection against abusive requests. Your explicitly selected language may also be stored in a cookie.',
-                    'For selected convenience features, your browser stores local settings: the chosen list/map layout, temporary editing drafts for the current session and – only when you explicitly choose “don’t show this again” in the welcome window – the preference not to display that window again. These entries contain no advertising or tracking identifier.',
-                    'Camperwolf currently uses no advertising, marketing or external analytics trackers. A general consent or cookie banner is therefore not planned for the browser storage currently in use.',
-                    'For internal product statistics, Camperwolf counts page views and selected feature events. Only the event type, functional area, where applicable the affected public content, the broad audience class guest/user/moderator/administrator, a broad technical classification as potentially human or automated traffic, and the timestamp are stored. The full user agent is evaluated only during the request and is not stored in the usage statistics. These statistics do not store user IDs, IP addresses, session IDs, persistent visitor identifiers or fingerprints, and no data are sent to an external analytics service.',
+                    'Favon uses technically necessary session and security cookies for sign-in, session handling and protection against abusive requests. Your selected language may also be stored.',
+                    'Favon currently uses no advertising, marketing or external analytics trackers. No general consent or cookie banner is therefore planned for the browser storage currently required for technical operation.',
+                    'For internal usage statistics, page views and selected feature events may be stored without user ID, raw IP address, session ID, persistent visitor identifier or fingerprint.',
                 ],
             ],
             [
-                'title' => '12. Recipients and service providers',
+                'title' => '10. Support and reports',
                 'paragraphs' => [
-                    'Personal data are disclosed only where required for a function, a legal obligation applies, or another legal basis exists. Recipients may include technical hosting and email providers and the map and geodata services described above.',
-                    'The final production hosting and email providers have not yet been selected and will be added or specified before public launch.',
+                    'Support requests and reports contain the information you submit and the context needed to process them. For signed-in users, a request may be linked internally to the account.',
+                    'Support and report data are retained only as long as needed for handling, traceability, abuse prevention or legal obligations and claims.',
                 ],
             ],
             [
-                'title' => '13. Retention',
+                'title' => '11. Retention and account deletion',
                 'paragraphs' => [
-                    'Personal data are generally retained only for as long as needed for the relevant purpose. Security events are currently cleaned up after 90 days. Completed self-service data exports are deleted after 72 hours.',
-                    'When an account is deleted, personal profile and account information is removed or anonymised under the defined deletion process. Community factual data may remain without personal attribution. Photos and review text are removed on final account deletion.',
-                    'Binding retention periods for some operational data, such as support cases, resolved abuse cases and production server logs, will be defined before public launch.',
+                    'Favon generally retains personal data only for as long as needed for the relevant purpose. Security events are cleaned up according to the configured technical retention period; completed self-service data exports are made available for a limited period and then deleted.',
+                    'On final account deletion, personal account data are removed or irreversibly anonymised under the implemented deletion process. Factual place data may remain without public attribution to a person.',
                 ],
             ],
             [
-                'title' => '14. Your rights',
+                'title' => '12. Your rights',
                 'paragraphs' => [
-                    'Subject to the GDPR, you may have rights including access, rectification, erasure, restriction of processing, data portability and, where the legal requirements are met, objection to certain processing.',
-                    'Camperwolf additionally offers an automated export for many account-related data. This convenience feature does not limit your statutory right of access.',
+                    'Subject to the GDPR, you may have rights including access, rectification, erasure, restriction of processing, data portability and, where the requirements are met, objection.',
+                    'Favon additionally provides a self-service data export. This convenience function does not limit your statutory right of access.',
                     'Privacy requests can be sent to '.config('legal.operator.email').'.',
                 ],
             ],
             [
-                'title' => '15. Right to complain',
+                'title' => '13. Right to complain',
                 'paragraphs' => [
                     'You have the right to lodge a complaint with a data protection supervisory authority regarding the processing of your personal data.',
                 ],
             ],
             [
-                'title' => '16. Changes to this policy',
+                'title' => '14. Changes to this policy',
                 'paragraphs' => [
-                    'This policy will be updated when Camperwolf functions, service providers or legal requirements change. The current version is published on this page.',
+                    'Favon will update this policy when functions, service providers or legal requirements change. The current version is published on this page.',
                 ],
             ],
         ],
@@ -189,103 +170,75 @@ return [
 
     'terms' => [
         'title' => 'Terms of use',
-        'subtitle' => 'Rules for using Camperwolf and its community features.',
+        'subtitle' => 'Rules for using Favon.',
         'version' => config('legal.versions.terms'),
         'sections' => [
             [
                 'title' => '1. Scope',
                 'paragraphs' => [
-                    'These terms apply to Camperwolf.de and its community features. Camperwolf is currently a privately operated community project.',
-                    'Public place information can generally be searched and viewed without an account. An account is required for contributions, reviews, photos and other community functions.',
+                    'These terms apply to Favon and its available functions. The actual place directory is accessible only after sign-in.',
+                    'Favon is a place-based community directory. Its principle is “Places, not people”: Favon is not a dating, personal-ad, people-discovery or escort service.',
                 ],
             ],
             [
                 'title' => '2. User accounts',
                 'paragraphs' => [
-                    'Registration requires accurate contact information and reasonable protection of your account from unauthorised access. Login credentials must not be shared with third parties.',
-                    'There is no entitlement to a particular feature set remaining permanently unchanged. Camperwolf may develop, change or discontinue features while appropriately considering legitimate user interests.',
+                    'Community accounts sign in through Telegram. Accounts must not be abused or shared with third parties for use.',
+                    'There is no entitlement to a specific permanent feature set or uninterrupted availability.',
                 ],
             ],
             [
-                'title' => '3. Community contributions',
+                'title' => '3. Place data and community contributions',
                 'paragraphs' => [
-                    'When contributing content or data, you must take reasonable care that it is accurate to the best of your knowledge, relevant and lawful. You must not publish content that infringes third-party rights, exposes confidential personal information, threatens or insults others, or abuses the service.',
-                    'Place data contributions may be reviewed, corrected, merged, supplemented or rejected. Factual community data may remain without personal attribution after account deletion so that the shared dataset is not destroyed.',
+                    'Contributed information must, to the best of your knowledge, be relevant, accurate and lawful. Personal information about visitors or other third parties does not belong in place data.',
+                    'Favon may review, correct, merge, reject, hide or remove entries and changes that are inaccurate, inappropriate, unlawful or abusive.',
                 ],
             ],
             [
-                'title' => '4. Ratings and reviews',
+                'title' => '4. Prohibited content and uses',
                 'paragraphs' => [
-                    'Ratings and reviews should reflect your own actual experience or observations you reasonably believe to be accurate and should help other campers assess a place.',
-                    'Factual negative criticism is permitted. Fabricated experiences, knowingly false statements of fact, unsupported serious allegations, revenge reviews, advertising, spam or content unrelated to the place are not permitted.',
-                    'Reviews are currently published immediately and can be reported, moderated or removed afterwards.',
-                ],
-                'links' => [
-                    ['label' => 'Full review rules', 'route' => 'help.show', 'parameter' => 'regeln-und-empfehlungen-fuer-rezensionen'],
+                    'Prohibited content includes private home addresses used as personal or meetup ads, doxxing, personal ads, identifying descriptions of visitors, pornographic content, explicit sexual experience reports, advertising or spam, and content that infringes third-party rights.',
+                    'Favon does not provide user photos, free-text reviews, chats, direct messages, dating or matching functions.',
                 ],
             ],
             [
-                'title' => '5. Photos',
+                'title' => '5. Structured ratings',
                 'paragraphs' => [
-                    'You may only upload photos for which you have the necessary publication rights. Rights of identifiable persons, house rules and photography restrictions must be respected.',
-                    'Place photos must have a meaningful connection to the place. Prohibited content includes unlawful or sexualised material, confidential personal information, misleading manipulation, advertising and third-party images without sufficient rights.',
-                    'Photos are moderated before becoming public.',
-                ],
-                'links' => [
-                    ['label' => 'Full photo rules', 'route' => 'help.show', 'parameter' => 'regeln-und-empfehlungen-fuer-fotouploads'],
+                    'Where structured ratings are available, they should reflect your own actual observations of the place in a factual manner. Manipulation, abusive repeat submissions and knowingly false information are not permitted.',
                 ],
             ],
             [
-                'title' => '6. Rights in your content',
+                'title' => '6. Moderation and measures',
                 'paragraphs' => [
-                    'You generally retain the rights to your own content. To the extent necessary to operate Camperwolf, you grant Camperwolf a non-exclusive right for the period of availability to technically store, reproduce, display and make your contributions available within the service.',
-                    'This licence is limited to what is necessary to provide, moderate and technically process the respective content and to maintain a traceable history of place data.',
+                    'In cases of rule violations, abuse or security issues, Favon may reject or remove content and temporarily or permanently restrict functions or accounts.',
+                    'Problematic places or content can be reported through the available reporting and support channels.',
                 ],
             ],
             [
-                'title' => '7. Moderation and measures',
+                'title' => '7. No guarantee of place information',
                 'paragraphs' => [
-                    'Camperwolf may review, label, hide, reject or remove content where there are concrete indications of a rule violation, infringement, abuse or serious quality problem.',
-                    'Repeated or serious abuse may result in temporary or permanent restrictions on features or accounts. Where appropriate, the type and severity of the violation, previous violations and effects on other users are considered.',
-                    'Users can report problematic content through the available reporting functions or Help & Support.',
+                    'Despite checks, community information may be outdated, incomplete or incorrect. Local rules, accessibility and actual conditions can change at short notice.',
+                    'Favon does not guarantee that a place is always accessible, lawful to use, safe or suitable for a particular purpose.',
                 ],
             ],
             [
-                'title' => '8. No guarantee of place information',
+                'title' => '8. Availability and liability',
                 'paragraphs' => [
-                    'Camperwolf collects information from community contributions and may later also use open or official data sources. Despite checks, information may be outdated, incomplete or incorrect.',
-                    'Opening hours, prices, access, restrictions, availability and facilities can change at short notice. Important information should be confirmed with the operator or an official source where necessary before travelling.',
+                    'Favon aims to provide a reliable service but cannot guarantee uninterrupted availability.',
+                    'Liability follows mandatory statutory rules, including for intent and gross negligence. Otherwise, the applicable statutory provisions apply.',
                 ],
             ],
             [
-                'title' => '9. Availability and changes',
+                'title' => '9. Account deletion',
                 'paragraphs' => [
-                    'Camperwolf aims to provide a reliable service but cannot guarantee uninterrupted availability. Maintenance, security measures, technical failures or changes to external services may temporarily restrict functionality.',
+                    'You can start account deletion through the available account function. Personal account data are removed or anonymised under the implemented deletion process; factual place data may remain without personal attribution.',
                 ],
             ],
             [
-                'title' => '10. Liability',
+                'title' => '10. Changes and contact',
                 'paragraphs' => [
-                    'Camperwolf is liable in accordance with mandatory statutory provisions, including for intent and gross negligence. Otherwise, liability is governed by the applicable statutory rules.',
-                    'Camperwolf does not independently guarantee that place information provided by users or external sources is complete and up to date at all times.',
-                ],
-            ],
-            [
-                'title' => '11. Account deletion',
-                'paragraphs' => [
-                    'You can start account deletion in your settings and choose between a recovery period and immediate final deletion. Before confirmation, the deletion page explains which personal data will be removed and which anonymised factual community data may remain.',
-                ],
-            ],
-            [
-                'title' => '12. Changes to these terms',
-                'paragraphs' => [
-                    'These terms may be updated if Camperwolf develops materially or legal requirements change. Registered users will be appropriately informed before material changes affecting them take effect.',
-                ],
-            ],
-            [
-                'title' => '13. Contact',
-                'paragraphs' => [
-                    'Questions about these terms can be sent to '.config('legal.operator.email').' or submitted through Help & Support.',
+                    'These terms may be updated if Favon or the applicable legal framework changes materially.',
+                    'Questions can be sent to '.config('legal.operator.email').' or submitted through Help & Support.',
                 ],
             ],
         ],

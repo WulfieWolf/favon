@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'camperwolf_id' => 'Camperwolf-ID',
+    'favon_id' => 'Favon-ID',
     'public_title' => 'Profil',
     'edit_profile' => 'Profil bearbeiten',
     'member_since' => 'Dabei seit :date',
@@ -113,7 +113,7 @@ return [
 
     'settings' => [
         'title' => 'Profil Einstellungen',
-        'subtitle' => 'Lege fest, wie du innerhalb der Camperwolf-Community auftrittst und wer deine Angaben sehen darf.',
+        'subtitle' => 'Lege fest, wie du innerhalb der Favon-Community auftrittst und wer deine Angaben sehen darf.',
         'settings_heading' => 'Einstellungen',
         'settings_subheading' => 'Verwalte dein Profil und deine Kontoeinstellungen.',
         'security' => 'Sicherheit',
@@ -125,8 +125,8 @@ return [
         'identity' => 'Öffentliche Identität',
         'handle' => 'Anzeigename',
         'handle_current' => 'Aktueller Anzeigename',
-        'handle_dummy_note' => 'Deine feste Camperwolf-ID im Format CW-XXXXX bleibt immer bestehen. Optional kannst du einmalig einen eigenen öffentlichen Anzeigenamen festlegen.',
-        'handle_final_note' => 'Dein eigener Anzeigename ist endgültig. Deine Camperwolf-ID bleibt zusätzlich dauerhaft erhalten.',
+        'handle_dummy_note' => 'Deine feste Favon-ID im Format FV-XXXXX bleibt immer bestehen. Optional kannst du einmalig einen eigenen öffentlichen Anzeigenamen festlegen.',
+        'handle_final_note' => 'Dein eigener Anzeigename ist endgültig. Deine Favon-ID bleibt zusätzlich dauerhaft erhalten.',
         'handle_choose' => 'Eigenen Anzeigenamen festlegen',
         'handle_help' => '3–30 Zeichen. Erlaubt sind Buchstaben, Zahlen, Punkt, Bindestrich und Unterstrich. Der Name kann nur einmal vergeben werden.',
         'handle_confirm' => 'Anzeigename endgültig festlegen',
@@ -140,7 +140,7 @@ return [
         'close_retry' => 'Schließen und erneut versuchen',
         'handle_confirm_warning' => 'Diese Auswahl kann später nicht geändert werden.',
         'handle_unavailable' => 'Dieser Anzeigename ist nicht verfügbar.',
-        'handle_reserved_prefix' => 'Anzeigenamen mit „CW-“ sind für automatisch erzeugte Camperwolf-Namen reserviert.',
+        'handle_reserved_prefix' => 'Anzeigenamen mit „FV-“ sind für automatisch erzeugte Favon-Namen reserviert.',
         'profile_photo' => 'Profilbild',
         'profile_photo_help' => 'Optional. JPG, PNG oder WebP bis 5 MB.',
         'upload_photo' => 'Profilbild speichern',
@@ -177,7 +177,7 @@ return [
         'photo_saved' => 'Profilbild wurde aktualisiert.',
         'photo_removed' => 'Profilbild wurde entfernt.',
         'join_date_title' => 'Beitrittsdatum anzeigen',
-        'join_date_help' => 'Zeigt in deinem öffentlichen Profil an, seit wann du bei Camperwolf dabei bist.',
+        'join_date_help' => 'Zeigt in deinem öffentlichen Profil an, seit wann du bei Favon dabei bist.',
         'selected_title' => 'Angezeigter Titel',
         'no_title' => 'Kein Titel',
         'selected_title_help' => 'Du kannst jeden bereits freigeschalteten Badge oder jedes Achievement als Titel im Profil anzeigen.',

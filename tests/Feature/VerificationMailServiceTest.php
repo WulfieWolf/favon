@@ -35,7 +35,7 @@ class VerificationMailServiceTest extends TestCase
 
         UserProfile::create([
             'user_id' => $user->id,
-            'public_handle' => 'CW-12378',
+            'public_handle' => 'FV-12378',
             'public_alias' => 'Wulfie',
         ]);
 

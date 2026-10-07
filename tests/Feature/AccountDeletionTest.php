@@ -38,7 +38,7 @@ class AccountDeletionTest extends TestCase
 
         DB::table('user_profiles')->insert([
             'user_id' => $user->id,
-            'public_handle' => 'CW-OLD-ID',
+            'public_handle' => 'FV-OLD-ID',
             'bio' => 'Private profile text',
             'birth_date' => '1980-01-01',
             'gender' => 'custom',
@@ -81,7 +81,7 @@ class AccountDeletionTest extends TestCase
         $this->assertNotSame('example-person@example.test', $row->email);
 
         $profile = DB::table('user_profiles')->where('user_id', $user->id)->first();
-        $this->assertNotSame('CW-OLD-ID', $profile->public_handle);
+        $this->assertNotSame('FV-OLD-ID', $profile->public_handle);
         $this->assertNull($profile->bio);
         $this->assertNull($profile->birth_date);
         $this->assertNull($profile->gender);

@@ -1,33 +1,36 @@
-# Camperwolf.de
+# Favon
 
-Camperwolf.de is a quality-focused, map-centric directory and community platform for camping, motorhome, campervan and service locations.
+Favon is a privacy-oriented, community-maintained directory and map for cruising and hookup-relevant places.
 
-Germany is the initial market, but the project is designed for later European and international expansion. The application is built with Laravel and Livewire and is intended to become a mobile-first website/PWA before any native-app work.
+The product principle is **“Places, not people.”** Favon describes places and their current condition while deliberately avoiding public contributor identities, visit histories, chat, dating features, photos and free-text sexual content.
 
-The project deliberately focuses on structured, current and transparent place information rather than maximizing the number of listings or features. Public place data is designed to be historically traceable, community-maintained and moderated.
+## Current access model
 
-## Documentation
+- community users sign in with Telegram via OIDC
+- Favon stores only the stable Telegram numeric ID required for account mapping
+- community accounts receive internal names such as `User-0000001`
+- classic e-mail/password login is reserved for the system owner and administrators
+- public Fortify registration is disabled
+- place/map content is login-gated
 
-The detailed product and architecture documentation is maintained here:
-
-- [`docs/PROJECT_OVERVIEW.md`](docs/PROJECT_OVERVIEW.md) – product concept, data model, conventions, implemented features, roadmap and current development status.
-- [`docs/RECOVERY_PROMPT.md`](docs/RECOVERY_PROMPT.md) – context-recovery prompt for continuing the project if the original development chat/context is lost.
-
-For implemented behavior, the code and migrations on `main` remain authoritative. The project overview records the intended product behavior and architectural decisions.
-
-## Current stack
+## Technical stack
 
 - Laravel 13
 - Livewire 4
 - Flux UI / Tailwind
 - MySQL 8
-- PHP 8.3+ application requirement; local development currently uses PHP 8.4
+- PHP 8.4 in production
 - Node/npm frontend tooling
+- Leaflet bundled locally
 
-## Development status
+## Documentation
 
-The project currently has the database foundation for places, localization, features/tags, typed units, pricing, opening hours, reviews, photos, audit history, provenance, user suggestions and historical/versioned public place data.
+The authoritative project and development context is:
 
-The next major implementation step is the backend service for safely reviewing and applying grouped `change_requests`.
+- [`docs/PROJECT_CONTEXT.md`](docs/PROJECT_CONTEXT.md)
 
-See [`docs/PROJECT_OVERVIEW.md`](docs/PROJECT_OVERVIEW.md) for the full status and design decisions.
+The code and migrations on `main` remain authoritative for implemented behavior.
+
+## Repository separation
+
+Favon is technically and organizationally separate from Camperwolf. Camperwolf may be used as read-only reference material during the one-time cleanup of inherited code, but Favon changes must only be written to this repository.

@@ -9,41 +9,41 @@ return [
     'platzprofil-verstehen' => [
         'title' => 'Understanding a place profile',
         'summary' => 'An explanation of statuses, features, location details, and change suggestions.',
-        'body' => "A place profile brings together everything Camperwolf currently knows about a place.\n\n## Basic information\n\nAt the top, you will find the most important **basic information about the place**, such as operator details and its current status.\n\nUse **\"History\"** to open the place history and see what information has changed and when.\n\n## Suitable for\n\nThis section shows **which types of vehicles the place is intended for**. It gives you a quick indication of whether the place is generally suitable for your vehicle.\n\n## Directions & access\n\nHere you will find information to help you plan your journey and arrival.\n\nThis may include:\n\n- Contact details\n- Information about access and getting onto the site\n- Address and location\n- Links to different map services\n\n## Opening hours\n\nThis section shows the **opening hours currently known to Camperwolf**.\n\n> **Important:** Camperwolf's information is maintained by the community and may have changed. Before making a longer journey, it is a good idea to confirm important details such as opening hours directly with the operator or on their website.\n\n## Facilities & features\n\nHere you will find all **currently known facilities and features** of the place.\n\nAs a general rule:\n\n- **Green** - available\n- **Red** - not available\n- **Grey** - not yet known\n\nSome features include additional information such as a price, distance, or technical details.\n\n## Ratings & reviews\n\nHere you can find **ratings and reviews from other users**.\n\nDepending on what has been contributed, you may also see photos uploaded by users for this place.",
+        'body' => "A place profile brings together everything Favon currently knows about a place.\n\n## Basic information\n\nAt the top, you will find the most important **basic information about the place**, such as operator details and its current status.\n\nUse **\"History\"** to open the place history and see what information has changed and when.\n\n## Suitable for\n\nThis section shows **which types of vehicles the place is intended for**. It gives you a quick indication of whether the place is generally suitable for your vehicle.\n\n## Directions & access\n\nHere you will find information to help you plan your journey and arrival.\n\nThis may include:\n\n- Contact details\n- Information about access and getting onto the site\n- Address and location\n- Links to different map services\n\n## Opening hours\n\nThis section shows the **opening hours currently known to Favon**.\n\n> **Important:** Favon's information is maintained by the community and may have changed. Before making a longer journey, it is a good idea to confirm important details such as opening hours directly with the operator or on their website.\n\n## Facilities & features\n\nHere you will find all **currently known facilities and features** of the place.\n\nAs a general rule:\n\n- **Green** - available\n- **Red** - not available\n- **Grey** - not yet known\n\nSome features include additional information such as a price, distance, or technical details.\n\n## Ratings & reviews\n\nHere you can find **ratings and reviews from other users**.\n\nDepending on what has been contributed, you may also see photos uploaded by users for this place.",
     ],
     'platz-vorschlagen-schritt-fuer-schritt' => [
         'title' => 'Suggesting a new place step by step',
         'summary' => 'From the location and features through to submission.',
-        'body' => "Know a place that is not yet listed on Camperwolf? You can suggest it here.\n\nWe only need a few details to create a new place. Everything else is optional and can be added now or later by the community.\n\n## 1. Enter the place name\n\nEnter the **name of the place**.\n\nUse the operator's official name where possible, or the name the place is generally known by.\n\n## 2. Choose a place type\n\nChoose the type that best describes the place:\n\n- **Campground** - A classic campground for motorhomes, caravans, tents, and similar forms of camping.\n- **Motorhome pitch** - A dedicated place for motorhomes or campervans, often similar to a parking area.\n- **Tent site** - A site intended specifically for tents, such as trekking, youth, or scout camps.\n- **Parking area** - A regular parking area. Whether overnight stays are allowed or tolerated is recorded separately.\n- **Rest area / truck stop** - A rest area, service area, or truck stop for travellers, including truck traffic.\n- **Informal pitch** - A simple pitch outside traditional campgrounds or parking areas, such as a field, farm, or lakeside spot.\n- **Service station** - A place offering camping-related services such as fresh water, waste disposal, washing facilities, or workshop services.\n- **Camping & outdoor store** - A camping or outdoor retailer or another permanent camping-related shop.\n\n## 3. Set the location\n\nNext, we need the **exact location of the place**.\n\nThere are **three alternative ways** to do this - you only need to use one. If you set the location using a different method, it replaces the previous selection:\n\n- Search for an address.\n- Or select the position directly on the map. Camperwolf will then try to fill in the matching address automatically.\n- Or enter the coordinates directly if you know them.\n\nFor example, coordinates can be entered like this:\n\n\`51.1234567, 7.1234567\`\n\nTry to mark the actual location of the place rather than an approximate point nearby.\n\n## That is already enough\n\nThe name, place type, and location are enough to suggest a new place.\n\nIf you do not want to add anything else, select **\"Submit for review\"**.\n\nIf you would like to add information about the place's facilities first, select **\"Add features\"** instead.\n\n## Optional: add features\n\nThe next step shows the features suggested for the selected place type.\n\nSelect a feature to see which information you can provide.\n\nSome features only need to be marked as **available** or **not available**. Others let you add more details, such as distances, dimensions, prices, or technical information.\n\nThere is **no minimum number of features** you need to complete.\n\nOnly enter information you are reasonably sure about. If you do not know something, leave it blank. On Camperwolf, a missing answer means **\"unknown\"**, not **\"not available\"**.\n\nMissing information can be added later by you or other members of the community.\n\n## Submit your suggestion\n\nWhen you are finished, select **\"Submit for review\"**.\n\nA moderator or administrator will review your suggestion as soon as possible. Once a decision has been made, you will receive a notification under the **bell icon**.",
+        'body' => "Know a place that is not yet listed on Favon? You can suggest it here.\n\nWe only need a few details to create a new place. Everything else is optional and can be added now or later by the community.\n\n## 1. Enter the place name\n\nEnter the **name of the place**.\n\nUse the operator's official name where possible, or the name the place is generally known by.\n\n## 2. Choose a place type\n\nChoose the type that best describes the place:\n\n- **Campground** - A classic campground for motorhomes, caravans, tents, and similar forms of camping.\n- **Motorhome pitch** - A dedicated place for motorhomes or campervans, often similar to a parking area.\n- **Tent site** - A site intended specifically for tents, such as trekking, youth, or scout camps.\n- **Parking area** - A regular parking area. Whether overnight stays are allowed or tolerated is recorded separately.\n- **Rest area / truck stop** - A rest area, service area, or truck stop for travellers, including truck traffic.\n- **Informal pitch** - A simple pitch outside traditional campgrounds or parking areas, such as a field, farm, or lakeside spot.\n- **Service station** - A place offering camping-related services such as fresh water, waste disposal, washing facilities, or workshop services.\n- **Camping & outdoor store** - A camping or outdoor retailer or another permanent camping-related shop.\n\n## 3. Set the location\n\nNext, we need the **exact location of the place**.\n\nThere are **three alternative ways** to do this - you only need to use one. If you set the location using a different method, it replaces the previous selection:\n\n- Search for an address.\n- Or select the position directly on the map. Favon will then try to fill in the matching address automatically.\n- Or enter the coordinates directly if you know them.\n\nFor example, coordinates can be entered like this:\n\n\`51.1234567, 7.1234567\`\n\nTry to mark the actual location of the place rather than an approximate point nearby.\n\n## That is already enough\n\nThe name, place type, and location are enough to suggest a new place.\n\nIf you do not want to add anything else, select **\"Submit for review\"**.\n\nIf you would like to add information about the place's facilities first, select **\"Add features\"** instead.\n\n## Optional: add features\n\nThe next step shows the features suggested for the selected place type.\n\nSelect a feature to see which information you can provide.\n\nSome features only need to be marked as **available** or **not available**. Others let you add more details, such as distances, dimensions, prices, or technical information.\n\nThere is **no minimum number of features** you need to complete.\n\nOnly enter information you are reasonably sure about. If you do not know something, leave it blank. On Favon, a missing answer means **\"unknown\"**, not **\"not available\"**.\n\nMissing information can be added later by you or other members of the community.\n\n## Submit your suggestion\n\nWhen you are finished, select **\"Submit for review\"**.\n\nA moderator or administrator will review your suggestion as soon as possible. Once a decision has been made, you will receive a notification under the **bell icon**.",
     ],
     'benachrichtigungen' => [
         'title' => 'Notifications',
-        'summary' => 'Personal activity and important updates from Camperwolf.',
-        'body' => "The **bell in the header** keeps you informed about things that may be important to you.\n\nFor example:\n\n- one of your suggestions has been reviewed or approved\n- one of your photos has been marked as helpful - for popular photos, Camperwolf only notifies you at certain milestones rather than after every vote\n- you unlocked an achievement, reached a new badge tier, or received a special award\n- one of your changes or other contributions has been moderated\n- important Camperwolf information, such as planned maintenance, new features, or community activities\n\nNew notifications appear at the bell. You can also open the notifications page to look back at older messages.\n\n## How long are notifications kept?\n\nNotifications are not stored indefinitely.\n\n**Read notifications** are normally removed after 30 days.\n\n**Unread notifications** may be kept for longer. If you have been inactive for a while, very old unread notifications may be removed after 180 days.\n\nImportant system messages may remain available for longer.",
+        'summary' => 'Personal activity and important updates from Favon.',
+        'body' => "The **bell in the header** keeps you informed about things that may be important to you.\n\nFor example:\n\n- one of your suggestions has been reviewed or approved\n- one of your photos has been marked as helpful - for popular photos, Favon only notifies you at certain milestones rather than after every vote\n- you unlocked an achievement, reached a new badge tier, or received a special award\n- one of your changes or other contributions has been moderated\n- important Favon information, such as planned maintenance, new features, or community activities\n\nNew notifications appear at the bell. You can also open the notifications page to look back at older messages.\n\n## How long are notifications kept?\n\nNotifications are not stored indefinitely.\n\n**Read notifications** are normally removed after 30 days.\n\n**Unread notifications** may be kept for longer. If you have been inactive for a while, very old unread notifications may be removed after 180 days.\n\nImportant system messages may remain available for longer.",
     ],
     'benachrichtigungseinstellungen' => [
         'title' => 'Notification settings',
         'summary' => 'Choose which events you want to be notified about.',
-        'body' => "Here you can choose which events you want to hear about through [[benachrichtigungen|notifications]].\n\n- **Decisions about my suggestions** - Lets you know when one of your change suggestions has been approved or rejected.\n- **Changes to my favorites** - Lets you know about approved changes to places you have saved as favorites.\n- **General Camperwolf updates** - Keeps you informed about general news and notices from Camperwolf, such as planned maintenance or changes to the platform.\n\n> **Important:** Messages that are necessary for the safe or reliable operation of Camperwolf may still be shown regardless of these settings.",
+        'body' => "Here you can choose which events you want to hear about through [[benachrichtigungen|notifications]].\n\n- **Decisions about my suggestions** - Lets you know when one of your change suggestions has been approved or rejected.\n- **Changes to my favorites** - Lets you know about approved changes to places you have saved as favorites.\n- **General Favon updates** - Keeps you informed about general news and notices from Favon, such as planned maintenance or changes to the platform.\n\n> **Important:** Messages that are necessary for the safe or reliable operation of Favon may still be shown regardless of these settings.",
     ],
     'profil-und-kontodaten' => [
         'title' => 'Profile and account details',
         'summary' => 'Manage your account name and email address.',
-        'body' => "In the profile area, you can change your **account name** and the **email address** associated with your Camperwolf account.\n\nYour account name is not part of your public Camperwolf profile.\n\nIf you change your email address, you will need to verify the new address again.",
+        'body' => "In the profile area, you can change your **account name** and the **email address** associated with your Favon account.\n\nYour account name is not part of your public Favon profile.\n\nIf you change your email address, you will need to verify the new address again.",
     ],
     'sicherheit-im-benutzerkonto' => [
         'title' => 'Account security',
         'summary' => 'Manage your password, two-factor authentication and passkeys.',
-        'body' => "Here you can manage the security of your Camperwolf account.\n\n- **Change your password** - Change your current password. It is best to use a strong password that you do not use for any other service.\n- **Two-factor authentication (2FA)** - Adds an extra layer of protection using a code from an authenticator app. Once enabled, you will need this code in addition to your password when signing in. You will also receive recovery codes in case you lose access to your authenticator app.\n- **Passkeys** - Let you sign in without a password, for example using Windows Hello, a fingerprint, face recognition or your phone's screen lock. The options available depend on your device and browser.\n\n> **Important:** Only set up 2FA or a passkey if you understand how you will access it later. Keep your recovery codes somewhere safe, and do not remove an old passkey until you have another way to sign in.\n\nNever share your password, 2FA codes or recovery codes with anyone.",
+        'body' => "Here you can manage the security of your Favon account.\n\n- **Change your password** - Change your current password. It is best to use a strong password that you do not use for any other service.\n- **Two-factor authentication (2FA)** - Adds an extra layer of protection using a code from an authenticator app. Once enabled, you will need this code in addition to your password when signing in. You will also receive recovery codes in case you lose access to your authenticator app.\n- **Passkeys** - Let you sign in without a password, for example using Windows Hello, a fingerprint, face recognition or your phone's screen lock. The options available depend on your device and browser.\n\n> **Important:** Only set up 2FA or a passkey if you understand how you will access it later. Keep your recovery codes somewhere safe, and do not remove an old passkey until you have another way to sign in.\n\nNever share your password, 2FA codes or recovery codes with anyone.",
     ],
     'darstellung-anpassen' => [
         'title' => 'Customizing appearance',
         'summary' => 'Choose a light or dark appearance.',
-        'body' => "In the appearance settings, you can choose how Camperwolf looks for you.\n\nYou can switch between a **light** and a **dark** appearance.\n\nThis only changes how Camperwolf is displayed for you, and you can change the setting again at any time.",
+        'body' => "In the appearance settings, you can choose how Favon looks for you.\n\nYou can switch between a **light** and a **dark** appearance.\n\nThis only changes how Favon is displayed for you, and you can change the setting again at any time.",
     ],
     'regeln-und-empfehlungen-fuer-fotouploads' => [
         'title' => 'Rules and recommendations for photo uploads',
-        'summary' => 'Which photos are allowed on Camperwolf and which images are particularly useful to other campers.',
+        'summary' => 'Which photos are allowed on Favon and which images are particularly useful to other campers.',
         'body' => <<<'TEXT'
 Photos should help other campers see **what a place really looks like**. A few rules keep the galleries useful and fair.
 
@@ -51,7 +51,7 @@ Photos should help other campers see **what a place really looks like**. A few r
 
 - **No nudity or sexualised content.** Visible genitals, exposed female breasts and pornographic content are not allowed, including at naturist locations.
 - **No illegal or age-inappropriate content.** This includes prohibited symbols, graphic violence or gore, illegal drugs, unlawful weapons content and other prohibited material. Applicable German law and directly applicable EU law apply in particular.
-- **Camperwolf may also reject other unsuitable content** that breaks these platform rules even if it is not clearly illegal.
+- **Favon may also reject other unsuitable content** that breaks these platform rules even if it is not clearly illegal.
 - **Respect other people's rights.** Do not upload photos showing identifiable people unless you are sure they agree to publication. Also respect photography restrictions and the rules of the place.
 - **Place-gallery photos must be related to the place.** Suitable subjects include pitches, access, sanitary facilities, reception, service points and the directly relevant surroundings. Pure selfies and unrelated holiday photos do not belong in a place gallery.
 - **Only upload photos you have the right to use.** Do not copy images from websites, search engines, social media, booking portals or operator sites without explicit permission.
@@ -89,13 +89,13 @@ TEXT,
     ],
     'regeln-und-empfehlungen-fuer-rezensionen' => [
         'title' => 'Rules and recommendations for reviews',
-        'summary' => 'How reviews can help other campers and which content is not allowed on Camperwolf.',
+        'summary' => 'How reviews can help other campers and which content is not allowed on Favon.',
         'body' => <<<'TEXT'
 Reviews should help other campers get a **realistic idea of a place**. Good experiences are just as welcome as bad ones.
 
 ## Rules
 
-- **No illegal, pornographic, violence-glorifying, discriminatory, abusive or threatening content.** Applicable German law and directly applicable EU law apply in particular. Camperwolf may also reject content that breaks these platform rules.
+- **No illegal, pornographic, violence-glorifying, discriminatory, abusive or threatening content.** Applicable German law and directly applicable EU law apply in particular. Favon may also reject content that breaks these platform rules.
 - **No personal or confidential data.** Do not publish private names, phone numbers, email addresses, home addresses, licence plates, booking numbers or similar details. Publicly listed business information about a place or operator may be mentioned factually.
 - **No invented experiences or knowingly false claims.** Only describe things you believe to be true to the best of your knowledge.
 - **No unsupported serious accusations.** Claims about crimes, fraud, theft or similarly serious misconduct must not be presented as fact without a reliable basis.
@@ -126,11 +126,11 @@ TEXT,
         'title' => 'Support reports and tickets',
         'summary' => 'Report problems, follow replies and manage your own support requests.',
         'body' => <<<'TEXT'
-If you find a problem on Camperwolf, want to suggest an improvement or need help with something else, you can send us a message using **"Report a problem"**.
+If you find a problem on Favon, want to suggest an improvement or need help with something else, you can send us a message using **"Report a problem"**.
 
 Some information about the page you are currently viewing is included automatically. This helps us find and understand the problem more quickly.
 
-For known bugs or features that are already planned, Camperwolf may show you matching entries before you submit a new report.
+For known bugs or features that are already planned, Favon may show you matching entries before you submit a new report.
 
 ## My reports
 
@@ -139,16 +139,16 @@ When you are signed in, **"My reports"** shows all support requests you have cre
 There you can:
 
 - see the current status of your report
-- read replies from Camperwolf
+- read replies from Favon
 - answer follow-up questions
 - follow the history of the report
 
-When the status of your report changes or you receive a reply, Camperwolf will notify you.
+When the status of your report changes or you receive a reply, Favon will notify you.
 TEXT,
     ],
     'ueber-camperwolf' => [
-        'title' => 'About Camperwolf',
-        'summary' => 'Why Camperwolf exists, what we want to do differently and where the project may go next.',
+        'title' => 'About Favon',
+        'summary' => 'Why Favon exists, what we want to do differently and where the project may go next.',
         'body' => <<<'TEXT'
 ## Why another camping platform?
 
@@ -160,25 +160,25 @@ As a camper, I know many of the existing services myself. I also know some of th
 
 When you are camping, current and reliable information matters more than a premium label.
 
-That is where the idea for Camperwolf came from.
+That is where the idea for Favon came from.
 
-## What should Camperwolf do differently?
+## What should Favon do differently?
 
-Camperwolf is intended to be a **free place database maintained by the community**.
+Favon is intended to be a **free place database maintained by the community**.
 
 All platform features should generally be available to everyone. There is no premium membership that unlocks better search tools, additional place information or other advantages.
 
-The database is built from several data sources - wherever possible public and mostly government sources - together with contributions from the Camperwolf community.
+The database is built from several data sources - wherever possible public and mostly government sources - together with contributions from the Favon community.
 
 But the idea is not simply to collect data.
 
 Missing information can be added, incorrect details corrected and existing listings updated. If someone discovers on site that something has changed, they can share that information with everyone else.
 
-The more people use Camperwolf and help maintain it, the more complete and up to date the database can become.
+The more people use Favon and help maintain it, the more complete and up to date the database can become.
 
-## The community helps shape what Camperwolf needs
+## The community helps shape what Favon needs
 
-Camperwolf provides the technical platform, but what grows from it should be guided by the people who actually use it.
+Favon provides the technical platform, but what grows from it should be guided by the people who actually use it.
 
 That goes beyond the information on individual places.
 
@@ -188,9 +188,9 @@ Is there a feature or facility that matters to campers but is missing from the p
 
 Is an important search option missing, or is there a better idea for an existing feature? That can help shape the platform too.
 
-Camperwolf should not dictate which information campers need. It should provide the tools that allow the community to collect, maintain and use that information.
+Favon should not dictate which information campers need. It should provide the tools that allow the community to collect, maintain and use that information.
 
-## What already makes Camperwolf different
+## What already makes Favon different
 
 ### Search for what matters to you
 
@@ -210,11 +210,11 @@ That is a central part of the idea: people who are actually at a location often 
 
 Whether someone personally likes a place is subjective.
 
-Camperwolf therefore combines personal reviews with fixed rating criteria that are relevant to campers. This leaves room for individual experiences while making ratings easier to compare.
+Favon therefore combines personal reviews with fixed rating criteria that are relevant to campers. This leaves room for individual experiences while making ratings easier to compare.
 
 ## What could come later?
 
-Camperwolf is intended to grow with its community. Some ideas therefore go well beyond a place database.
+Favon is intended to grow with its community. Some ideas therefore go well beyond a place database.
 
 These include, for example:
 
@@ -225,24 +225,24 @@ These include, for example:
 
 Which of these ideas are ultimately implemented, and what they look like, is not fixed yet. The same principle should apply here: **we should not build features simply because we can, but because the community can make useful use of them.**
 
-## Camperwolf should grow with its users
+## Favon should grow with its users
 
 In the end, the idea is fairly simple:
 
-**Camperwolf provides the platform. The community turns it into a useful place database.**
+**Favon provides the platform. The community turns it into a useful place database.**
 
-You can simply use Camperwolf to find places. If you want to, you can also help by adding a missing place, correcting outdated information or sharing your experience.
+You can simply use Favon to find places. If you want to, you can also help by adding a missing place, correcting outdated information or sharing your experience.
 
-**It does not matter whether you only use Camperwolf or contribute content yourself. If the platform helps you find the right place or gives you useful information while travelling, then the idea is already working.**
+**It does not matter whether you only use Favon or contribute content yourself. If the platform helps you find the right place or gives you useful information while travelling, then the idea is already working.**
 
-And if Camperwolf eventually needs something nobody has thought of today, perhaps that will simply become the next feature.
+And if Favon eventually needs something nobody has thought of today, perhaps that will simply become the next feature.
 TEXT,
     ],
     'verwendete-software-dienste-und-lizenzen' => [
         'title' => 'Software, services & licences',
-        'summary' => 'The main technical components and external services behind Camperwolf.',
+        'summary' => 'The main technical components and external services behind Favon.',
         'body' => <<<'TEXT'
-Camperwolf is built on several open-source projects and a small number of external services. This page lists the main components that are relevant for users, privacy or licence notices.
+Favon is built on several open-source projects and a small number of external services. This page lists the main components that are relevant for users, privacy or licence notices.
 
 This is intentionally not a complete inventory of every technical dependency. Small internal libraries and development-only tools are not listed individually. Licence and copyright notices that must remain with software packages are retained in the relevant packages and project files regardless of this overview.
 
@@ -250,7 +250,7 @@ This is intentionally not a complete inventory of every technical dependency. Sm
 
 ### Laravel
 
-Camperwolf uses **Laravel** as its server-side web framework.
+Favon uses **Laravel** as its server-side web framework.
 
 - Licence: **MIT License**
 - Project: https://laravel.com
@@ -258,7 +258,7 @@ Camperwolf uses **Laravel** as its server-side web framework.
 
 ### Livewire
 
-Camperwolf uses **Livewire** for interactive parts of the user interface.
+Favon uses **Livewire** for interactive parts of the user interface.
 
 - Licence: **MIT License**
 - Project: https://livewire.laravel.com
@@ -275,7 +275,7 @@ Flux is used under the licence provided for that software. It is not an open-sou
 
 ### Tailwind CSS
 
-Camperwolf uses **Tailwind CSS** for interface styling.
+Favon uses **Tailwind CSS** for interface styling.
 
 - Licence: **MIT License**
 - Project: https://tailwindcss.com
@@ -293,7 +293,7 @@ The interactive map is displayed using **Leaflet**.
 
 ### OpenStreetMap
 
-Camperwolf uses map data from **OpenStreetMap**.
+Favon uses map data from **OpenStreetMap**.
 
 OpenStreetMap data is available under the **Open Data Commons Open Database License (ODbL)**. The required attribution to OpenStreetMap and its contributors is shown directly on the map.
 
@@ -301,7 +301,7 @@ OpenStreetMap data is available under the **Open Data Commons Open Database Lice
 
 ### Photon
 
-Camperwolf currently uses komoot's public **Photon** service for address search, reverse lookup and certain place selections.
+Favon currently uses komoot's public **Photon** service for address search, reverse lookup and certain place selections.
 
 Photon is an open-source geocoder based on OpenStreetMap data.
 
@@ -315,48 +315,48 @@ When you use a related search function, a request is sent to the Photon service.
 
 ### Brevo
 
-Camperwolf uses **Brevo** for transactional email such as email verification and password resets.
+Favon uses **Brevo** for transactional email such as email verification and password resets.
 
-Brevo is an external service rather than an open-source library embedded in Camperwolf, so there is no open-source software licence to list here.
+Brevo is an external service rather than an open-source library embedded in Favon, so there is no open-source software licence to list here.
 
 Further information about the related data processing can be found in the privacy policy.
 
-## What does this mean for Camperwolf?
+## What does this mean for Favon?
 
-The projects and services listed above remain the property or works of their respective rights holders. Their use within Camperwolf does not imply a partnership, endorsement or official affiliation with those providers.
+The projects and services listed above remain the property or works of their respective rights holders. Their use within Favon does not imply a partnership, endorsement or official affiliation with those providers.
 
 Where a licence requires visible attribution, it is shown in the appropriate place. This applies in particular to OpenStreetMap data on the map.
 
-This page will be updated when Camperwolf adds other major services or technical components that are relevant for transparency, privacy or licence notices.
+This page will be updated when Favon adds other major services or technical components that are relevant for transparency, privacy or licence notices.
 TEXT,
     ],
     'faq' => [
-        'title' => 'FAQ - Frequently asked questions about Camperwolf',
-        'summary' => 'Answers to common questions about Camperwolf, the project and its principles.',
+        'title' => 'FAQ - Frequently asked questions about Favon',
+        'summary' => 'Answers to common questions about Favon, the project and its principles.',
         'body' => <<<'TEXT'
-## Will Camperwolf cost money?
+## Will Favon cost money?
 
-No. Camperwolf is intended to remain free to use.
+No. Favon is intended to remain free to use.
 
 There are no plans to put features behind a paywall or give paying users advantages over other users. The basic idea is a freely accessible platform built around contributions from its community.
 
-## How is Camperwolf funded?
+## How is Favon funded?
 
-Camperwolf is currently funded entirely from private funds.
+Favon is currently funded entirely from private funds.
 
 In the future, we may offer voluntary donations or introduce advertising to help cover running costs such as servers, email delivery and other services.
 
 Funding the project should not result in important features becoming available only to paying users.
 
-## Who is behind Camperwolf?
+## Who is behind Favon?
 
-Camperwolf is an independently developed private project. It is currently not operated by a camping corporation, campsite operator, travel company or other large business.
+Favon is an independently developed private project. It is currently not operated by a camping corporation, campsite operator, travel company or other large business.
 
-The idea behind Camperwolf is to bring information about campsites, pitches, parking areas and service locations together in one place and keep it up to date with the help of the community.
+The idea behind Favon is to bring information about campsites, pitches, parking areas and service locations together in one place and keep it up to date with the help of the community.
 
 ## Why are some places or details missing?
 
-Camperwolf is still being built. Our data comes from a range of public data sources as well as contributions from the community.
+Favon is still being built. Our data comes from a range of public data sources as well as contributions from the community.
 
 This means that some places may still be missing or that we may not yet have complete information about an existing place.
 
@@ -364,17 +364,17 @@ You can help with exactly that: missing places can be suggested, and existing in
 
 ## Where does the information about places come from?
 
-Camperwolf can receive place information from several sources. These include public data sources, contributions from our users and, in the future, information supplied by verified place operators.
+Favon can receive place information from several sources. These include public data sources, contributions from our users and, in the future, information supplied by verified place operators.
 
 Where possible, we want it to remain clear where information came from and when it was last changed.
 
 ## Can I add a place or correct information myself?
 
-Yes. That is an important part of Camperwolf.
+Yes. That is an important part of Favon.
 
 If a place is missing, you can suggest it. If existing information is wrong or incomplete, you can suggest a change.
 
-The more people contribute their experience and knowledge, the more complete and up to date Camperwolf can become.
+The more people contribute their experience and knowledge, the more complete and up to date Favon can become.
 
 ## Why aren't changes always published immediately?
 
@@ -384,15 +384,15 @@ This helps prevent incorrect information, spam or deliberate manipulation from a
 
 At the same time, we try to keep moderation as straightforward as possible.
 
-## Can I rely on the information on Camperwolf?
+## Can I rely on the information on Favon?
 
-We try to keep Camperwolf's information as accurate and current as possible, but we cannot guarantee that every detail is correct.
+We try to keep Favon's information as accurate and current as possible, but we cannot guarantee that every detail is correct.
 
 Information can change, and public data sources or community contributions may become outdated.
 
 This is particularly important for details such as prices, opening hours, access conditions or temporary restrictions. If something is important for your trip, you should check it with the operator or at the location when in doubt.
 
-If you notice incorrect information on Camperwolf, you can help us correct it.
+If you notice incorrect information on Favon, you can help us correct it.
 
 ## Why do I need an account for some features?
 
@@ -404,15 +404,15 @@ This lets us associate contributions with a user, keep changes traceable and bet
 
 ## Is my personal data sold?
 
-No. Camperwolf does not sell users' personal data.
+No. Favon does not sell users' personal data.
 
-We want Camperwolf to be a community platform, not a business model based on selling personal information.
+We want Favon to be a community platform, not a business model based on selling personal information.
 
 Our Privacy Policy explains in more detail which data is processed and why it is needed.
 
 ## Why are there XP, levels, badges and achievements?
 
-They are intended to make contributing to Camperwolf a little more engaging and to recognize contributions to the community.
+They are intended to make contributing to Favon a little more engaging and to recognize contributions to the community.
 
 Different activities can earn XP and unlock badges and achievements. They do not provide paid advantages or exclusive features.
 
@@ -426,27 +426,27 @@ It is intended to allow verified operators to maintain certain information about
 
 Until then, operators can report incorrect or missing information, suggest changes like other users, or contact support.
 
-## Is there a Camperwolf app?
+## Is there a Favon app?
 
 Not yet.
 
-Camperwolf is being developed as a website first, with particular attention to making it work well on smartphones.
+Favon is being developed as a website first, with particular attention to making it work well on smartphones.
 
 A dedicated app is planned for later. For now, the priority is making the main platform reliable and building up useful content.
 
-## How can I support Camperwolf?
+## How can I support Favon?
 
-The best way to support Camperwolf is by contributing.
+The best way to support Favon is by contributing.
 
 You can add missing places, correct inaccurate information, fill in missing details, upload photos, write reviews or report problems.
 
-It also helps to tell other campers about Camperwolf. The more people share their knowledge, the more useful the platform becomes for everyone.
+It also helps to tell other campers about Favon. The more people share their knowledge, the more useful the platform becomes for everyone.
 
 Financial support is neither required nor currently planned. If we offer voluntary donations in the future, we will communicate that transparently.
 
-## Why is Camperwolf still in beta?
+## Why is Favon still in beta?
 
-Camperwolf is still under development. During the beta, we want to see how the platform performs in real use and identify bugs or areas that could be improved.
+Favon is still under development. During the beta, we want to see how the platform performs in real use and identify bugs or areas that could be improved.
 
 Features may still change, be expanded or be removed. Bugs can also occur despite our testing.
 
@@ -457,17 +457,17 @@ TEXT,
     ],
     'account-loeschen' => [
         'title' => 'Delete account',
-        'summary' => 'How permanent deletion of your Camperwolf account works.',
+        'summary' => 'How permanent deletion of your Favon account works.',
         'body' => <<<'TEXT'
-If you no longer want to use Camperwolf, you can permanently delete your account.
+If you no longer want to use Favon, you can permanently delete your account.
 
-Before you continue, Camperwolf shows you how many photos, reviews, created places and change suggestions are connected to your account.
+Before you continue, Favon shows you how many photos, reviews, created places and change suggestions are connected to your account.
 
 ## You do not have to delete your account
 
-If you want to take a break from Camperwolf or simply stop using it, you do not have to delete your account.
+If you want to take a break from Favon or simply stop using it, you do not have to delete your account.
 
-**Inactive accounts are not deleted automatically.** There is no problem with simply leaving your account as it is if you are not using Camperwolf at the moment. You can come back later.
+**Inactive accounts are not deleted automatically.** There is no problem with simply leaving your account as it is if you are not using Favon at the moment. You can come back later.
 
 Account deletion is intended for cases where you specifically want your account and personal data to be permanently removed.
 
@@ -508,7 +508,7 @@ Your previous public profile will no longer be connected to your former account 
 
 ## What remains?
 
-Some information cannot simply be removed from the database because it is needed to keep Camperwolf working correctly and to preserve a traceable history of changes.
+Some information cannot simply be removed from the database because it is needed to keep Favon working correctly and to preserve a traceable history of changes.
 
 This may include, for example:
 
@@ -533,13 +533,13 @@ TEXT,
     ],
     'meine-daten' => [
         'title' => 'My data',
-        'summary' => 'Request and download a copy of the data Camperwolf stores about your account.',
+        'summary' => 'Request and download a copy of the data Favon stores about your account.',
         'body' => <<<'TEXT'
-Under **"My data"**, you can request a copy of the data Camperwolf stores about your account.
+Under **"My data"**, you can request a copy of the data Favon stores about your account.
 
 ## What does the data export include?
 
-The export contains data and activity associated with your Camperwolf account. This includes, for example:
+The export contains data and activity associated with your Favon account. This includes, for example:
 
 - your account and profile data
 - your settings and consents
@@ -554,7 +554,7 @@ The data is collected in a **ZIP file**. It contains your data in structured fil
 
 ## How do I request an export?
 
-Start the export under **"My data"**. Camperwolf will then prepare the file for you.
+Start the export under **"My data"**. Favon will then prepare the file for you.
 
 Once the export is ready, you can download it there.
 
@@ -568,23 +568,23 @@ If an export fails to be created, it does not start a new waiting period.
 
 ## Who can download my export?
 
-The download is tied to your account. Other Camperwolf users cannot download your data export.
+The download is tied to your account. Other Favon users cannot download your data export.
 
 ## Privacy and your rights
 
-The data export helps you view the data stored in connection with your Camperwolf account and receive it in a machine-readable format.
+The data export helps you view the data stored in connection with your Favon account and receive it in a machine-readable format.
 
 You can find more information about your data protection rights in our **Privacy Policy**, including information about the right of access under **Article 15 GDPR** and the right to data portability under **Article 20 GDPR**.
 TEXT,
     ],
     'level-und-xp' => [
         'title' => 'Levels and XP',
-        'summary' => 'How Camperwolf’s optional level and XP system works.',
-        'body' => "When you help Camperwolf with information, ratings, photos, or other contributions, you can earn **experience points (XP)**.\n\nAs you collect XP, your **level** gradually increases. It shows how much you have contributed to the community.\n\nImportantly, a higher level gives you **no special rights or advantages**. It does not affect ratings or the order in which places are shown.\n\n## How do I earn XP?\n\nYou earn XP for helpful contributions to Camperwolf.\n\nIf a contribution needs moderator approval, the XP is awarded once the contribution has been approved.\n\nYou currently earn, for example:\n\n- **+1 XP** for an additional piece of information or feature about a place\n- **+2 XP** for larger text contributions, such as a description or directions\n- **+1 XP** for each answered rating question\n- **+1 XP** for a photo - up to 5 photo XP per place\n- **+2 XP** for a review\n- **+4 XP in total** for a detailed review of at least 300 characters\n- **+1 XP** when someone marks your photo as helpful - up to 10 XP per photo\n\nThe details required to create a new place - such as its name, type, and location - do not earn additional XP.\n\nIf you voluntarily add more information about the new place, you can earn XP for those contributions.\n\n## Can I earn XP for the same information more than once?\n\nNo. You normally earn XP only once for the same piece of information about a place.\n\nFor example, if you add a feature and receive XP for it, you will not receive more XP for updating that same feature yourself later.\n\nIf another user adds or updates that information for the first time, they may also earn XP for their contribution.\n\n## What happens if I delete something and add it again?\n\nXP you have already earned cannot be earned again this way.\n\nFor example, if you have already received the maximum 5 photo XP for a place, deleting those photos and uploading new ones will not give you another 5 photo XP.\n\n## How do levels work?\n\nYou start at **Level 1 with 0 XP**.\n\nThe first levels are relatively quick to reach. Each new level requires more XP than the one before it.\n\nXP you have already earned remains yours.\n\n## Where can I see my XP?\n\nYou can view your **XP history** on your profile.\n\nIt shows when you received XP and what you received it for. Corrections are shown there as well.\n\nFor example:\n\n\`01/01/2026, 20:32 - Wrote a detailed review: +4 XP\`\n\n\`02/01/2026, 11:32 - Added a feature to a place: +1 XP\`\n\n## What are special XP and corrections?\n\nSometimes additional XP may be awarded, for example for special community activities, events, or awards.\n\nXP may also need to be corrected. For example, if a moderator removes a contribution for which you previously received XP, those XP may be deducted again.\n\nThese changes also appear in your XP history.\n\n## I don't want this. Can I hide my level and XP?\n\nYes. In your profile settings, you can choose not to show your **gamification publicly**.\n\nOther users will then no longer see your level, progress, badges, or XP history.\n\nYour XP is **not lost**. Camperwolf continues counting it in the background and your level can still increase.\n\nThis setting only affects your own profile. You will still see the levels and badges of other users who choose to show their gamification.\n\nLearn more about the other community awards in [[badges-und-achievements|Badges & achievements]].",
+        'summary' => 'How Favon’s optional level and XP system works.',
+        'body' => "When you help Favon with information, ratings, photos, or other contributions, you can earn **experience points (XP)**.\n\nAs you collect XP, your **level** gradually increases. It shows how much you have contributed to the community.\n\nImportantly, a higher level gives you **no special rights or advantages**. It does not affect ratings or the order in which places are shown.\n\n## How do I earn XP?\n\nYou earn XP for helpful contributions to Favon.\n\nIf a contribution needs moderator approval, the XP is awarded once the contribution has been approved.\n\nYou currently earn, for example:\n\n- **+1 XP** for an additional piece of information or feature about a place\n- **+2 XP** for larger text contributions, such as a description or directions\n- **+1 XP** for each answered rating question\n- **+1 XP** for a photo - up to 5 photo XP per place\n- **+2 XP** for a review\n- **+4 XP in total** for a detailed review of at least 300 characters\n- **+1 XP** when someone marks your photo as helpful - up to 10 XP per photo\n\nThe details required to create a new place - such as its name, type, and location - do not earn additional XP.\n\nIf you voluntarily add more information about the new place, you can earn XP for those contributions.\n\n## Can I earn XP for the same information more than once?\n\nNo. You normally earn XP only once for the same piece of information about a place.\n\nFor example, if you add a feature and receive XP for it, you will not receive more XP for updating that same feature yourself later.\n\nIf another user adds or updates that information for the first time, they may also earn XP for their contribution.\n\n## What happens if I delete something and add it again?\n\nXP you have already earned cannot be earned again this way.\n\nFor example, if you have already received the maximum 5 photo XP for a place, deleting those photos and uploading new ones will not give you another 5 photo XP.\n\n## How do levels work?\n\nYou start at **Level 1 with 0 XP**.\n\nThe first levels are relatively quick to reach. Each new level requires more XP than the one before it.\n\nXP you have already earned remains yours.\n\n## Where can I see my XP?\n\nYou can view your **XP history** on your profile.\n\nIt shows when you received XP and what you received it for. Corrections are shown there as well.\n\nFor example:\n\n\`01/01/2026, 20:32 - Wrote a detailed review: +4 XP\`\n\n\`02/01/2026, 11:32 - Added a feature to a place: +1 XP\`\n\n## What are special XP and corrections?\n\nSometimes additional XP may be awarded, for example for special community activities, events, or awards.\n\nXP may also need to be corrected. For example, if a moderator removes a contribution for which you previously received XP, those XP may be deducted again.\n\nThese changes also appear in your XP history.\n\n## I don't want this. Can I hide my level and XP?\n\nYes. In your profile settings, you can choose not to show your **gamification publicly**.\n\nOther users will then no longer see your level, progress, badges, or XP history.\n\nYour XP is **not lost**. Favon continues counting it in the background and your level can still increase.\n\nThis setting only affects your own profile. You will still see the levels and badges of other users who choose to show their gamification.\n\nLearn more about the other community awards in [[badges-und-achievements|Badges & achievements]].",
     ],
     'badges-und-achievements' => [
         'title' => 'Badges & achievements',
-        'summary' => 'Awards and special achievements for your contributions to the Camperwolf community.',
-        'body' => "By contributing to Camperwolf, you can unlock **badges and achievements**.\n\nThey are small awards for different kinds of community contributions - such as adding new places, useful information, reviews, photos, or other activities.\n\n## Badges\n\nBadges track your contributions over time. Many have several tiers that you can reach as you continue contributing to Camperwolf.\n\nEach badge tells you what counts towards it and what you need to reach the next tier.\n\n## Achievements\n\nAchievements are special accomplishments that you can unlock through particular activities.\n\nEach achievement tells you what you need to do. Some achievements also award **XP**.\n\nThere are also a few **hidden achievements**. Naturally, we are not going to tell you how to unlock those. :)\n\n## Special awards\n\nSome awards cannot be unlocked through regular activity. They may be given for special activities, events, or contributions to the community.\n\n## Use a badge as your profile title\n\nAt the bottom of your user profile, you can choose one of your unlocked badges or awards as your **profile title**. Your selected title will then be shown on your profile.\n\nCamperwolf also notifies you when you unlock an achievement, reach a new badge tier, or receive a special award. Changes to XP alone do not create a separate notification. See [[benachrichtigungen|notifications]] for more details.\n\nYou can learn more about levels and experience points under [[level-und-xp|Levels and XP]].",
+        'summary' => 'Awards and special achievements for your contributions to the Favon community.',
+        'body' => "By contributing to Favon, you can unlock **badges and achievements**.\n\nThey are small awards for different kinds of community contributions - such as adding new places, useful information, reviews, photos, or other activities.\n\n## Badges\n\nBadges track your contributions over time. Many have several tiers that you can reach as you continue contributing to Favon.\n\nEach badge tells you what counts towards it and what you need to reach the next tier.\n\n## Achievements\n\nAchievements are special accomplishments that you can unlock through particular activities.\n\nEach achievement tells you what you need to do. Some achievements also award **XP**.\n\nThere are also a few **hidden achievements**. Naturally, we are not going to tell you how to unlock those. :)\n\n## Special awards\n\nSome awards cannot be unlocked through regular activity. They may be given for special activities, events, or contributions to the community.\n\n## Use a badge as your profile title\n\nAt the bottom of your user profile, you can choose one of your unlocked badges or awards as your **profile title**. Your selected title will then be shown on your profile.\n\nFavon also notifies you when you unlock an achievement, reach a new badge tier, or receive a special award. Changes to XP alone do not create a separate notification. See [[benachrichtigungen|notifications]] for more details.\n\nYou can learn more about levels and experience points under [[level-und-xp|Levels and XP]].",
     ],
 ];
