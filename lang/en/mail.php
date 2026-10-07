@@ -27,7 +27,7 @@ return [
         'account_heading' => 'Your account:',
         'account_name' => ':name',
         'account_email' => ':email',
-        'account_id' => ':cw_id',
+        'account_id' => ':favon_id',
         'registration_ignore' => 'If you did not create a Favon account, you can safely ignore this email.',
         'change_ignore' => 'If you did not make this change, you can ignore this email and contact Favon support.',
         'fallback' => 'If the button does not work, copy and paste this link into your browser:',
