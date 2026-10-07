@@ -21,7 +21,7 @@ class AuthenticationTest extends TestCase
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         $user = User::factory()->create();
-        config(['camperwolf.owner_email' => $user->email]);
+        config(['favon.owner_email' => $user->email]);
 
         $response = $this->post(route('login.store'), [
             'email' => $user->email,
@@ -59,7 +59,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $user = User::factory()->withTwoFactor()->create();
-        config(['camperwolf.owner_email' => $user->email]);
+        config(['favon.owner_email' => $user->email]);
 
         $response = $this->post(route('login.store'), [
             'email' => $user->email,
