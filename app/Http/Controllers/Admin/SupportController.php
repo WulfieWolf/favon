@@ -110,7 +110,7 @@ class SupportController extends Controller
                 ->unique()
             : collect();
 
-        $ownerEmail = config('camperwolf.owner_email');
+        $ownerEmail = config('favon.owner_email');
 
         $assignees = DB::table('users')
             ->where(function ($query) use ($assigneeIds, $ownerEmail): void {

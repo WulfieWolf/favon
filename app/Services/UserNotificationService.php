@@ -235,8 +235,8 @@ class UserNotificationService
 
         foreach ($groups as $group) {
             $window = str_starts_with($group->cluster_key, 'favorite:')
-                ? (int) config('camperwolf_notifications.cluster_minutes.favorite', 30)
-                : (int) config('camperwolf_notifications.cluster_minutes.moderation', 10);
+                ? (int) config('favon_notifications.cluster_minutes.favorite', 30)
+                : (int) config('favon_notifications.cluster_minutes.moderation', 10);
             if (now()->diffInMinutes($group->first_occurred_at, false) > -$window) {
                 continue;
             }
@@ -303,7 +303,7 @@ class UserNotificationService
             ->join('user_notification_reads as unr', 'unr.notification_id', '=', 'un.id')
             ->whereNotNull('un.user_id')
             ->where('un.priority', '!=', 'important')
-            ->where('unr.read_at', '<', now()->subDays((int) config('camperwolf_notifications.retention_days.read', 30)))
+            ->where('unr.read_at', '<', now()->subDays((int) config('favon_notifications.retention_days.read', 30)))
             ->pluck('un.id')
             ->unique();
 
@@ -311,10 +311,10 @@ class UserNotificationService
             ->join('users as u', 'u.id', '=', 'un.user_id')
             ->whereNotNull('un.user_id')
             ->where('un.priority', '!=', 'important')
-            ->where('un.available_at', '<', now()->subDays((int) config('camperwolf_notifications.retention_days.stale_unread', 180)))
+            ->where('un.available_at', '<', now()->subDays((int) config('favon_notifications.retention_days.stale_unread', 180)))
             ->where(function ($query): void {
                 $query->whereNull('u.last_seen_at')
-                    ->orWhere('u.last_seen_at', '<', now()->subDays((int) config('camperwolf_notifications.retention_days.inactive_user', 90)));
+                    ->orWhere('u.last_seen_at', '<', now()->subDays((int) config('favon_notifications.retention_days.inactive_user', 90)));
             })
             ->whereNotExists(function ($query): void {
                 $query->selectRaw('1')

@@ -34,7 +34,7 @@ class SafeMailService
             throw new MailSafetyException('Invalid mail recipient.');
         }
 
-        if (! (bool) config('camperwolf.mail.enabled', false)) {
+        if (! (bool) config('favon.mail.enabled', false)) {
             throw new MailSafetyException('Application mail circuit breaker is disabled.');
         }
 
@@ -52,7 +52,7 @@ class SafeMailService
                     ? $mail->envelope()->subject
                     : null;
 
-                Log::debug('Camperwolf mail preview', [
+                Log::debug('Favon mail preview', [
                     'mail_type' => $mailType,
                     'recipient_hash' => $recipientHash,
                     'subject' => $subject,
@@ -107,14 +107,14 @@ class SafeMailService
      */
     private function rateLimits(string $mailType, string $recipientHash): array
     {
-        $typeLimits = (array) config('camperwolf.mail.type_per_hour', []);
+        $typeLimits = (array) config('favon.mail.type_per_hour', []);
         $typeLimit = (int) ($typeLimits[$mailType] ?? $typeLimits['default'] ?? 20);
 
         return [
-            ['mail:global:minute', (int) config('camperwolf.mail.global_per_minute', 20), 60],
-            ['mail:global:hour', (int) config('camperwolf.mail.global_per_hour', 100), 3600],
-            ['mail:global:day', (int) config('camperwolf.mail.global_per_day', 50), 86400],
-            ['mail:recipient:hour:'.$recipientHash, (int) config('camperwolf.mail.recipient_per_hour', 10), 3600],
+            ['mail:global:minute', (int) config('favon.mail.global_per_minute', 20), 60],
+            ['mail:global:hour', (int) config('favon.mail.global_per_hour', 100), 3600],
+            ['mail:global:day', (int) config('favon.mail.global_per_day', 50), 86400],
+            ['mail:recipient:hour:'.$recipientHash, (int) config('favon.mail.recipient_per_hour', 10), 3600],
             ['mail:type:hour:'.$this->hash($mailType), $typeLimit, 3600],
         ];
     }
@@ -126,7 +126,7 @@ class SafeMailService
         ?User $user,
         ?string $locale,
     ): int {
-        $seconds = max(1, (int) config('camperwolf.mail.duplicate_window_seconds', 60));
+        $seconds = max(1, (int) config('favon.mail.duplicate_window_seconds', 60));
         $lock = Cache::lock('mail:dedupe:'.$fingerprint, 10);
 
         return $lock->block(3, function () use ($mailType, $recipientHash, $fingerprint, $user, $locale, $seconds): int {
@@ -177,7 +177,7 @@ class SafeMailService
     private function shouldDebugPreview(): bool
     {
         return app()->environment('local')
-            && (bool) config('camperwolf.mail.debug_preview', false);
+            && (bool) config('favon.mail.debug_preview', false);
     }
 
     private function hash(string $value): string

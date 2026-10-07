@@ -76,7 +76,7 @@ class SecurityHardeningTest extends TestCase
 
     public function test_filtered_dashboard_requests_are_rate_limited_but_plain_dashboard_is_not(): void
     {
-        config(['camperwolf.security.filtered_browse_per_minute' => 2]);
+        config(['favon.security.filtered_browse_per_minute' => 2]);
 
         RateLimiter::clear('filtered-browse:127.0.0.1');
         $this->actingAs(User::factory()->create());

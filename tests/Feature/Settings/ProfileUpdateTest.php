@@ -54,7 +54,7 @@ class ProfileUpdateTest extends TestCase
         Queue::fake();
 
         $user = User::factory()->create();
-        config(['camperwolf.owner_email' => $user->email]);
+        config(['favon.owner_email' => $user->email]);
 
         $this->actingAs($user);
 

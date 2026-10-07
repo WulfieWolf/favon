@@ -10,7 +10,7 @@ class SupportContextService
     public function fromRequest(Request $request): array
     {
         $routeName = $request->route()?->getName();
-        $routeContexts = config('camperwolf_support.route_contexts', []);
+        $routeContexts = config('favon_support.route_contexts', []);
         $definition = $routeName && is_array($routeContexts) ? ($routeContexts[$routeName] ?? null) : null;
 
         return [

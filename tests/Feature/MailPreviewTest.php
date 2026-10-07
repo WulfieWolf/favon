@@ -20,7 +20,7 @@ class MailPreviewTest extends TestCase
 
     public function test_local_preview_requires_authentication(): void
     {
-        config()->set('camperwolf.mail.debug_preview', true);
+        config()->set('favon.mail.debug_preview', true);
 
         $response = $this->get('/dev/mail/verify-email');
 
@@ -29,7 +29,7 @@ class MailPreviewTest extends TestCase
 
     public function test_local_preview_renders_without_sending_mail(): void
     {
-        config()->set('camperwolf.mail.debug_preview', true);
+        config()->set('favon.mail.debug_preview', true);
 
         $user = User::factory()->unverified()->create([
             'name' => 'Sascha Schwarz',
@@ -50,7 +50,7 @@ class MailPreviewTest extends TestCase
 
     public function test_preview_controller_returns_not_found_when_preview_flag_is_disabled(): void
     {
-        config()->set('camperwolf.mail.debug_preview', false);
+        config()->set('favon.mail.debug_preview', false);
 
         $user = User::factory()->unverified()->create();
 

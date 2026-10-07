@@ -73,7 +73,7 @@ class SecurityMonitoringTest extends TestCase
     {
         $this->seed(DatabaseSeeder::class);
 
-        config()->set('camperwolf.owner_email', 'owner-security@example.test');
+        config()->set('favon.owner_email', 'owner-security@example.test');
 
         $owner = User::factory()->create([
             'email' => 'owner-security@example.test',

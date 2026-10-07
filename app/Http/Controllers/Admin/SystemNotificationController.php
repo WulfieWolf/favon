@@ -26,7 +26,7 @@ class SystemNotificationController extends Controller
         ]);
 
         $expiresAt = $data['expires_at'] ?? ($data['priority'] === 'normal'
-            ? now()->addDays((int) config('camperwolf_notifications.retention_days.normal_broadcast', 180))
+            ? now()->addDays((int) config('favon_notifications.retention_days.normal_broadcast', 180))
             : null);
 
         $notificationId = $notifications->createImmediate(

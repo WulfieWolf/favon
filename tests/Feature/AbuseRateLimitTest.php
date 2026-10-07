@@ -35,6 +35,6 @@ class AbuseRateLimitTest extends TestCase
 
     public function test_public_read_rate_limit_is_disabled_by_default(): void
     {
-        $this->assertFalse((bool) config('camperwolf.security.public_read_limit_enabled'));
+        $this->assertFalse((bool) config('favon.security.public_read_limit_enabled'));
     }
 }

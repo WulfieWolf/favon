@@ -20,7 +20,7 @@ class AuditLogAdminLocaleTest extends TestCase
             'name' => 'Audit Actor',
             'email_verified_at' => now(),
         ]);
-        config(['camperwolf.owner_email' => $owner->email]);
+        config(['favon.owner_email' => $owner->email]);
 
         DB::table('audit_logs')->insert([
             'user_id' => $owner->id,
