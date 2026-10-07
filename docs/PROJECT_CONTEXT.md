@@ -1283,3 +1283,20 @@ Important cleanup/runtime fixes made during this validation pass include:
 - Assistant commits to **Favon GitHub only**; user pulls/tests locally. Camperwolf is read-only.
 - `migrate:fresh` is destructive: use **only** when the active project and `.env` are positively verified to target the isolated local `favon` DB. Never use it against Camperwolf or production.
 - Update this living context at important milestones; do not copy back obsolete Camperwolf concepts.
+
+
+---
+
+## 2026-10-07 – Camperwolf content cleanup
+
+The active Favon repository has been cleaned up further after the authentication/config migration:
+
+- README rewritten for Favon;
+- active UI, mail, notification, export and admin copy rebranded to Favon;
+- social metadata no longer uses the Camperwolf site name or Camperwolf placeholder image;
+- inherited automatic public-handle prefix changed from `CW-` to `FV-` for any remaining transitional use;
+- public legal copy rewritten around Favon's actual login-gated, Telegram-OIDC, “Places, not people” model instead of Camperwolf's camping/review/photo model;
+- obsolete Camperwolf-era project documentation removed; this file remains the authoritative project context;
+- historical already-applied migration files are intentionally not rewritten merely to remove old wording, because migration history should remain stable.
+
+The legal copy is technically aligned with the current Favon product model, but this cleanup is not a substitute for a dedicated legal review before a broader public launch.
