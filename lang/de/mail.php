@@ -27,7 +27,7 @@ return [
         'account_heading' => 'Dein Konto:',
         'account_name' => ':name',
         'account_email' => ':email',
-        'account_id' => ':cw_id',
+        'account_id' => ':favon_id',
         'registration_ignore' => 'Wenn du kein Konto bei Favon erstellt hast, kannst du diese E-Mail einfach ignorieren.',
         'change_ignore' => 'Wenn du diese Änderung nicht vorgenommen hast, kannst du diese E-Mail ignorieren und dich an den Favon-Support wenden.',
         'fallback' => 'Falls der Button nicht funktioniert, kannst du auch diesen Link verwenden:',
