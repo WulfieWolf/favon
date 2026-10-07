@@ -6,7 +6,7 @@ use App\Models\User;
 
 class AdminDebugService
 {
-    public const SESSION_KEY = 'camperwolf.admin_debug';
+    public const SESSION_KEY = 'favon.admin_debug';
 
     public function __construct(private readonly PermissionService $permissions)
     {
