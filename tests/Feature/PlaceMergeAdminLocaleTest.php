@@ -18,7 +18,7 @@ class PlaceMergeAdminLocaleTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $owner = User::factory()->create(['email_verified_at' => now()]);
-        config(['camperwolf.owner_email' => $owner->email]);
+        config(['favon.owner_email' => $owner->email]);
 
         $typeId = (int) DB::table('place_types')->where('is_active', true)->value('id');
         if ($typeId === 0) {
