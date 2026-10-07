@@ -16,7 +16,7 @@ class SystemNotificationAdminLocaleTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $owner = User::factory()->create(['email_verified_at' => now()]);
-        config(['camperwolf.owner_email' => $owner->email]);
+        config(['favon.owner_email' => $owner->email]);
 
         $this->actingAs($owner)
             ->withSession(['locale' => 'de'])
