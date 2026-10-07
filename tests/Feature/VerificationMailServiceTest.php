@@ -20,7 +20,7 @@ class VerificationMailServiceTest extends TestCase
         parent::setUp();
 
         Mail::fake();
-        config()->set('camperwolf.mail.enabled', true);
+        config()->set('favon.mail.enabled', true);
         RateLimiter::clear('mail:global:minute');
         RateLimiter::clear('mail:global:hour');
     }
