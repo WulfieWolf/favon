@@ -22,13 +22,13 @@ class SafeMailServiceTest extends TestCase
     {
         parent::setUp();
 
-        config()->set('camperwolf.mail.enabled', true);
+        config()->set('favon.mail.enabled', true);
     }
 
     public function test_mail_is_blocked_when_the_circuit_breaker_is_disabled(): void
     {
         Mail::fake();
-        config()->set('camperwolf.mail.enabled', false);
+        config()->set('favon.mail.enabled', false);
 
         try {
             app(SafeMailService::class)->send(
@@ -109,7 +109,7 @@ class SafeMailServiceTest extends TestCase
         Mail::fake();
         RateLimiter::clear('mail:global:minute');
         RateLimiter::clear('mail:global:hour');
-        config()->set('camperwolf.mail.global_per_minute', 2);
+        config()->set('favon.mail.global_per_minute', 2);
 
         $service = app(SafeMailService::class);
 
@@ -126,9 +126,9 @@ class SafeMailServiceTest extends TestCase
         RateLimiter::clear('mail:global:minute');
         RateLimiter::clear('mail:global:hour');
         RateLimiter::clear('mail:global:day');
-        config()->set('camperwolf.mail.global_per_minute', 20);
-        config()->set('camperwolf.mail.global_per_hour', 20);
-        config()->set('camperwolf.mail.global_per_day', 2);
+        config()->set('favon.mail.global_per_minute', 20);
+        config()->set('favon.mail.global_per_hour', 20);
+        config()->set('favon.mail.global_per_day', 2);
 
         $service = app(SafeMailService::class);
 
@@ -142,10 +142,10 @@ class SafeMailServiceTest extends TestCase
     public function test_it_applies_a_central_limit_per_mail_type(): void
     {
         Mail::fake();
-        config()->set('camperwolf.mail.global_per_minute', 20);
-        config()->set('camperwolf.mail.global_per_hour', 20);
-        config()->set('camperwolf.mail.global_per_day', 20);
-        config()->set('camperwolf.mail.type_per_hour.email_verification', 1);
+        config()->set('favon.mail.global_per_minute', 20);
+        config()->set('favon.mail.global_per_hour', 20);
+        config()->set('favon.mail.global_per_day', 20);
+        config()->set('favon.mail.type_per_hour.email_verification', 1);
 
         $service = app(SafeMailService::class);
         $service->send('email_verification', 'type-one@example.test', fn () => new TestAccountMail('One'), dedupeKey: 'type-1');
@@ -174,7 +174,7 @@ class SafeMailServiceTest extends TestCase
 
     public function test_debug_preview_flag_never_enables_preview_outside_local_environment(): void
     {
-        config()->set('camperwolf.mail.debug_preview', true);
+        config()->set('favon.mail.debug_preview', true);
         app()->detectEnvironment(fn () => 'production');
 
         $method = new \ReflectionMethod(SafeMailService::class, 'shouldDebugPreview');
