@@ -106,12 +106,12 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('public-read', function (Request $request): Limit {
-            if (! config('camperwolf.security.public_read_limit_enabled', false)) {
+            if (! config('favon.security.public_read_limit_enabled', false)) {
                 return Limit::none();
             }
 
             return Limit::perMinute(
-                (int) config('camperwolf.security.public_read_per_minute', 180),
+                (int) config('favon.security.public_read_per_minute', 180),
             )->by('public-read:'.$request->ip());
         });
 
