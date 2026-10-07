@@ -17,7 +17,7 @@ class AccessControlLocaleTest extends TestCase
 
         $owner = User::factory()->create(['email_verified_at' => now()]);
         $target = User::factory()->create(['email_verified_at' => now()]);
-        config(['camperwolf.owner_email' => $owner->email]);
+        config(['favon.owner_email' => $owner->email]);
 
         $this->actingAs($owner)
             ->withSession(['locale' => 'en'])
