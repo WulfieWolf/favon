@@ -13,7 +13,7 @@ class MailPreviewController extends Controller
     public function verifyEmail(Request $request, MailContextService $context): View
     {
         abort_unless(app()->environment('local'), 404);
-        abort_unless((bool) config('camperwolf.mail.debug_preview', false), 404);
+        abort_unless((bool) config('favon.mail.debug_preview', false), 404);
 
         $user = $request->user();
         $locale = in_array((string) $request->query('locale'), ['de', 'en'], true)
