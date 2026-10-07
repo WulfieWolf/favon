@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'camperwolf_id' => 'Camperwolf ID',
+    'camperwolf_id' => 'Favon ID',
     'public_title' => 'Profile',
     'edit_profile' => 'Edit profile',
     'member_since' => 'Member since :date',
@@ -113,7 +113,7 @@ return [
 
     'settings' => [
         'title' => 'Profile settings',
-        'subtitle' => 'Choose how you appear within the Camperwolf community and who may see your information.',
+        'subtitle' => 'Choose how you appear within the Favon community and who may see your information.',
         'settings_heading' => 'Settings',
         'settings_subheading' => 'Manage your profile and account settings.',
         'security' => 'Security',
@@ -125,8 +125,8 @@ return [
         'identity' => 'Public identity',
         'handle' => 'Display name',
         'handle_current' => 'Current display name',
-        'handle_dummy_note' => 'Your permanent Camperwolf ID in the format CW-XXXXX always remains available. You may optionally choose a custom public display name once.',
-        'handle_final_note' => 'Your custom display name is final. Your Camperwolf ID remains permanently available as well.',
+        'handle_dummy_note' => 'Your permanent Favon ID in the format FV-XXXXX always remains available. You may optionally choose a custom public display name once.',
+        'handle_final_note' => 'Your custom display name is final. Your Favon ID remains permanently available as well.',
         'handle_choose' => 'Choose your own display name',
         'handle_help' => '3–30 characters. Letters, numbers, dots, hyphens and underscores are allowed. The name can only be chosen once.',
         'handle_confirm' => 'Set display name permanently',
@@ -140,7 +140,7 @@ return [
         'close_retry' => 'Close and try again',
         'handle_confirm_warning' => 'This choice cannot be changed later.',
         'handle_unavailable' => 'This display name is not available.',
-        'handle_reserved_prefix' => 'Display names starting with “CW-” are reserved for automatically generated Camperwolf names.',
+        'handle_reserved_prefix' => 'Display names starting with “FV-” are reserved for automatically generated Favon names.',
         'profile_photo' => 'Profile picture',
         'profile_photo_help' => 'Optional. JPG, PNG or WebP up to 5 MB.',
         'upload_photo' => 'Save profile picture',
@@ -177,7 +177,7 @@ return [
         'photo_saved' => 'Profile picture updated.',
         'photo_removed' => 'Profile picture removed.',
         'join_date_title' => 'Show join date',
-        'join_date_help' => 'Shows on your public profile when you joined Camperwolf.',
+        'join_date_help' => 'Shows on your public profile when you joined Favon.',
         'selected_title' => 'Displayed title',
         'no_title' => 'No title',
         'selected_title_help' => 'You can display any unlocked badge or achievement as your profile title.',
