@@ -10,7 +10,7 @@
 {{ __('mail.password_reset.account_heading', [], $locale) }}
 {{ $context['account_name'] }}
 {{ $context['email'] }}
-@if($context['cw_id']){{ $context['cw_id'] }}@endif
+@if($context['favon_id']){{ $context['favon_id'] }}@endif
 
 {{ __('mail.password_reset.ignore', [], $locale) }}
 
