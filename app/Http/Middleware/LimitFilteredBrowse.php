@@ -22,7 +22,7 @@ class LimitFilteredBrowse
 
         $maxAttempts = max(
             1,
-            (int) config('camperwolf.security.filtered_browse_per_minute', 60),
+            (int) config('favon.security.filtered_browse_per_minute', 60),
         );
         $key = 'filtered-browse:'.$request->ip();
 
