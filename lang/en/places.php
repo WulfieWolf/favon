@@ -43,6 +43,8 @@ return [
         'environment_indoor' => 'Indoor',
         'environment_both' => 'Both',
         'gloryhole' => 'Gloryhole?',
+        'yes' => 'Yes',
+        'no' => 'No',
         'street' => 'Street',
         'house_number' => 'House number',
         'postal_code' => 'Postal code',
