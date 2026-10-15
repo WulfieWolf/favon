@@ -46,6 +46,9 @@ return [
         'environment_outdoor' => 'Outdoor',
         'environment_indoor' => 'Indoor',
         'environment_both' => 'Beides',
+        'target_audience' => 'Zielgruppe',
+        'target_audience_men' => 'Männer',
+        'target_audience_women' => 'Frauen',
         'gloryhole' => 'Gloryhole?',
         'yes' => 'Ja',
         'no' => 'Nein',
@@ -86,6 +89,9 @@ return [
         'finish_help' => 'Name, Platztyp und Position reichen aus. Wenn du möchtest, kannst du im nächsten Schritt noch einige passende Merkmale angeben.',
         'submit_now' => 'Direkt zur Prüfung einreichen',
         'continue_quick_features' => 'Weiter: Merkmale ergänzen',
+    ],
+    'profile' => [
+        'target_audience' => 'Zielgruppe: :audience',
     ],
     'draft' => [
         'badge' => 'Entwurf',
