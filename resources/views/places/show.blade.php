@@ -7,9 +7,15 @@
                 <div>
                     <h1 class="text-2xl font-semibold">{{ $place->name }}</h1>
                     <div class="mt-1 text-sm text-zinc-500">{{ __("place_types.{$place->place_type_slug}.name") }}</div>
-                    @if ($place->target_audience)
+                    @php
+                        $targetAudiences = array_values(array_filter([
+                            $place->target_mm ? __('places.suggest.target_audience_mm') : null,
+                            $place->target_mf ? __('places.suggest.target_audience_mf') : null,
+                        ]));
+                    @endphp
+                    @if ($targetAudiences)
                         <div class="mt-2 inline-flex rounded-full border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:border-zinc-700 dark:text-zinc-300">
-                            {{ __('places.profile.target_audience', ['audience' => __("places.suggest.target_audience_{$place->target_audience}")]) }}
+                            {{ __('places.profile.target_audience', ['audience' => implode(' + ', $targetAudiences)]) }}
                         </div>
                     @endif
                 </div>

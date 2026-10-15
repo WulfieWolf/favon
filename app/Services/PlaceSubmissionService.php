@@ -16,7 +16,7 @@ class PlaceSubmissionService
      *   longitude:float|int|string,
      *   description?:string|null,
      *   environment?:string|null,
-     *   target_audience:string,
+     *   target_audience:array<int,string>,
      *   has_gloryhole?:bool|int|string|null,
      *   street_address?:string|null,
      *   postal_code?:string|null,
@@ -40,7 +40,9 @@ class PlaceSubmissionService
                 'slug' => $this->uniqueSlug($name),
                 'description' => $description !== '' ? $description : null,
                 'environment' => $data['environment'] ?? null,
-                'target_audience' => $data['target_audience'],
+                'target_audience' => null,
+                'target_mm' => in_array('mm', $data['target_audience'], true),
+                'target_mf' => in_array('mf', $data['target_audience'], true),
                 'has_gloryhole' => array_key_exists('has_gloryhole', $data) && $data['has_gloryhole'] !== null
                     ? (bool) $data['has_gloryhole']
                     : null,

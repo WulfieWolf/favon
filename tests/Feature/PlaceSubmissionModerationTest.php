@@ -87,7 +87,7 @@ class PlaceSubmissionModerationTest extends TestCase
             'latitude' => 51.1,
             'longitude' => 7.1,
             'environment' => 'outdoor',
-            'target_audience' => 'mm',
+            'target_audience' => ['mm'],
             'has_gloryhole' => '0',
         ])->assertRedirect(route('dashboard'));
 
@@ -101,7 +101,7 @@ class PlaceSubmissionModerationTest extends TestCase
                 'longitude' => 7.1001,
                 'description' => 'Hinterer Bereich des Parks.',
                 'environment' => 'outdoor',
-                'target_audience' => 'mf',
+                'target_audience' => ['mm', 'mf'],
                 'has_gloryhole' => '0',
                 'city' => 'Essen',
                 'country_code' => 'DE',
@@ -112,7 +112,9 @@ class PlaceSubmissionModerationTest extends TestCase
 
         $this->assertSame('published', $published->publication_status);
         $this->assertSame('Park ohne Tippfehler', $published->name);
-        $this->assertSame('mf', $published->target_audience);
+        $this->assertTrue((bool) $published->target_mm);
+        $this->assertTrue((bool) $published->target_mf);
+        $this->assertNull($published->target_audience);
         $this->assertSame((int) $owner->id, (int) $published->approved_by);
         $this->assertNotNull($published->approved_at);
 
@@ -139,7 +141,7 @@ class PlaceSubmissionModerationTest extends TestCase
             'name' => 'Privater Ort',
             'latitude' => 51.2,
             'longitude' => 7.2,
-            'target_audience' => 'mm',
+            'target_audience' => ['mm'],
         ])->assertRedirect(route('dashboard'));
 
         $placeId = (int) DB::table('places')->where('name', 'Privater Ort')->value('id');
