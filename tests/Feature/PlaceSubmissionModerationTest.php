@@ -26,6 +26,8 @@ class PlaceSubmissionModerationTest extends TestCase
             ->assertSee('Gloryhole')
             ->assertSee('Straße und Hausnummer')
             ->assertSee('Deutschland')
+            ->assertSee('Adresse oder Ort suchen')
+            ->assertSee('data-favon-address-search', false)
             ->assertSee('data-favon-place-picker', false);
     }
 
