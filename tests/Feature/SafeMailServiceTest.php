@@ -190,7 +190,7 @@ class TestAccountMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Camperwolf test');
+        return new Envelope(subject: 'Favon test');
     }
 
     public function content(): Content
