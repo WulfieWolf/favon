@@ -45,6 +45,7 @@ class PlaceSubmissionModerationController extends Controller
         return view('admin.place-submissions.show', [
             'place' => $item,
             'placeTypes' => $placeTypes,
+            'editingPublished' => false,
         ]);
     }
 
