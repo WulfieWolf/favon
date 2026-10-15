@@ -11,6 +11,8 @@ return [
         'overview' => 'Zur Übersicht',
         'cancel' => 'Abbrechen',
         'check_inputs' => 'Bitte prüfe die Eingaben.',
+        'google_maps' => 'Google Maps',
+        'apple_maps' => 'Apple Karten',
         'moderation_note' => 'Hinweis für die Moderation',
     ],
     'suggest' => [
