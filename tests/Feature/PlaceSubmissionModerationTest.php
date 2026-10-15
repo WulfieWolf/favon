@@ -254,8 +254,8 @@ class PlaceSubmissionModerationTest extends TestCase
         $this->actingAs($creator)->get(route('places.show', 'alter-platz'))
             ->assertOk()->assertDontSee(route('admin.places.edit', $placeId));
 
-        $this->actingAs($creator)->get(route('admin.places.edit', $placeId))->assertForbidden();
-        $this->actingAs($creator)->put(route('admin.places.update', $placeId), $payload)->assertForbidden();
+        $this->actingAs($creator)->get(route('admin.places.edit', $placeId))->assertNotFound();
+        $this->actingAs($creator)->put(route('admin.places.update', $placeId), $payload)->assertNotFound();
 
         $this->actingAs($owner)->get(route('places.show', 'alter-platz'))
             ->assertOk()->assertSee(route('admin.places.edit', $placeId));
