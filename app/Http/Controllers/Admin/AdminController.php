@@ -25,6 +25,7 @@ class AdminController extends Controller
             'isOwner' => $permissions->isOwner($user),
             'canUseSystemTools' => $permissions->can($user, 'admin.access'),
             'canMergePlaces' => $permissions->can($user, 'places.merge'),
+            'canModeratePlaceSubmissions' => $permissions->can($user, 'places.change_publication_status'),
             'canViewUsers' => $permissions->can($user, 'users.view'),
             'canViewAuditLogs' => $permissions->can($user, 'audit.view_all'),
             'canViewStatistics' => $permissions->can($user, 'statistics.view'),
@@ -32,6 +33,7 @@ class AdminController extends Controller
             'canManageSupport' => $permissions->can($user, 'support.view_all'),
             'userCount' => User::count(),
             'auditLogCount' => DB::table('audit_logs')->count(),
+            'pendingPlaceSubmissionCount' => DB::table('places')->where('publication_status', 'pending')->count(),
         ]);
     }
 

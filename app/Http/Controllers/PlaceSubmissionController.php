@@ -5,10 +5,23 @@ namespace App\Http\Controllers;
 use App\Services\PlaceSubmissionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 use Illuminate\Validation\Rule;
 
 class PlaceSubmissionController extends Controller
 {
+    public function create(): View
+    {
+        $placeTypes = DB::table('place_types')
+            ->where('is_active', true)
+            ->where('is_searchable', true)
+            ->orderBy('sort_order')
+            ->get(['id', 'slug']);
+
+        return view('places.create', compact('placeTypes'));
+    }
+
     public function store(Request $request, PlaceSubmissionService $submissions): RedirectResponse
     {
         $data = $request->validate([

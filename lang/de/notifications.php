@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'place_submission_approved_title' => 'Platz freigegeben',
+    'place_submission_approved_message' => 'Dein vorgeschlagener Platz „:place“ wurde freigegeben und ist jetzt auf Favon verfügbar.',
+    'place_submission_rejected_title' => 'Platz nicht veröffentlicht',
+    'place_submission_rejected_message' => 'Dein vorgeschlagener Platz „:place“ wurde nicht veröffentlicht. Grund: :reason',
     'title' => 'Benachrichtigungen',
     'history_intro' => 'Hier findest du aktuelle und bereits gelesene Benachrichtigungen.',
     'mark_all_read' => 'Alle als gelesen markieren',
