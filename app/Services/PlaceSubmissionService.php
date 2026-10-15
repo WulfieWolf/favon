@@ -17,8 +17,7 @@ class PlaceSubmissionService
      *   description?:string|null,
      *   environment?:string|null,
      *   has_gloryhole?:bool|int|string|null,
-     *   street?:string|null,
-     *   house_number?:string|null,
+     *   street_address?:string|null,
      *   postal_code?:string|null,
      *   city?:string|null,
      *   country_code?:string|null
@@ -65,12 +64,14 @@ class PlaceSubmissionService
                 'updated_at' => $now,
             ]);
 
+            [$street, $houseNumber] = $this->splitStreetAddress($data['street_address'] ?? null);
+
             $address = [
                 'country_code' => $countryCode,
                 'postal_code' => $this->nullableTrim($data['postal_code'] ?? null),
                 'city' => $this->nullableTrim($data['city'] ?? null),
-                'street' => $this->nullableTrim($data['street'] ?? null),
-                'house_number' => $this->nullableTrim($data['house_number'] ?? null),
+                'street' => $street,
+                'house_number' => $houseNumber,
             ];
 
             if (collect($address)->contains(fn ($value) => $value !== null)) {
@@ -108,6 +109,21 @@ class PlaceSubmissionService
         } while (DB::table('places')->where('slug', $slug)->exists());
 
         return $slug;
+    }
+
+    private function splitStreetAddress(mixed $value): array
+    {
+        $address = $this->nullableTrim($value);
+
+        if ($address === null) {
+            return [null, null];
+        }
+
+        if (preg_match('/^(.+?)\s+([0-9]+[A-Za-z]?(?:[-\/]?[0-9A-Za-z]+)?)$/u', $address, $matches)) {
+            return [trim($matches[1]), trim($matches[2])];
+        }
+
+        return [$address, null];
     }
 
     private function nullableTrim(mixed $value): ?string
