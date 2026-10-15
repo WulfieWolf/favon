@@ -1,15 +1,16 @@
-<x-layouts::app :title="__('admin.place_submissions.review_title')">
+<x-layouts::app :title="$editingPublished ? __('places.admin_edit.title') : __('admin.place_submissions.review_title')">
     <div class="mx-auto w-full max-w-6xl space-y-6 px-4 py-6">
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-                <h1 class="text-2xl font-semibold">{{ __('admin.place_submissions.review_title') }}</h1>
-                <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ __('admin.place_submissions.review_intro', ['user' => $place->creator_name ?? '—']) }}</p>
+                <h1 class="text-2xl font-semibold">{{ $editingPublished ? __('places.admin_edit.title') : __('admin.place_submissions.review_title') }}</h1>
+                @unless ($editingPublished)<p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ __('admin.place_submissions.review_intro', ['user' => $place->creator_name ?? '—']) }}</p>@endunless
             </div>
-            <a href="{{ route('admin.place-submissions.index') }}" class="text-sm text-zinc-500 hover:text-zinc-950 dark:hover:text-white">{{ __('admin.place_submissions.back') }}</a>
+            <a href="{{ $editingPublished ? route('places.show', $place->slug) : route('admin.place-submissions.index') }}" class="text-sm text-zinc-500 hover:text-zinc-950 dark:hover:text-white">{{ $editingPublished ? __('places.common.cancel') : __('admin.place_submissions.back') }}</a>
         </div>
 
-        <form method="POST" action="{{ route('admin.place-submissions.approve', $place->id) }}" class="space-y-6">
+        <form method="POST" action="{{ $editingPublished ? route('admin.places.update', $place->id) : route('admin.place-submissions.approve', $place->id) }}" class="space-y-6">
             @csrf
+            @if ($editingPublished) @method('PUT') @endif
 
             <section class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
                 <div class="grid gap-5">
@@ -97,10 +98,11 @@
             @endif
 
             <div class="flex justify-end">
-                <button type="submit" class="rounded-lg bg-emerald-700 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-800">{{ __('admin.place_submissions.approve') }}</button>
+                <button type="submit" class="rounded-lg bg-emerald-700 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-800">{{ $editingPublished ? __('places.admin_edit.save') : __('admin.place_submissions.approve') }}</button>
             </div>
         </form>
 
+        @unless ($editingPublished)
         <section class="rounded-xl border border-red-300 bg-red-50 p-5 dark:border-red-900 dark:bg-red-950/20">
             <h2 class="font-semibold text-red-900 dark:text-red-200">{{ __('admin.place_submissions.reject') }}</h2>
             <p class="mt-1 text-sm text-red-700 dark:text-red-300">{{ __('admin.place_submissions.reject_help') }}</p>
@@ -110,6 +112,7 @@
                 <button type="submit" class="rounded-lg bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800">{{ __('admin.place_submissions.reject') }}</button>
             </form>
         </section>
+        @endunless
     </div>
 
     @push('scripts')
