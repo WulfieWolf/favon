@@ -87,12 +87,44 @@
 
             <section class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
                 <h2 class="text-lg font-semibold">{{ __('places.suggest.position') }}</h2>
-                <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ __('places.suggest.position_help_simple') }}</p>
+                <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ __('places.suggest.position_help') }}</p>
+
+                <div class="relative mt-4">
+                    <label for="place-search" class="text-sm font-medium">{{ __('places.suggest.search') }}</label>
+                    <input
+                        id="place-search"
+                        type="search"
+                        autocomplete="off"
+                        placeholder="{{ __('places.suggest.search_placeholder') }}"
+                        data-favon-address-search
+                        data-results="place-search-results"
+                        data-map="favon-place-create-map"
+                        class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
+                    >
+                    <div
+                        id="place-search-results"
+                        data-favon-address-results
+                        class="absolute left-0 right-0 z-[1100] mt-1 hidden max-h-72 overflow-y-auto rounded-xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900"
+                    ></div>
+                    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{{ __('places.suggest.search_note') }}</p>
+                </div>
 
                 <div id="favon-place-create-map"
                     data-favon-place-picker
                     data-lat-input="latitude"
                     data-lng-input="longitude"
+                    data-search-input="place-search"
+                    data-street-input="street_address"
+                    data-postal-input="postal_code"
+                    data-city-input="city"
+                    data-country-input="country_code"
+                    data-locale="{{ app()->getLocale() }}"
+                    data-geocoder-searching="{{ __('places.geocoder.searching') }}"
+                    data-geocoder-none="{{ __('places.geocoder.none') }}"
+                    data-geocoder-unavailable="{{ __('places.geocoder.unavailable') }}"
+                    data-geocoder-reverse-searching="{{ __('places.geocoder.reverse_searching') }}"
+                    data-geocoder-reverse-none="{{ __('places.geocoder.reverse_none') }}"
+                    data-geocoder-reverse-failed="{{ __('places.geocoder.reverse_failed') }}"
                     class="mt-4 h-80 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800"></div>
 
                 <div class="mt-4 grid gap-3 md:grid-cols-2">
@@ -110,10 +142,10 @@
                     <div class="text-sm font-medium">{{ __('places.suggest.address') }}</div>
                     <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{{ __('places.suggest.address_help') }}</p>
                     <div class="mt-3 grid gap-3 md:grid-cols-6">
-                        <input name="street_address" value="{{ old('street_address') }}" placeholder="{{ __('places.suggest.street_address') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-6 dark:border-zinc-700 dark:bg-zinc-950">
-                        <input name="postal_code" value="{{ old('postal_code') }}" placeholder="{{ __('places.suggest.postal_code') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-2 dark:border-zinc-700 dark:bg-zinc-950">
-                        <input name="city" value="{{ old('city') }}" placeholder="{{ __('places.suggest.city') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-2 dark:border-zinc-700 dark:bg-zinc-950">
-                        <select name="country_code" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-2 dark:border-zinc-700 dark:bg-zinc-950">
+                        <input id="street_address" name="street_address" value="{{ old('street_address') }}" placeholder="{{ __('places.suggest.street_address') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-6 dark:border-zinc-700 dark:bg-zinc-950">
+                        <input id="postal_code" name="postal_code" value="{{ old('postal_code') }}" placeholder="{{ __('places.suggest.postal_code') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-2 dark:border-zinc-700 dark:bg-zinc-950">
+                        <input id="city" name="city" value="{{ old('city') }}" placeholder="{{ __('places.suggest.city') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-2 dark:border-zinc-700 dark:bg-zinc-950">
+                        <select id="country_code" name="country_code" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-2 dark:border-zinc-700 dark:bg-zinc-950">
                             @foreach ($countries as $country)
                                 <option value="{{ $country->code }}" @selected(old('country_code', 'DE') === $country->code)>{{ $country->name }}</option>
                             @endforeach
