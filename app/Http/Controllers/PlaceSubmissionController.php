@@ -57,6 +57,7 @@ class PlaceSubmissionController extends Controller
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'description' => ['nullable', 'string', 'max:2000'],
             'environment' => ['nullable', Rule::in(['indoor', 'outdoor', 'both'])],
+            'target_audience' => ['required', Rule::in(['men', 'women'])],
             'has_gloryhole' => ['nullable', 'boolean'],
             'street_address' => ['nullable', 'string', 'max:320'],
             'postal_code' => ['nullable', 'string', 'max:32'],
