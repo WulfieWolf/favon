@@ -78,9 +78,6 @@
                 </form>
             </div>
 
-            <flux:menu.item :href="route('help.index')" icon="question-mark-circle">
-                {{ __('global.help_support') }}
-            </flux:menu.item>
             <flux:menu.item :href="route('support.my.index')" icon="chat-bubble-left-right">
                 {{ __('community_profile.settings.my_reports') }}
             </flux:menu.item>
