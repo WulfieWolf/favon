@@ -77,7 +77,6 @@ class PlaceSubmissionService
                 DB::table('place_addresses')->insert([
                     'place_id' => $placeId,
                     'country_code' => $address['country_code'],
-                    'state' => null,
                     'postal_code' => $address['postal_code'],
                     'city' => $address['city'],
                     'street' => $address['street'],
