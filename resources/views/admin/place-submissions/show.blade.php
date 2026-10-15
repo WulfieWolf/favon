@@ -65,10 +65,11 @@
                         </fieldset>
                         <div>
                             <label class="text-sm font-medium" for="has_gloryhole">{{ __('places.suggest.gloryhole') }}</label>
+                            @php($selectedGloryhole = (string) old('has_gloryhole', $place->has_gloryhole === null ? '' : (string) (int) $place->has_gloryhole))
                             <select id="has_gloryhole" name="has_gloryhole" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
                                 <option value="">{{ __('admin.place_submissions.unknown') }}</option>
-                                <option value="1" @selected((string) old('has_gloryhole', $place->has_gloryhole === null ? '' : (string) (int) $place->has_gloryhole) === '1')>{{ __('places.suggest.yes') }}</option>
-                                <option value="0" @selected((string) old('has_gloryhole', $place->has_gloryhole === null ? '' : '0') === '0')>{{ __('places.suggest.no') }}</option>
+                                <option value="1" @selected($selectedGloryhole === '1')>{{ __('places.suggest.yes') }}</option>
+                                <option value="0" @selected($selectedGloryhole === '0')>{{ __('places.suggest.no') }}</option>
                             </select>
                         </div>
                     </div>
