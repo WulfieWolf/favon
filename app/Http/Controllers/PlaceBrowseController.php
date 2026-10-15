@@ -13,6 +13,10 @@ class PlaceBrowseController extends Controller
         $queryText = trim((string) $request->query('q', ''));
         $favoritesOnly = (bool) $request->user() && $request->boolean('favorites');
 
+        $nearLat = $this->coordinate($request->query('near_lat'), -90, 90);
+        $nearLng = $this->coordinate($request->query('near_lng'), -180, 180);
+        $nearby = $nearLat !== null && $nearLng !== null;
+
         $requestedTypes = collect($request->query('place_types', []))
             ->filter(fn ($value) => is_string($value) && preg_match('/^[a-z0-9-]+$/', $value))
             ->unique()
@@ -40,6 +44,13 @@ class PlaceBrowseController extends Controller
                 'pa.house_number',
             ]);
 
+        if ($nearby) {
+            $placesQuery->selectRaw(
+                'ST_Distance_Sphere(POINT(p.longitude, p.latitude), POINT(?, ?)) / 1000 AS distance_km',
+                [$nearLng, $nearLat],
+            );
+        }
+
         if ($queryText !== '') {
             $placesQuery->where(function ($query) use ($queryText): void {
                 $query->where('p.name', 'like', '%'.$queryText.'%')
@@ -62,7 +73,11 @@ class PlaceBrowseController extends Controller
         }
 
         $places = $placesQuery
-            ->orderBy('p.name')
+            ->when(
+                $nearby,
+                fn ($query) => $query->orderBy('distance_km')->orderBy('p.name'),
+                fn ($query) => $query->orderBy('p.name'),
+            )
             ->paginate(100)
             ->withQueryString();
 
@@ -88,6 +103,20 @@ class PlaceBrowseController extends Controller
             'queryText' => $queryText,
             'favoritesOnly' => $favoritesOnly,
             'favoriteIds' => $favoriteIds,
+            'nearLat' => $nearLat,
+            'nearLng' => $nearLng,
+            'nearby' => $nearby,
         ]);
+    }
+
+    private function coordinate(mixed $value, float $min, float $max): ?float
+    {
+        if (! is_numeric($value)) {
+            return null;
+        }
+
+        $coordinate = (float) $value;
+
+        return $coordinate >= $min && $coordinate <= $max ? $coordinate : null;
     }
 }

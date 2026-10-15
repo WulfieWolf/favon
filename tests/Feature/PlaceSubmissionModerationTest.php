@@ -23,7 +23,50 @@ class PlaceSubmissionModerationTest extends TestCase
             ->assertOk()
             ->assertSee('Gay-Sauna')
             ->assertSee('Park / Wald')
-            ->assertSee('Gloryhole');
+            ->assertSee('Gloryhole')
+            ->assertSee('Straße und Hausnummer')
+            ->assertSee('Deutschland')
+            ->assertSee('Adresse oder Ort suchen')
+            ->assertSee('data-favon-address-search', false)
+            ->assertSee('data-favon-place-picker', false);
+    }
+
+
+    public function test_dashboard_uses_localized_place_type_names(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $user = User::factory()->create();
+        $typeId = (int) DB::table('place_types')->where('slug', 'public-toilet')->value('id');
+
+        DB::table('places')->insert([
+            'place_type_id' => $typeId,
+            'name' => 'Test Klappe',
+            'slug' => 'test-klappe',
+            'latitude' => 51.2,
+            'longitude' => 7.2,
+            'publication_status' => 'published',
+            'legal_status' => 'unclear',
+            'opening_status' => 'unclear',
+            'is_active' => true,
+            'created_by' => $user->id,
+            'approved_by' => $user->id,
+            'approved_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->withSession(['locale' => 'de'])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Öffentliche Toilette / Klappe');
+
+        $this->actingAs($user)
+            ->withSession(['locale' => 'en'])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Public toilet / cottage');
     }
 
     public function test_owner_can_correct_and_approve_submission_and_user_is_notified(): void

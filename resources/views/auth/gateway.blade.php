@@ -21,6 +21,10 @@
             @endif
         </div>
 
+        <p class="-mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+            {{ __('auth.telegram_privacy_note') }}
+        </p>
+
         <div class="border-t border-zinc-200 pt-5 dark:border-zinc-800">
             <a href="{{ route('login') }}" class="text-sm underline underline-offset-4">
                 {{ __('auth.admin_login') }}

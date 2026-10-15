@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'submission_success_title' => 'Platzvorschlag übermittelt',
+    'submission_success_message' => 'Dein Platzvorschlag „:place“ wurde übermittelt und wird geprüft.',
     'submission_received' => 'Dein Platzvorschlag wurde eingereicht und wartet auf Freigabe.',
     'photo_alt' => 'Foto des Platzes',
     'suggest_help' => 'Wie schlage ich einen Platz vor?',
@@ -9,6 +11,8 @@ return [
         'overview' => 'Zur Übersicht',
         'cancel' => 'Abbrechen',
         'check_inputs' => 'Bitte prüfe die Eingaben.',
+        'google_maps' => 'Google Maps',
+        'apple_maps' => 'Apple Karten',
         'moderation_note' => 'Hinweis für die Moderation',
     ],
     'suggest' => [
@@ -46,6 +50,7 @@ return [
         'yes' => 'Ja',
         'no' => 'Nein',
         'street' => 'Straße',
+        'street_address' => 'Straße und Hausnummer',
         'house_number' => 'Hausnummer',
         'postal_code' => 'PLZ',
         'city' => 'Ort',

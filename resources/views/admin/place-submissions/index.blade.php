@@ -21,7 +21,7 @@
                         </div>
                         <div class="text-right text-xs text-zinc-500">
                             <div>{{ $place->creator_name ?? '—' }}</div>
-                            <div class="mt-1">{{ AppSupportLocalTime::parse($place->created_at)->diffForHumans() }}</div>
+                            <div class="mt-1">{{ \App\Support\LocalTime::parse($place->created_at)->diffForHumans() }}</div>
                         </div>
                     </div>
                 </a>

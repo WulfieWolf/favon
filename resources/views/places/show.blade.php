@@ -6,7 +6,7 @@
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <h1 class="text-2xl font-semibold">{{ $place->name }}</h1>
-                    <div class="mt-1 text-sm text-zinc-500">{{ str($place->place_type_slug)->replace('-', ' ')->headline() }}</div>
+                    <div class="mt-1 text-sm text-zinc-500">{{ __("place_types.{$place->place_type_slug}.name") }}</div>
                 </div>
                 @auth
                     <form method="POST" action="{{ $isFavorite ? route('favorites.destroy', $place->slug) : route('favorites.store', $place->slug) }}">
@@ -31,8 +31,17 @@
 
         <div id="favon-place-map" class="h-[48vh] min-h-80 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800"></div>
 
-        <div class="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">
-            Dieses Profil ist absichtlich reduziert. Favon-spezifische Attribute, Check-ins, Health Checks und Ratings werden als Nächstes neu aufgebaut.
+        @php
+            $googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query='.urlencode($place->latitude.','.$place->longitude);
+            $appleMapsUrl = 'https://maps.apple.com/?ll='.urlencode($place->latitude.','.$place->longitude).'&q='.urlencode($place->name);
+        @endphp
+        <div class="grid gap-3 sm:grid-cols-2">
+            <a href="{{ $googleMapsUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800">
+                {{ __('places.common.google_maps') }}
+            </a>
+            <a href="{{ $appleMapsUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800">
+                {{ __('places.common.apple_maps') }}
+            </a>
         </div>
     </div>
 

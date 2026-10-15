@@ -27,8 +27,7 @@ class PlaceSubmissionTest extends TestCase
             'description' => 'Treffpunkt im hinteren Bereich des Parks.',
             'environment' => 'outdoor',
             'has_gloryhole' => '0',
-            'street' => 'Beispielstraße',
-            'house_number' => '12',
+            'street_address' => 'Beispielstraße 12',
             'postal_code' => '45127',
             'city' => 'Essen',
             'country_code' => 'de',
@@ -36,7 +35,7 @@ class PlaceSubmissionTest extends TestCase
 
         $response
             ->assertRedirect(route('dashboard'))
-            ->assertSessionHas('ui_toast');
+            ->assertSessionHas('place_submission_success');
 
         $place = DB::table('places')->where('name', 'Stadtpark Süd')->first();
 
@@ -81,6 +80,11 @@ class PlaceSubmissionTest extends TestCase
             'environment' => 'outdoor',
             'has_gloryhole' => '1',
         ])->assertRedirect(route('dashboard'));
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Noch nicht freigegeben');
 
         $this->actingAs($user)
             ->get(route('dashboard'))

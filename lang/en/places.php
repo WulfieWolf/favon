@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'submission_success_title' => 'Place suggestion submitted',
+    'submission_success_message' => 'Your place suggestion “:place” was submitted and will be reviewed.',
     'submission_received' => 'Your place suggestion was submitted and is awaiting review.',
     'photo_alt' => 'Photo of the place',
     'suggest_help' => 'How do I suggest a place?',
@@ -9,6 +11,8 @@ return [
         'overview' => 'Overview',
         'cancel' => 'Cancel',
         'check_inputs' => 'Please check your entries.',
+        'google_maps' => 'Google Maps',
+        'apple_maps' => 'Apple Maps',
         'moderation_note' => 'Note for moderation',
     ],
     'suggest' => [
@@ -46,6 +50,7 @@ return [
         'yes' => 'Yes',
         'no' => 'No',
         'street' => 'Street',
+        'street_address' => 'Street and house number',
         'house_number' => 'House number',
         'postal_code' => 'Postal code',
         'city' => 'City / locality',
