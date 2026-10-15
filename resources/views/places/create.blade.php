@@ -71,7 +71,7 @@
                         <fieldset>
                             <legend class="text-sm font-medium">{{ __('places.suggest.target_audience') }}</legend>
                             <div class="mt-2 grid grid-cols-2 gap-2">
-                                @foreach (['men', 'women'] as $value)
+                                @foreach (['mm', 'mf'] as $value)
                                     <label class="cursor-pointer">
                                         <div class="flex items-center justify-center gap-2 rounded-lg border border-zinc-300 px-3 py-2 text-sm has-[:checked]:border-zinc-950 has-[:checked]:bg-zinc-100 has-[:checked]:font-semibold dark:border-zinc-700 dark:has-[:checked]:border-white dark:has-[:checked]:bg-zinc-800">
                                             <input type="radio" name="target_audience" value="{{ $value }}" class="size-4 accent-zinc-950 dark:accent-white" @checked(old('target_audience') === $value) required>
