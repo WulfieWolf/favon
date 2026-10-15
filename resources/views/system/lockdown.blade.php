@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow,noarchive">
-    <title>{{ __('admin.system.lockdown_title') }} – Camperwolf</title>
+    <title>{{ __('admin.system.lockdown_title') }} – Favon</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
     <main class="mx-auto flex min-h-screen max-w-xl items-center px-6 py-12">
         <div class="w-full rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <div class="text-2xl font-semibold">Camperwolf</div>
+            <div class="text-2xl font-semibold">Favon</div>
             <h1 class="mt-6 text-xl font-semibold">{{ __('admin.system.lockdown_title') }}</h1>
             <div class="mt-3 whitespace-pre-line text-sm leading-6 text-zinc-600 dark:text-zinc-300">
                 @php
