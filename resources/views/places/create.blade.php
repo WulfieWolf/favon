@@ -125,16 +125,17 @@
                     data-geocoder-reverse-searching="{{ __('places.geocoder.reverse_searching') }}"
                     data-geocoder-reverse-none="{{ __('places.geocoder.reverse_none') }}"
                     data-geocoder-reverse-failed="{{ __('places.geocoder.reverse_failed') }}"
+                    data-reverse-on-init="{{ request()->filled('lat') && request()->filled('lng') && ! old('street_address') ? '1' : '0' }}"
                     class="mt-4 h-80 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800"></div>
 
                 <div class="mt-4 grid gap-3 md:grid-cols-2">
                     <div>
                         <label for="latitude" class="text-sm font-medium">{{ __('places.suggest.latitude') }}</label>
-                        <input id="latitude" name="latitude" value="{{ old('latitude') }}" required inputmode="decimal" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
+                        <input id="latitude" name="latitude" value="{{ old('latitude', request()->query('lat')) }}" required inputmode="decimal" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
                     </div>
                     <div>
                         <label for="longitude" class="text-sm font-medium">{{ __('places.suggest.longitude') }}</label>
-                        <input id="longitude" name="longitude" value="{{ old('longitude') }}" required inputmode="decimal" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
+                        <input id="longitude" name="longitude" value="{{ old('longitude', request()->query('lng')) }}" required inputmode="decimal" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
                     </div>
                 </div>
 
