@@ -45,7 +45,7 @@
                         <div>
                             <label class="text-sm font-medium" for="target_audience">{{ __('places.suggest.target_audience') }}</label>
                             <select id="target_audience" name="target_audience" required class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
-                                @foreach (['men', 'women'] as $value)
+                                @foreach (['mm', 'mf'] as $value)
                                     <option value="{{ $value }}" @selected(old('target_audience', $place->target_audience) === $value)>{{ __("places.suggest.target_audience_{$value}") }}</option>
                                 @endforeach
                             </select>
