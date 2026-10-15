@@ -52,6 +52,20 @@
                     </form>
 
                     @auth
+                        @php($unreadNotifications = app(\App\Services\UserNotificationService::class)->unreadCount((int) auth()->id()))
+                        <a
+                            href="{{ route('notifications.index') }}"
+                            class="relative grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+                            title="{{ __('notifications.title') }}"
+                            aria-label="{{ __('notifications.title') }}"
+                        >
+                            <x-tabler-icon name="bell" class="size-5" />
+                            @if ($unreadNotifications > 0)
+                                <span class="absolute -right-1 -top-1 min-w-5 rounded-full bg-red-600 px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-white">
+                                    {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
+                                </span>
+                            @endif
+                        </a>
                         <x-desktop-user-menu />
                     @else
                         @if (Route::has('login'))
