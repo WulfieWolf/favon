@@ -211,6 +211,72 @@ class PlaceSubmissionModerationTest extends TestCase
             ->assertOk()->assertSee('MM Platz')->assertSee('Beide Platz')->assertSee('MF Platz');
     }
 
+
+    public function test_only_owner_can_edit_published_places_without_notifying_creator(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+        config(['favon.owner_email' => 'owner@example.test']);
+        $owner = User::factory()->create(['email' => 'owner@example.test']);
+        $creator = User::factory()->create();
+        $typeId = (int) DB::table('place_types')->where('slug', 'park-forest')->value('id');
+
+        DB::table('places')->insert([
+            'place_type_id' => $typeId,
+            'name' => 'Alter Platz',
+            'slug' => 'alter-platz',
+            'description' => 'Alte Beschreibung',
+            'latitude' => 51.2,
+            'longitude' => 7.2,
+            'target_mm' => true,
+            'target_mf' => false,
+            'publication_status' => 'published',
+            'legal_status' => 'unclear',
+            'opening_status' => 'unclear',
+            'is_active' => true,
+            'created_by' => $creator->id,
+            'approved_by' => $owner->id,
+            'approved_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $placeId = (int) DB::table('places')->where('slug', 'alter-platz')->value('id');
+        $payload = [
+            'place_type_id' => $typeId,
+            'name' => 'Neuer Platzname',
+            'description' => 'Neue Beschreibung',
+            'latitude' => 51.3,
+            'longitude' => 7.3,
+            'target_audience' => ['mm', 'mf'],
+            'city' => 'Essen',
+            'country_code' => 'DE',
+        ];
+
+        $this->actingAs($creator)->get(route('places.show', 'alter-platz'))
+            ->assertOk()->assertDontSee(route('admin.places.edit', $placeId));
+
+        $this->actingAs($creator)->get(route('admin.places.edit', $placeId))->assertForbidden();
+        $this->actingAs($creator)->put(route('admin.places.update', $placeId), $payload)->assertForbidden();
+
+        $this->actingAs($owner)->get(route('places.show', 'alter-platz'))
+            ->assertOk()->assertSee(route('admin.places.edit', $placeId));
+        $this->actingAs($owner)->get(route('admin.places.edit', $placeId))
+            ->assertOk()->assertSee('Alte Beschreibung');
+
+        $this->actingAs($owner)->put(route('admin.places.update', $placeId), $payload)
+            ->assertRedirect(route('places.show', 'alter-platz'));
+
+        $this->assertDatabaseHas('places', [
+            'id' => $placeId,
+            'name' => 'Neuer Platzname',
+            'description' => 'Neue Beschreibung',
+            'target_mm' => true,
+            'target_mf' => true,
+            'publication_status' => 'published',
+        ]);
+        $this->assertDatabaseHas('place_addresses', ['place_id' => $placeId, 'city' => 'Essen']);
+        $this->assertSame(0, DB::table('user_notifications')->where('user_id', $creator->id)->count());
+    }
+
     public function test_regular_user_cannot_open_admin_submission_queue(): void
     {
         $this->seed(DatabaseSeeder::class);
