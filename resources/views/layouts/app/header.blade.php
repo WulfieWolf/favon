@@ -29,14 +29,6 @@
                     <a href="{{ route('dashboard') }}" class="rounded-lg px-3 py-2 {{ request()->routeIs('dashboard') || request()->routeIs('home') || request()->routeIs('places.show') ? 'bg-zinc-100 font-medium dark:bg-zinc-800' : 'text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white' }}">
                         Plätze
                     </a>
-                    @if (auth()->check() && app(\App\Services\PermissionService::class)->can(auth()->user(), 'places.submit'))
-                        <a href="{{ route('places.create') }}" class="rounded-lg px-3 py-2 {{ request()->routeIs('places.create') ? 'bg-zinc-100 font-medium dark:bg-zinc-800' : 'text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white' }}">
-                            {{ __('ui.add_place') }}
-                        </a>
-                    @endif
-                    <a href="{{ route('help.index') }}" class="rounded-lg px-3 py-2 {{ request()->routeIs('help.*') || request()->routeIs('support.*') ? 'bg-zinc-100 font-medium dark:bg-zinc-800' : 'text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white' }}">
-                        Hilfe
-                    </a>
                 </nav>
 
                 <div class="ml-auto flex items-center gap-2">
