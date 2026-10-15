@@ -17,6 +17,7 @@ use App\Http\Controllers\MailPreviewController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PlaceBrowseController;
 use App\Http\Controllers\PlaceProfileController;
+use App\Http\Controllers\PlaceSubmissionController;
 use App\Http\Controllers\RolePreviewController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SupportTicketController;
@@ -59,6 +60,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', PlaceBrowseController::class)
         ->middleware(['harden-browse', 'limit-filtered-browse'])
         ->name('dashboard');
+    Route::post('places', [PlaceSubmissionController::class, 'store'])
+        ->middleware(['permission:places.submit', 'throttle:place-submit'])
+        ->name('places.store');
     Route::get('places/{slug}', PlaceProfileController::class)->name('places.show');
 
     Route::get('help', [HelpController::class, 'index'])->name('help.index');
