@@ -24,6 +24,9 @@ class PlaceSubmissionModerationTest extends TestCase
             ->assertSee('Gay-Sauna')
             ->assertSee('Park / Wald')
             ->assertSee('Gloryhole')
+            ->assertSee('Zielgruppe')
+            ->assertSee('Männer')
+            ->assertSee('Frauen')
             ->assertSee('Straße und Hausnummer')
             ->assertSee('Deutschland')
             ->assertSee('Adresse oder Ort suchen')
@@ -84,6 +87,7 @@ class PlaceSubmissionModerationTest extends TestCase
             'latitude' => 51.1,
             'longitude' => 7.1,
             'environment' => 'outdoor',
+            'target_audience' => 'men',
             'has_gloryhole' => '0',
         ])->assertRedirect(route('dashboard'));
 
@@ -97,6 +101,7 @@ class PlaceSubmissionModerationTest extends TestCase
                 'longitude' => 7.1001,
                 'description' => 'Hinterer Bereich des Parks.',
                 'environment' => 'outdoor',
+                'target_audience' => 'women',
                 'has_gloryhole' => '0',
                 'city' => 'Essen',
                 'country_code' => 'DE',
@@ -107,6 +112,7 @@ class PlaceSubmissionModerationTest extends TestCase
 
         $this->assertSame('published', $published->publication_status);
         $this->assertSame('Park ohne Tippfehler', $published->name);
+        $this->assertSame('women', $published->target_audience);
         $this->assertSame((int) $owner->id, (int) $published->approved_by);
         $this->assertNotNull($published->approved_at);
 
@@ -133,6 +139,7 @@ class PlaceSubmissionModerationTest extends TestCase
             'name' => 'Privater Ort',
             'latitude' => 51.2,
             'longitude' => 7.2,
+            'target_audience' => 'men',
         ])->assertRedirect(route('dashboard'));
 
         $placeId = (int) DB::table('places')->where('name', 'Privater Ort')->value('id');
