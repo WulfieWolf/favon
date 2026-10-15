@@ -59,7 +59,7 @@
                 type="button"
                 data-favon-nearby
                 data-error="{{ __('ui.transition.location_failed') }}"
-                class="absolute bottom-3 right-3 z-[500] inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-semibold shadow-lg ring-1 ring-zinc-200 hover:bg-zinc-50 dark:bg-zinc-900 dark:ring-zinc-700 dark:hover:bg-zinc-800"
+                class="absolute bottom-8 right-3 z-[500] inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-semibold shadow-lg ring-1 ring-zinc-200 hover:bg-zinc-50 dark:bg-zinc-900 dark:ring-zinc-700 dark:hover:bg-zinc-800"
             >
                 <x-tabler-icon name="current-location" class="size-5" />
                 <span class="hidden sm:inline">{{ __('ui.transition.nearby') }}</span>
