@@ -95,7 +95,7 @@ class PlaceSubmissionTest extends TestCase
             ->assertDontSee('Noch nicht freigegeben');
     }
 
-    public function test_submission_requires_only_type_name_and_location_as_core_fields(): void
+    public function test_submission_rejects_invalid_core_fields_and_target_audience(): void
     {
         $this->seed(RolePermissionSeeder::class);
 
