@@ -305,7 +305,7 @@ class PlaceSubmissionModerationTest extends TestCase
             ]);
         }
 
-        $this->actingAs($user)->get(route('dashboard', ['gloryhole' => 1]))
+        $this->actingAs($user)->withSession(['locale' => 'de'])->get(route('dashboard', ['gloryhole' => 1]))
             ->assertOk()->assertSee('Mit Gloryhole')->assertDontSee('Ohne Gloryhole')->assertDontSee('Unbekanntes Gloryhole')
             ->assertSee('Cruising-Typ')->assertSee('Zielgruppe');
 
