@@ -164,6 +164,53 @@ class PlaceSubmissionModerationTest extends TestCase
         $this->assertStringContainsString('Privatadresse', $notification->message);
     }
 
+
+    public function test_published_profile_shows_description_and_audience_filters_match_either_selection(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+        $user = User::factory()->create();
+        $typeId = (int) DB::table('place_types')->where('slug', 'park-forest')->value('id');
+
+        foreach ([
+            ['MM Platz', 'mm-platz', true, false, 'Weg hinter dem Parkeingang.'],
+            ['MF Platz', 'mf-platz', false, true, null],
+            ['Beide Platz', 'beide-platz', true, true, null],
+        ] as [$name, $slug, $mm, $mf, $description]) {
+            DB::table('places')->insert([
+                'place_type_id' => $typeId,
+                'name' => $name,
+                'slug' => $slug,
+                'description' => $description,
+                'target_mm' => $mm,
+                'target_mf' => $mf,
+                'latitude' => 51.2,
+                'longitude' => 7.2,
+                'publication_status' => 'published',
+                'legal_status' => 'unclear',
+                'opening_status' => 'unclear',
+                'is_active' => true,
+                'created_by' => $user->id,
+                'approved_by' => $user->id,
+                'approved_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        $this->actingAs($user)->get(route('places.show', 'mm-platz'))
+            ->assertOk()
+            ->assertSee('Weg hinter dem Parkeingang.');
+
+        $this->actingAs($user)->get(route('dashboard', ['target_audience' => ['mm']]))
+            ->assertOk()->assertSee('MM Platz')->assertSee('Beide Platz')->assertDontSee('MF Platz');
+
+        $this->actingAs($user)->get(route('dashboard', ['target_audience' => ['mf']]))
+            ->assertOk()->assertDontSee('MM Platz')->assertSee('Beide Platz')->assertSee('MF Platz');
+
+        $this->actingAs($user)->get(route('dashboard', ['target_audience' => ['mm', 'mf']]))
+            ->assertOk()->assertSee('MM Platz')->assertSee('Beide Platz')->assertSee('MF Platz');
+    }
+
     public function test_regular_user_cannot_open_admin_submission_queue(): void
     {
         $this->seed(DatabaseSeeder::class);
