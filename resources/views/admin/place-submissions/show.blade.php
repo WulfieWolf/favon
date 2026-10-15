@@ -32,13 +32,21 @@
                         <textarea id="description" name="description" rows="4" maxlength="2000" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">{{ old('description', $place->description) }}</textarea>
                     </div>
 
-                    <div class="grid gap-4 md:grid-cols-2">
+                    <div class="grid gap-4 md:grid-cols-3">
                         <div>
                             <label class="text-sm font-medium" for="environment">{{ __('places.suggest.environment') }}</label>
                             <select id="environment" name="environment" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
                                 <option value="">{{ __('admin.place_submissions.unknown') }}</option>
                                 @foreach (['outdoor', 'indoor', 'both'] as $value)
                                     <option value="{{ $value }}" @selected(old('environment', $place->environment) === $value)>{{ __("places.suggest.environment_{$value}") }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium" for="target_audience">{{ __('places.suggest.target_audience') }}</label>
+                            <select id="target_audience" name="target_audience" required class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
+                                @foreach (['men', 'women'] as $value)
+                                    <option value="{{ $value }}" @selected(old('target_audience', $place->target_audience) === $value)>{{ __("places.suggest.target_audience_{$value}") }}</option>
                                 @endforeach
                             </select>
                         </div>
