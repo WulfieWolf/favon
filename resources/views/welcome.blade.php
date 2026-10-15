@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{{ __('Welcome') }} - {{ config('app.name', 'Camperwolf') }}</title>
+        <title>{{ __('Welcome') }} - {{ config('app.name', 'Favon') }}</title>
 
                 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         
