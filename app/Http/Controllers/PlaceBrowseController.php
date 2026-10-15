@@ -22,6 +22,11 @@ class PlaceBrowseController extends Controller
             ->unique()
             ->values();
 
+        $requestedAudiences = collect($request->query('target_audience', []))
+            ->filter(fn ($value) => is_string($value) && in_array($value, ['mm', 'mf'], true))
+            ->unique()
+            ->values();
+
         $placesQuery = DB::table('places as p')
             ->join('place_types as pt', 'pt.id', '=', 'p.place_type_id')
             ->leftJoin('place_addresses as pa', function ($join): void {
@@ -63,6 +68,17 @@ class PlaceBrowseController extends Controller
             $placesQuery->whereIn('pt.slug', $requestedTypes->all());
         }
 
+        if ($requestedAudiences->isNotEmpty()) {
+            $placesQuery->where(function ($query) use ($requestedAudiences): void {
+                if ($requestedAudiences->contains('mm')) {
+                    $query->orWhere('p.target_mm', true);
+                }
+                if ($requestedAudiences->contains('mf')) {
+                    $query->orWhere('p.target_mf', true);
+                }
+            });
+        }
+
         if ($favoritesOnly) {
             $placesQuery->whereExists(function ($query) use ($request): void {
                 $query->selectRaw('1')
@@ -100,6 +116,7 @@ class PlaceBrowseController extends Controller
             'places' => $places,
             'placeTypes' => $placeTypes,
             'selectedTypes' => $requestedTypes->all(),
+            'selectedAudiences' => $requestedAudiences->all(),
             'queryText' => $queryText,
             'favoritesOnly' => $favoritesOnly,
             'favoriteIds' => $favoriteIds,

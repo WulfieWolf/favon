@@ -23,6 +23,7 @@ class PlaceProfileController extends Controller
             ->first([
                 'p.id',
                 'p.name',
+                'p.description',
                 'p.slug',
                 'p.target_mm',
                 'p.target_mf',

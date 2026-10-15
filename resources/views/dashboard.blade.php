@@ -18,7 +18,7 @@
                 <button class="shrink-0 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">{{ __('ui.transition.search') }}</button>
             </div>
 
-            <details class="mt-2" @if ($favoritesOnly || count($selectedTypes)) open @endif>
+            <details class="mt-2" @if ($favoritesOnly || count($selectedTypes) || count($selectedAudiences)) open @endif>
                 <summary class="inline-flex cursor-pointer list-none items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800 [&::-webkit-details-marker]:hidden">
                     <x-tabler-icon name="adjustments-horizontal" class="size-4" />
                     {{ __('ui.transition.filters') }}
@@ -42,6 +42,18 @@
                             @endforeach
                         </div>
                     @endif
+
+                    <fieldset>
+                        <legend class="mb-2 text-sm font-medium">{{ __('places.suggest.target_audience') }}</legend>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach (['mm', 'mf'] as $audience)
+                                <label class="flex items-center gap-1.5 rounded-full border border-zinc-300 px-3 py-1.5 text-xs dark:border-zinc-700">
+                                    <input type="checkbox" name="target_audience[]" value="{{ $audience }}" @checked(in_array($audience, $selectedAudiences, true))>
+                                    {{ __("places.suggest.target_audience_{$audience}") }}
+                                </label>
+                            @endforeach
+                        </div>
+                    </fieldset>
 
                     <div class="flex justify-end">
                         <button class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800">
