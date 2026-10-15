@@ -1,9 +1,9 @@
 <x-layouts::app title="Favon">
     @if (session('place_submission_success'))
-        <div class="fixed inset-0 z-[1000] grid place-items-center bg-black/70 px-4" role="dialog" aria-modal="true" aria-labelledby="place-submission-success-title">
-            <div class="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
-                <h2 id="place-submission-success-title" class="text-xl font-semibold">{{ __('places.submission_success_title') }}</h2>
-                <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-300">{{ __('places.submission_success_message', ['place' => session('place_submission_success.name')]) }}</p>
+        <div class="fixed inset-0 z-[1000] flex items-end justify-center bg-black/70 p-3 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="place-submission-success-title">
+            <div class="max-h-[calc(100dvh-1.5rem)] w-full min-w-0 max-w-md overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl sm:p-6 dark:border-zinc-700 dark:bg-zinc-900">
+                <h2 id="place-submission-success-title" class="break-words text-xl font-semibold">{{ __('places.submission_success_title') }}</h2>
+                <p class="mt-3 break-words text-sm text-zinc-600 dark:text-zinc-300">{{ __('places.submission_success_message', ['place' => session('place_submission_success.name')]) }}</p>
                 <div class="mt-6 flex justify-end">
                     <a href="{{ route('dashboard') }}" class="rounded-lg bg-zinc-950 px-5 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">{{ __('ui.feedback.ok') }}</a>
                 </div>
@@ -12,31 +12,44 @@
     @endif
 
     <div class="mx-auto w-full max-w-7xl space-y-5 px-4 py-6">
-        <div>
-            <h1 class="text-2xl font-semibold">Favon</h1>
-            <p class="mt-1 text-sm text-zinc-500">{{ __('ui.transition.intro') }}</p>
-        </div>
+        <form method="GET" action="{{ route('dashboard') }}" class="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+            <div class="flex gap-2">
+                <input name="q" value="{{ $queryText }}" placeholder="{{ __('ui.transition.search_placeholder') }}" class="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
+                <button class="shrink-0 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">{{ __('ui.transition.search') }}</button>
+            </div>
 
-        <form method="GET" action="{{ route('dashboard') }}" class="grid gap-3 rounded-xl border border-zinc-200 bg-white p-4 md:grid-cols-[1fr_auto_auto] dark:border-zinc-800 dark:bg-zinc-900">
-            <input name="q" value="{{ $queryText }}" placeholder="{{ __('ui.transition.search_placeholder') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
-            @auth
-                <label class="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="favorites" value="1" @checked($favoritesOnly)>
-                    {{ __('ui.transition.favorites_only') }}
-                </label>
-            @endauth
-            <button class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">{{ __('ui.transition.search') }}</button>
+            <details class="mt-2" @if ($favoritesOnly || count($selectedTypes)) open @endif>
+                <summary class="inline-flex cursor-pointer list-none items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800 [&::-webkit-details-marker]:hidden">
+                    <x-tabler-icon name="adjustments-horizontal" class="size-4" />
+                    {{ __('ui.transition.filters') }}
+                </summary>
 
-            @if ($placeTypes->isNotEmpty())
-                <div class="flex flex-wrap gap-2 md:col-span-3">
-                    @foreach ($placeTypes as $type)
-                        <label class="flex items-center gap-1.5 rounded-full border border-zinc-300 px-3 py-1.5 text-xs dark:border-zinc-700">
-                            <input type="checkbox" name="place_types[]" value="{{ $type->slug }}" @checked(in_array($type->slug, $selectedTypes, true))>
-                            {{ __("place_types.{$type->slug}.name") }}
+                <div class="mt-2 space-y-3 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+                    @auth
+                        <label class="flex items-center gap-2 text-sm">
+                            <input type="checkbox" name="favorites" value="1" @checked($favoritesOnly)>
+                            {{ __('ui.transition.favorites_only') }}
                         </label>
-                    @endforeach
+                    @endauth
+
+                    @if ($placeTypes->isNotEmpty())
+                        <div class="flex flex-wrap gap-2">
+                            @foreach ($placeTypes as $type)
+                                <label class="flex items-center gap-1.5 rounded-full border border-zinc-300 px-3 py-1.5 text-xs dark:border-zinc-700">
+                                    <input type="checkbox" name="place_types[]" value="{{ $type->slug }}" @checked(in_array($type->slug, $selectedTypes, true))>
+                                    {{ __("place_types.{$type->slug}.name") }}
+                                </label>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <div class="flex justify-end">
+                        <button class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800">
+                            {{ __('ui.transition.apply_filters') }}
+                        </button>
+                    </div>
                 </div>
-            @endif
+            </details>
         </form>
 
         <div class="relative">
@@ -46,7 +59,7 @@
                 type="button"
                 data-favon-nearby
                 data-error="{{ __('ui.transition.location_failed') }}"
-                class="absolute left-3 top-3 z-[500] inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-semibold shadow-lg ring-1 ring-zinc-200 hover:bg-zinc-50 dark:bg-zinc-900 dark:ring-zinc-700 dark:hover:bg-zinc-800"
+                class="absolute bottom-8 right-3 z-[500] inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-semibold shadow-lg ring-1 ring-zinc-200 hover:bg-zinc-50 dark:bg-zinc-900 dark:ring-zinc-700 dark:hover:bg-zinc-800"
             >
                 <x-tabler-icon name="current-location" class="size-5" />
                 <span class="hidden sm:inline">{{ __('ui.transition.nearby') }}</span>

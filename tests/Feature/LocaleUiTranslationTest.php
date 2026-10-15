@@ -56,12 +56,16 @@ class LocaleUiTranslationTest extends TestCase
         $this->actingAs($user)->withSession(['locale' => 'de'])
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Keine Plätze gefunden');
+            ->assertSee('Keine Plätze gefunden')
+            ->assertSee('Filter')
+            ->assertDontSee('Übergangsansicht während des Favon-Aufbaus.');
 
         $this->actingAs($user)->withSession(['locale' => 'en'])
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('No places found');
+            ->assertSee('No places found')
+            ->assertSee('Filters')
+            ->assertDontSee('Transitional view while Favon is being built.');
     }
 
     public function test_favorites_page_is_available_in_german_and_english(): void
