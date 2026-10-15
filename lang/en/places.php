@@ -96,6 +96,10 @@ return [
         'save' => 'Save changes',
         'saved' => 'Place updated.',
     ],
+    'filters' => [
+        'cruising_type' => 'Cruising type',
+        'gloryhole' => 'Gloryhole',
+    ],
     'profile' => [
         'target_audience' => 'Target audience: :audience',
     ],
