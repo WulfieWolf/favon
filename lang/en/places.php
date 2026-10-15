@@ -46,6 +46,9 @@ return [
         'environment_outdoor' => 'Outdoor',
         'environment_indoor' => 'Indoor',
         'environment_both' => 'Both',
+        'target_audience' => 'Target audience',
+        'target_audience_mm' => 'MM',
+        'target_audience_mf' => 'MF',
         'gloryhole' => 'Gloryhole?',
         'yes' => 'Yes',
         'no' => 'No',
@@ -86,6 +89,9 @@ return [
         'finish_help' => 'Name, place type and position are enough. If you want, you can add a few relevant features in the next step.',
         'submit_now' => 'Submit for review now',
         'continue_quick_features' => 'Continue: add features',
+    ],
+    'profile' => [
+        'target_audience' => 'Target audience: :audience',
     ],
     'draft' => [
         'badge' => 'Draft',

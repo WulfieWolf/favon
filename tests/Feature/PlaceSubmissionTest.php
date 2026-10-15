@@ -26,6 +26,7 @@ class PlaceSubmissionTest extends TestCase
             'longitude' => 7.011555,
             'description' => 'Treffpunkt im hinteren Bereich des Parks.',
             'environment' => 'outdoor',
+            'target_audience' => 'mm',
             'has_gloryhole' => '0',
             'street_address' => 'Beispielstraße 12',
             'postal_code' => '45127',
@@ -45,6 +46,7 @@ class PlaceSubmissionTest extends TestCase
         $this->assertNull($place->approved_by);
         $this->assertNull($place->approved_at);
         $this->assertSame('outdoor', $place->environment);
+        $this->assertSame('mm', $place->target_audience);
         $this->assertFalse((bool) $place->has_gloryhole);
         $this->assertSame('Treffpunkt im hinteren Bereich des Parks.', $place->description);
 
@@ -78,6 +80,7 @@ class PlaceSubmissionTest extends TestCase
             'latitude' => 51.0,
             'longitude' => 7.0,
             'environment' => 'outdoor',
+            'target_audience' => 'mm',
             'has_gloryhole' => '1',
         ])->assertRedirect(route('dashboard'));
 
@@ -92,7 +95,7 @@ class PlaceSubmissionTest extends TestCase
             ->assertDontSee('Noch nicht freigegeben');
     }
 
-    public function test_submission_requires_only_type_name_and_location_as_core_fields(): void
+    public function test_submission_rejects_invalid_core_fields_and_target_audience(): void
     {
         $this->seed(RolePermissionSeeder::class);
 
@@ -109,6 +112,7 @@ class PlaceSubmissionTest extends TestCase
                 'latitude' => 95,
                 'longitude' => 181,
                 'environment' => 'somewhere',
+                'target_audience' => 'everyone',
             ])
             ->assertRedirect(route('dashboard'))
             ->assertSessionHasErrors([
@@ -117,6 +121,7 @@ class PlaceSubmissionTest extends TestCase
                 'latitude',
                 'longitude',
                 'environment',
+                'target_audience',
             ]);
 
         $this->assertDatabaseCount('places', 0);
@@ -135,6 +140,7 @@ class PlaceSubmissionTest extends TestCase
                 'name' => 'Testplatz',
                 'latitude' => 51.1,
                 'longitude' => 7.1,
+                'target_audience' => 'mf',
             ])
             ->assertRedirect(route('dashboard'));
 
@@ -143,6 +149,7 @@ class PlaceSubmissionTest extends TestCase
         $this->assertNotNull($place);
         $this->assertNull($place->description);
         $this->assertNull($place->environment);
+        $this->assertSame('mf', $place->target_audience);
         $this->assertNull($place->has_gloryhole);
         $this->assertDatabaseMissing('place_addresses', ['place_id' => $place->id]);
     }

@@ -24,6 +24,7 @@ class PlaceProfileController extends Controller
                 'p.id',
                 'p.name',
                 'p.slug',
+                'p.target_audience',
                 'p.latitude',
                 'p.longitude',
                 'pt.slug as place_type_slug',

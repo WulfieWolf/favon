@@ -7,6 +7,11 @@
                 <div>
                     <h1 class="text-2xl font-semibold">{{ $place->name }}</h1>
                     <div class="mt-1 text-sm text-zinc-500">{{ __("place_types.{$place->place_type_slug}.name") }}</div>
+                    @if ($place->target_audience)
+                        <div class="mt-2 inline-flex rounded-full border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:border-zinc-700 dark:text-zinc-300">
+                            {{ __('places.profile.target_audience', ['audience' => __("places.suggest.target_audience_{$place->target_audience}")]) }}
+                        </div>
+                    @endif
                 </div>
                 @auth
                     <form method="POST" action="{{ $isFavorite ? route('favorites.destroy', $place->slug) : route('favorites.store', $place->slug) }}">
