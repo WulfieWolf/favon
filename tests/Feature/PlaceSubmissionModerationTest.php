@@ -18,6 +18,7 @@ class PlaceSubmissionModerationTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
+            ->withSession(['locale' => 'de'])
             ->get(route('places.create'))
             ->assertOk()
             ->assertSee('Gay-Sauna')
