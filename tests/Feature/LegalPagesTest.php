@@ -68,14 +68,13 @@ class LegalPagesTest extends TestCase
             ->assertDontSee(route('legal.privacy'), false);
     }
 
-    public function test_fixed_footer_remains_on_public_legal_pages_but_not_login_gateway(): void
+    public function test_legal_pages_remain_reachable_without_visible_footer_links(): void
     {
         $this->get(route('legal.imprint'))
             ->assertOk()
-            ->assertSee('fixed inset-x-0 bottom-0', false)
-            ->assertSee(route('legal.imprint'), false)
-            ->assertSee(route('legal.privacy'), false)
-            ->assertSee(route('legal.terms'), false);
+            ->assertDontSee('fixed inset-x-0 bottom-0', false)
+            ->assertDontSee(route('legal.privacy'), false)
+            ->assertDontSee(route('legal.terms'), false);
 
         $this->get(route('home'))
             ->assertOk()
