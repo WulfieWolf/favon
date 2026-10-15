@@ -11,6 +11,8 @@ return [
         'overview' => 'Overview',
         'cancel' => 'Cancel',
         'check_inputs' => 'Please check your entries.',
+        'google_maps' => 'Google Maps',
+        'apple_maps' => 'Apple Maps',
         'moderation_note' => 'Note for moderation',
     ],
     'suggest' => [
