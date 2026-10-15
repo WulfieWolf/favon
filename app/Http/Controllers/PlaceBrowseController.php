@@ -12,6 +12,7 @@ class PlaceBrowseController extends Controller
     {
         $queryText = trim((string) $request->query('q', ''));
         $favoritesOnly = (bool) $request->user() && $request->boolean('favorites');
+        $gloryholeOnly = $request->boolean('gloryhole');
 
         $nearLat = $this->coordinate($request->query('near_lat'), -90, 90);
         $nearLng = $this->coordinate($request->query('near_lng'), -180, 180);
@@ -79,6 +80,10 @@ class PlaceBrowseController extends Controller
             });
         }
 
+        if ($gloryholeOnly) {
+            $placesQuery->where('p.has_gloryhole', true);
+        }
+
         if ($favoritesOnly) {
             $placesQuery->whereExists(function ($query) use ($request): void {
                 $query->selectRaw('1')
@@ -119,6 +124,7 @@ class PlaceBrowseController extends Controller
             'selectedAudiences' => $requestedAudiences->all(),
             'queryText' => $queryText,
             'favoritesOnly' => $favoritesOnly,
+            'gloryholeOnly' => $gloryholeOnly,
             'favoriteIds' => $favoriteIds,
             'nearLat' => $nearLat,
             'nearLng' => $nearLng,

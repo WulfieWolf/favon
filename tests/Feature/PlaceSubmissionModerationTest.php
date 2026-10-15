@@ -277,6 +277,42 @@ class PlaceSubmissionModerationTest extends TestCase
         $this->assertSame(0, DB::table('user_notifications')->where('user_id', $creator->id)->count());
     }
 
+
+    public function test_gloryhole_filter_only_returns_confirmed_places(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+        $user = User::factory()->create();
+        $typeId = (int) DB::table('place_types')->where('slug', 'park-forest')->value('id');
+
+        foreach ([['Mit Gloryhole', 'mit-gloryhole', true], ['Ohne Gloryhole', 'ohne-gloryhole', false], ['Unbekanntes Gloryhole', 'unbekanntes-gloryhole', null]] as [$name, $slug, $value]) {
+            DB::table('places')->insert([
+                'place_type_id' => $typeId,
+                'name' => $name,
+                'slug' => $slug,
+                'has_gloryhole' => $value,
+                'target_mm' => true,
+                'latitude' => 51.2,
+                'longitude' => 7.2,
+                'publication_status' => 'published',
+                'legal_status' => 'unclear',
+                'opening_status' => 'unclear',
+                'is_active' => true,
+                'created_by' => $user->id,
+                'approved_by' => $user->id,
+                'approved_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        $this->actingAs($user)->withSession(['locale' => 'de'])->get(route('dashboard', ['gloryhole' => 1]))
+            ->assertOk()->assertSee('Mit Gloryhole')->assertDontSee('Ohne Gloryhole')->assertDontSee('Unbekanntes Gloryhole')
+            ->assertSee('Cruising-Typ')->assertSee('Zielgruppe');
+
+        $this->actingAs($user)->get(route('dashboard', ['gloryhole' => 1, 'target_audience' => ['mf']]))
+            ->assertOk()->assertDontSee('Mit Gloryhole');
+    }
+
     public function test_regular_user_cannot_open_admin_submission_queue(): void
     {
         $this->seed(DatabaseSeeder::class);

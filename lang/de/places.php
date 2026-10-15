@@ -96,6 +96,10 @@ return [
         'save' => 'Änderungen speichern',
         'saved' => 'Platz aktualisiert.',
     ],
+    'filters' => [
+        'cruising_type' => 'Cruising-Typ',
+        'gloryhole' => 'Gloryhole',
+    ],
     'profile' => [
         'target_audience' => 'Zielgruppe: :audience',
     ],
