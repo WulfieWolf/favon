@@ -64,6 +64,7 @@ class PlaceSubmissionModerationController extends Controller
                 'name' => trim($data['name']),
                 'description' => $this->nullableTrim($data['description'] ?? null),
                 'environment' => $data['environment'] ?? null,
+                'target_audience' => $data['target_audience'],
                 'has_gloryhole' => array_key_exists('has_gloryhole', $data) && $data['has_gloryhole'] !== null
                     ? (bool) $data['has_gloryhole']
                     : null,
@@ -198,6 +199,7 @@ class PlaceSubmissionModerationController extends Controller
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'description' => ['nullable', 'string', 'max:2000'],
             'environment' => ['nullable', Rule::in(['indoor', 'outdoor', 'both'])],
+            'target_audience' => ['required', Rule::in(['men', 'women'])],
             'has_gloryhole' => ['nullable', 'boolean'],
             'street' => ['nullable', 'string', 'max:255'],
             'house_number' => ['nullable', 'string', 'max:32'],
@@ -225,7 +227,7 @@ class PlaceSubmissionModerationController extends Controller
 
         $item = $query->first([
             'p.id', 'p.name', 'p.slug', 'p.place_type_id', 'p.description', 'p.environment',
-            'p.has_gloryhole', 'p.latitude', 'p.longitude', 'p.created_by', 'p.created_at',
+            'p.target_audience', 'p.has_gloryhole', 'p.latitude', 'p.longitude', 'p.created_by', 'p.created_at',
             'pa.country_code', 'pa.postal_code', 'pa.city', 'pa.street', 'pa.house_number',
             'u.name as creator_name',
         ]);
