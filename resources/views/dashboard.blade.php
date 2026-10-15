@@ -39,7 +39,39 @@
             @endif
         </form>
 
-        <div id="favon-map" class="h-[42vh] min-h-80 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800"></div>
+        <div class="relative">
+            <div id="favon-map" class="h-[42vh] min-h-80 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800"></div>
+
+            <button
+                type="button"
+                data-favon-nearby
+                data-error="{{ __('ui.transition.location_failed') }}"
+                class="absolute left-3 top-3 z-[500] inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-semibold shadow-lg ring-1 ring-zinc-200 hover:bg-zinc-50 dark:bg-zinc-900 dark:ring-zinc-700 dark:hover:bg-zinc-800"
+            >
+                <x-tabler-icon name="current-location" class="size-5" />
+                <span class="hidden sm:inline">{{ __('ui.transition.nearby') }}</span>
+            </button>
+
+            @if (auth()->check() && app(\App\Services\PermissionService::class)->can(auth()->user(), 'places.submit'))
+                <details class="group absolute right-3 top-3 z-[500]">
+                    <summary class="grid size-12 cursor-pointer list-none place-items-center rounded-full bg-blue-600 text-3xl font-light leading-none text-white shadow-lg transition hover:bg-blue-500 [&::-webkit-details-marker]:hidden">+</summary>
+                    <div class="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-zinc-200 bg-white p-1 shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
+                        <a href="{{ route('places.create') }}" class="block rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            {{ __('ui.transition.add_place') }}
+                        </a>
+                        <button
+                            type="button"
+                            data-favon-create-here
+                            data-url="{{ route('places.create') }}"
+                            data-error="{{ __('ui.transition.location_failed') }}"
+                            class="block w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                        >
+                            {{ __('ui.transition.add_place_here') }}
+                        </button>
+                    </div>
+                </details>
+            @endif
+        </div>
 
         <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             @forelse ($places as $place)
@@ -59,6 +91,11 @@
                     </div>
                     @if ($place->city || $place->postal_code)
                         <div class="mt-3 text-sm text-zinc-600 dark:text-zinc-300">{{ trim(($place->postal_code ? $place->postal_code.' ' : '').($place->city ?? '')) }}</div>
+                    @endif
+                    @if ($nearby && isset($place->distance_km))
+                        <div class="mt-1 text-xs font-medium text-zinc-500">
+                            {{ __('ui.transition.distance_away', ['distance' => number_format((float) $place->distance_km, (float) $place->distance_km < 10 ? 1 : 0, ',', '.')]) }}
+                        </div>
                     @endif
                 </article>
             @empty
@@ -82,13 +119,17 @@
         <script>
             (() => {
                 const points = @json($mapPoints);
+                const userPosition = @json($nearby ? ['lat' => $nearLat, 'lng' => $nearLng] : null);
 
                 const init = () => {
                     const element = document.getElementById('favon-map');
                     if (!element || element.dataset.ready || !window.L) return;
                     element.dataset.ready = '1';
 
-                    const map = window.L.map(element).setView([51.1657, 10.4515], 6);
+                    const map = window.L.map(element).setView(
+                        userPosition ? [userPosition.lat, userPosition.lng] : [51.1657, 10.4515],
+                        userPosition ? 13 : 6
+                    );
                     window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         maxZoom: 19,
                         attribution: '&copy; OpenStreetMap contributors',
@@ -100,7 +141,15 @@
                         marker.bindPopup('<a href="' + point.url + '">' + point.name.replaceAll('<', '&lt;').replaceAll('>', '&gt;') + '</a>');
                         bounds.push([point.lat, point.lng]);
                     });
-                    if (bounds.length) map.fitBounds(bounds, { padding: [24, 24], maxZoom: 14 });
+                    if (userPosition) {
+                        window.L.circleMarker([userPosition.lat, userPosition.lng], {
+                            radius: 8,
+                            weight: 3,
+                            fillOpacity: 0.8,
+                        }).addTo(map).bindPopup(@json(__('ui.transition.my_position')));
+                    } else if (bounds.length) {
+                        map.fitBounds(bounds, { padding: [24, 24], maxZoom: 14 });
+                    }
                 };
 
                 document.addEventListener('DOMContentLoaded', init, { once: true });
