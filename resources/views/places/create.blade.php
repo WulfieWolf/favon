@@ -70,6 +70,7 @@
 
                         <fieldset>
                             <legend class="text-sm font-medium">{{ __('places.suggest.target_audience') }}</legend>
+                            <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{{ __('places.suggest.target_audience_help') }}</p>
                             <div class="mt-2 grid grid-cols-2 gap-2">
                                 @foreach (['mm', 'mf'] as $value)
                                     <label class="cursor-pointer">
