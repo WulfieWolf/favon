@@ -1,1287 +1,159 @@
 # Favon – Project Context
 
-_Last updated: 2026-10-15 – cleanup deployed; first native Favon place-submission workflow in implementation_
+_Last updated: 2026-10-15 – Favon-native place workflow live/merged through PR #16_
 
 This file is the authoritative working context for **Favon**.
 
-It must contain only information that is relevant to Favon itself, Favon's implementation, Favon's deployment, or the one-time technical inheritance from Camperwolf that is still useful for Favon development.
+It must contain only information relevant to Favon itself, Favon's implementation, Favon's deployment, or one-time technical inheritance that is still useful for Favon development.
 
-Do not reintroduce Camperwolf product planning, Camperwolf import-source status, Camperwolf marketing plans, Camperwolf content rules, Camperwolf data-maintenance backlog, or other unrelated Camperwolf project history here.
+Do not reintroduce Camperwolf product planning, data-source status, marketing plans, content rules, backlog or unrelated Camperwolf history.
 
 ---
 
 # 1. Project identity
 
 **Project:** Favon  
-**Domain:** favon.de  
-**GitHub repository:** `WulfieWolf/favon`  
+**Domain:** `favon.de`  
+**Repository:** `WulfieWolf/favon`  
 **Framework:** Laravel  
-**Hosting:** same Plesk server as Camperwolf, but fully separate application
+**Hosting:** Plesk, separate application on the same physical server as Camperwolf
 
-Favon is a community-maintained directory/map for cruising and hookup-relevant places.
+Favon is a login-gated community directory/map for cruising and hookup-relevant places.
 
-The central product principle is:
+Core product principle:
 
 > **Places, not people.**
 
-Favon is intentionally **not**:
+Favon is intentionally not a dating platform, social network, contact marketplace, escort/prostitution directory, porn site or user-discovery service.
 
-- a dating platform
-- a social network
-- a hookup/contact marketplace
-- an escort or prostitution directory
-- a porn site
-- a user-discovery service
-
-The service should describe and maintain information about **places**, while revealing as little as possible about the people who use or maintain the service.
+The product describes places while exposing as little information as possible about the people using or maintaining it.
 
 ---
 
-# 2. Hard project separation: Favon vs. Camperwolf
+# 2. Permanent project separation
 
-This is a permanent development rule.
+Favon and Camperwolf are independent projects.
 
-Favon and Camperwolf are **two independent projects**.
+All Favon writes go only to:
 
-## Favon repository
+`WulfieWolf/favon`
 
-All Favon code changes belong in:
-
-```
-WulfieWolf/favon
-```
-
-## Camperwolf repository
-
-Camperwolf remains:
-
-```
-WulfieWolf/camperwolf
-```
-
-For Favon work, Camperwolf is **read-only reference material**.
+Camperwolf is read-only reference material at most.
 
 Never:
 
-- commit Favon changes to Camperwolf
-- push to Camperwolf while working on Favon
-- modify Camperwolf configuration for Favon
-- share Favon's database, .env, application state, session state, cache namespace or storage with Camperwolf
-- assume a Camperwolf product feature belongs in Favon just because code for it exists
+- commit or push Favon work to Camperwolf;
+- modify Camperwolf configuration while working on Favon;
+- share Favon database, `.env`, cache/session/storage or application state with Camperwolf;
+- run Favon migration/deployment commands in the Camperwolf project;
+- assume copied Camperwolf functionality belongs in Favon.
 
-Before any write operation, verify which project is currently being worked on.
-
-If the current task is Favon, writes go only to `WulfieWolf/favon`.
-
-Camperwolf may be read when useful for:
-
-- extracting proven Laravel patterns
-- reusing map/geolocation code
-- reusing security/abuse patterns
-- reusing deployment conventions
-- comparing behavior during the initial slimming phase
-
-Favon should then diverge freely.
+Before destructive operations, positively verify the active project/database.
 
 ---
 
-# 3. Origin of the codebase
+# 3. Working style / development rules
 
-Favon was initialized from the current Camperwolf Laravel codebase as a **one-time starting snapshot**.
-
-This is not intended to create a continuing fork relationship.
-
-The goal is:
-
-1. reuse a proven application foundation
-2. remove Camperwolf-specific complexity aggressively
-3. rebuild Favon around a much smaller domain model
-4. keep only infrastructure that materially helps Favon
-
-The original copied Camperwolf code is therefore not a specification for Favon.
-
-When deciding between:
-
-- keeping a complex Camperwolf subsystem
-- replacing it with a much simpler Favon-specific implementation
-
-prefer the simpler Favon implementation unless there is a strong technical reason not to.
+- Prefer the smallest useful Favon-specific implementation over inherited Camperwolf complexity.
+- Start deliberately small and add features from real user feedback.
+- Mobile-first, map-centric UI.
+- PowerShell commands must be one line each.
+- SSH/Linux commands may be multiline.
+- Normal workflow: feature branch -> local tests/practical check -> PR -> squash merge to `main` -> production pull/deploy.
+- Never use `migrate:fresh` on production.
+- Production migrations must be normal forward migrations and explicitly reviewed for safety.
+- Do not restore deleted Camperwolf systems merely to satisfy stale tests.
 
 ---
 
-# 4. Product philosophy
+# 4. Product non-negotiables
 
-Favon should be substantially simpler than Camperwolf.
+Unless explicitly reconsidered:
 
-Primary goals:
-
-- mobile-first
-- very low interaction friction
-- site content is login-gated; unauthenticated visitors see only the access gateway plus required public legal/support entry points
-- community users authenticate via Telegram; classic password login is reserved for admins/system owner
-- minimal forms
-- no public user identities
-- no user profiles as social objects
-- no free-text sexual content
-- no photos
-- no tracking/profiling
-- minimal moderation burden
-- current information maintained through short community microtasks
-
-The service should be usable without needing to understand a complex contribution workflow.
-
-A user who is physically at a place should be able to contribute useful data within seconds.
-
-Core interaction principle:
-
-> **On site: quickly confirm whether things still fit. At home: work on details.**
+1. Places, not people.
+2. Content is login-gated; unauthenticated users see only the gateway and required public legal/support entry points.
+3. Community authentication is Telegram-only.
+4. Classic e-mail/password login is reserved for the owner/admin.
+5. No public contributor identities.
+6. No “who is here”.
+7. No public visit histories.
+8. No user photos/place photos.
+9. No free-text reviews.
+10. No chat, DMs, dating, matching or contact ads.
+11. No identifiable-person descriptions.
+12. No movement profiles.
+13. Raw user GPS must not be retained beyond the immediate feature need.
+14. Stable place facts and live/temporary conditions are separate concepts.
+15. Favon remains technically and operationally separate from Camperwolf.
 
 ---
 
-# 5. Scope of places
-
-Favon should stay narrowly focused on typical cruising/hookup-oriented places.
-
-Likely categories include:
-
-- public cruising spots / cruising areas
-- gay saunas
-- gay bars or similar venues where the hookup/cruising relevance is genuinely part of the venue's purpose or common use
-- other closely related public/commercial places that fit the same narrow use case
-
-The exact place-type catalogue is still to be finalized.
-
-## Out of scope
-
-Do not turn Favon into a broad adult-industry directory.
-
-Reject or avoid:
-
-- brothel directory
-- escort directory
-- private prostitution offers
-- private apartments or homes
-- personal ads
-- profiles of sex workers
-- pornographic venues included only because pornography is consumed there
-- generic “places where sex can be purchased”
-- schools
-- playgrounds
-- other clearly inappropriate child/family-sensitive locations
-- private property where normal use would imply trespassing
-- doxxing or personally identifying information
-
-Public outdoor places may be listed if the location itself is legitimate to enter/use and the entry can be described neutrally.
-
-Favon must describe **where a place is and what kind of place it is**, not provide instructions for how to engage in sexual activity unnoticed.
-
----
-
-# 6. Authentication and account model
-
-Implemented V1 model: **Telegram-only login for community users**, while the existing e-mail/password login remains available only for administrators/system owner.
-
-### Production verification (2026-10-07)
-
-- Telegram OIDC login is live on `favon.de`.
-- First community login created `User-0000001`.
-- The community account has no e-mail address and no password.
-- Exactly one `community_accounts` row maps the account to a stable Telegram numeric ID.
-- The system-owner account is separate from Telegram community accounts.
-- Classic e-mail/password login works for the system owner via `FAVON_OWNER_EMAIL`.
-- Public registration remains disabled.
-- Active Favon config and environment namespaces use `favon.*` and `FAVON_*`.
-
-## Implemented login flow
-
-- unauthenticated visitors land on the Favon access gateway
-- gateway offers “Mit Telegram anmelden” and a separate “Admin-Login”
-- Telegram OIDC authenticates community users through the authorization-code flow with PKCE
-- Favon validates state, nonce, issuer, audience, expiry, RS256 signature and Telegram JWKS before accepting the identity
-- the authorization code is exchanged server-side using the Telegram client ID/client secret and PKCE verifier
-- only the stable Telegram numeric ID from the validated OIDC subject is persisted for community authentication
-- Telegram first name, last name, username, profile photo and phone number are not stored
-- the callback contains only OIDC protocol data; Telegram profile fields are not placed in Favon's URLs
-- unknown Telegram ID -> a minimal Favon account is created automatically
-- known Telegram ID -> the existing Favon account is reused
-- public Fortify registration is disabled
-- password login is rejected for normal community users even if password credentials were ever present
-
-Do not rely on Telegram username because it can change.
-
-## Minimal account data
-
-Implemented/current minimum direction:
-
-- internal Favon user ID
-- stable Telegram numeric ID in a separate `community_accounts` mapping
-- generated readable internal name such as `User-0000001`
-- role / permissions
-- ban/abuse state
-- timestamps
-
-Avoid storing unless technically required:
-
-- Telegram display name
-- Telegram username
-- profile photo
-- phone number
-
-## Public anonymity
-
-Users must never publicly see who:
-
-- created a place
-- edited a place
-- voted on a property
-- rated a place
-- checked in
-- favorited a place
-- reported a place
-
-No public contributor history.
-
-No public visit history.
-
-No public user discovery.
-
-No follower/friend model.
-
-No “who is here” feature.
-
-The system is therefore **pseudonymous**, not mathematically anonymous: administrators may still need internal account mapping for abuse prevention and bans.
-
----
-
-# 7. Place creation
-
-Place creation must be extremely low-friction.
-
-## Minimum
-
-Required:
-
-- place type
-- location / coordinates
-
-Optional:
-
-- name
-
-If no name exists, the display name can fall back to the place type.
-
-Examples:
-
-```
-Cruising-Platz
-```
-
-or:
-
-```
-Stadtpark Essen · Cruising-Platz
-```
-
-## Small set of basic characteristics
-
-A few stable characteristics may be collected at creation because they define the place and are unlikely to need a live health check.
-
-Current candidates:
-
-- indoor / outdoor
-- typical/intended audience
-- parking available
-
-Potential audience model is still undecided; current conceptual options include male / female / mixed or equivalent neutral terminology.
-
-Keep this set small.
-
----
-
-# 8. Data model principle: stable facts vs. live conditions
-
-Favon distinguishes two fundamentally different categories of information.
-
-## 8.1 Stable/base place information
-
-Examples:
-
-- location
-- place type
-- name
-- indoor/outdoor
-- typical audience
-- parking available
-
-These are maintained from the **place profile**, not during every check-in.
-
-Users can confirm whether the current value is still correct or vote for a valid alternative.
-
-Example:
-
-```
-Current: Outdoor
-Stimmt das?
-[Ja] [Nein]
-```
-
-If “Nein”, the user can choose a valid alternative such as Indoor.
-
-A single user must not be able to rewrite important core facts immediately.
-
-Consensus / moderation thresholds can depend on field sensitivity.
-
-Position changes deserve more caution than a simple binary property.
-
-## 8.2 Variable/live information
-
-These are things that can meaningfully change and that a person on site can verify quickly.
-
-Current examples:
-
-- currently accessible/open
-- toilet currently available
-- washing facility currently available
-- waste disposal currently available
-- lighting operational
-
-This catalogue should remain deliberately short.
-
-Variable information is primarily refreshed through check-in health checks.
-
----
-
-# 9. Community voting / consensus
-
-Favon should avoid an “authoritative editor” model for ordinary facts.
-
-Instead, current state is derived from community confirmations.
-
-Internally, individual votes should remain linked to an account where necessary for:
-
-- duplicate-vote prevention
-- rate limits
-- abuse investigation
-- vote replacement/update rules
-- moderation
-
-Publicly, only aggregate state is shown.
-
-A conceptual vote record may contain:
-
-```
-place_id
-feature_or_field_id
-user_id
-value
-voted_at
-```
-
-The exact schema is still open.
-
-## Temporal freshness
-
-Variable information should decay over time.
-
-Example:
-
-If a toilet was confirmed repeatedly a year ago but nobody has confirmed it recently, it should eventually stop appearing as confidently current.
-
-Concept:
-
-- each vote has a timestamp
-- only sufficiently recent votes affect current state
-- old votes expire from active consensus
-- stale features become unconfirmed
-- different features may use different TTL/freshness windows
-
-Stable properties such as indoor/outdoor do not need the same short expiry behavior.
-
----
-
-# 10. Check-in
-
-Check-in is a core Favon feature.
-
-Its purpose is to answer:
-
-> **Is something currently happening here?**
-
-It must never answer:
-
-> **Who is here?**
-
-## Proximity validation
-
-Expected flow:
-
-1. user taps check-in
-2. browser requests current position
-3. server verifies that the user is within an acceptable radius of the place
-4. raw position is used only for this validation
-5. raw GPS coordinates are not stored
-
-Exact radius is still TBD.
-
-Earlier conceptual range only: roughly 100–300 m depending on practical testing.
-
-## Check-in lifetime
-
-Check-ins are short-lived and expire automatically.
-
-Exact lifetime is still TBD.
-
-Earlier conceptual range only: roughly 60–90 minutes.
-
-## Minimal check-in record
-
-Possible model:
-
-```
-place_id
-user_id or temporary pseudonymous token
-checked_in_at
-expires_at
-```
-
-The account link should exist only as long as technically needed to prevent duplicate active check-ins and abuse.
-
-Long-term movement histories should not be built.
-
-## Public output
-
-Possible public presentation:
-
-- “Aktuell 3 Check-ins”
-- “Hier ist gerade etwas los”
-- quiet / some activity / busy
-
-Never show:
-
-- user names
-- profile links
-- visitor lists
-- who arrived when
-- how often one specific user visits
-
----
-
-# 11. Check-in health check
-
-A check-in should double as a very quick health check of current place conditions.
-
-Core rule:
-
-> **Check-in is for current condition, not stable place editing.**
-
-## Default flow
-
-Always establish whether the place is currently accessible/open.
-
-Then optionally confirm only relevant variable features.
-
-Ideal compact interaction:
-
-> **Alles noch aktuell?**  
-> [ Ja, passt ] [ Nein, etwas stimmt nicht ]
-
-If “Ja”:
-
-- current accessibility is freshly confirmed
-- currently listed variable features may receive a fresh confirmation
-
-If “Nein”:
-
-- show only the few variable features that could currently be wrong
-- user identifies the affected feature(s)
-
-## Example: toilet
-
-Options may be:
-
-- still available
-- unknown
-- not available
-
-If unavailable, optionally distinguish:
-
-- temporarily unavailable
-- permanently removed
-- unknown
-
-## Example: accessibility
-
-Options may be:
-
-- accessible/open
-- unknown
-- inaccessible/closed
-
-If closed:
-
-- temporary
-- permanent
-- unknown
-
-One negative vote must not instantly rewrite the public state.
-
-Prefer recent independent-user consensus.
-
-## Intelligent microtasks
-
-Do not ask every visitor every possible question.
-
-Prioritize stale/uncertain information.
-
-Example:
-
-- toilet confirmed 15 times today → do not ask again
-- washing facility unconfirmed for months → ask the next suitable visitor
-
-Goal: useful maintenance in seconds.
-
----
-
-# 12. Ratings
-
-Favon should have **structured ratings only**.
-
-No free-text reviews.
-
-No user photos.
-
-No sexually explicit “experience reports”.
-
-## Potential rating dimensions
-
-Current candidates:
-
-- cleanliness
-- discretion/privacy
-- lighting
-- accessibility
-- public/foot traffic
-- feeling of safety
-- atmosphere (optional)
-
-Likely scale: 1–5.
-
-Additional structured observations may include:
-
-- mostly daytime / evening / night
-- quiet / variable / busy
-- open / partly screened / discreet
-- typical audience pattern
-
-Final questionnaire should remain short enough for mobile use.
-
-Preferred wording:
-
-- “Ort bewerten”
-- “Einschätzung abgeben”
-
-Avoid wording that encourages explicit descriptions of sexual encounters.
-
----
-
-# 13. Favorites
-
-Favorites are useful and can remain part of Favon.
-
-They are private user state.
-
-Never publicly reveal:
-
-- who favorited a place
-- how many favorites a specific user has
-- a user's public favorite list
-
-Aggregate favorite counts should only be exposed if there is a clear product reason later.
-
----
-
-# 14. Photos and free text
-
-Current product decision:
-
-- **no place photos**
-- **no review photos**
-- **no user-uploaded media**
-- **no free-text reviews**
-- **no explicit sexual descriptions**
-
-This is a deliberate architectural/product constraint, not merely deferred functionality.
-
-Benefits:
-
-- substantially lower moderation burden
-- fewer privacy risks
-- less risk of identifiable people appearing in media
-- less explicit sexual content
-- simpler youth-protection position
-- smaller storage/infrastructure footprint
-
-Owner-specific media uploads are not currently part of the concept.
-
----
-
-# 15. Moderation
-
-Favon controls its catalogue.
-
-Not every submitted place needs to be published.
-
-Reject entries involving:
-
-- private residences
-- personal ads
-- doxxing
-- identifiable visitor descriptions
-- pornographic content
-- explicit sexual instructions
-- child/family-sensitive locations
-- obvious abuse/trolling
-- locations requiring trespassing
-- entries outside Favon's defined place scope
-
-A robust report/takedown route should exist for:
-
-- wrong places
-- inappropriate entries
-- owners/operators
-- neighbours/affected parties
-- legal complaints
-
-Administrative identity mapping may be used where needed to enforce bans.
-
----
-
-# 16. Privacy / GDPR direction
-
-Favon requires stronger privacy-by-design than an ordinary place directory because a check-in at a cruising/gay venue can potentially reveal information about sexual life or orientation.
-
-This may involve special-category data implications under GDPR.
-
-Design accordingly.
-
-## Core privacy rules
-
-- raw GPS location is not stored
-- no movement profiles
-- no public visit history
-- no public account attribution
-- no unnecessary Telegram profile data
-- short retention for active check-ins
-- collect only data needed for a specific function
-- separate public aggregate data from internal abuse-prevention identity
-- no third-party tracking unless later deliberately introduced and legally assessed
-
-Before launch, assess whether a DPIA / Datenschutz-Folgenabschätzung is required.
-
-Do not describe Favon as fully anonymous if an operator can internally map activity to an account.
-
-Use “pseudonymous” internally/legalistically where accuracy matters.
-
----
-
-# 17. Youth-protection direction
-
-Favon should deliberately avoid the features that would turn it into an explicit sexual-content or matchmaking service.
-
-Avoid:
-
-- pornography
-- explicit user-generated descriptions
-- sexual images
-- chat
-- DMs
-- contact ads
-- dating/matching
-- person search
-- hookup requests/offers
-
-Structured neutral location data is preferred.
-
-The final public presentation may be adult-oriented / 18+, but exact youth-protection requirements should be reviewed before launch.
-
-The product should not collect intrusive identity documents unless a later legal assessment shows that this is necessary.
-
----
-
-# 18. Legal/operator notes
-
-Favon will need normal German legal pages such as:
-
-- Impressum
-- Datenschutzerklärung
-- Nutzungsbedingungen / content rules as appropriate
-
-The operator does not want a private residential address exposed publicly if avoidable.
-
-Possible later option to evaluate:
-
-```
-flexdienst.de
-```
-
-as a service for a ladungsfähige Impressumsadresse / Zustellungsvollmacht.
-
-This is only a noted possibility; it has not been selected or booked.
-
-Exact operator/legal-entity structure is still open.
-
----
-
-# 19. Technical architecture direction
-
-Favon should reuse only the parts of the copied Laravel application that materially help.
-
-## Likely reusable foundations
-
-- Laravel application structure
-- map/geolocation logic
-- mobile-first UI patterns
-- public browse/search architecture
-- place profile architecture
-- favorites
-- admin/roles basics
-- abuse/rate-limit concepts
-- moderation patterns
-- deployment conventions
-- queue/scheduler infrastructure where genuinely needed
-- DE/EN localization architecture if retained
-
-## Camperwolf-derived systems removed from active paths or still pending schema cleanup
-
-Favon does not need:
-
-- camping-specific feature catalogue
-- vehicle suitability
-- camping price models
-- camping season logic
-- complex camping opening-hours system
-- Open Data import center
-- external_sources / external_records import pipelines
-- destination.one integration
-- NRW TFIS integration
-- Bayern ATKIS integration
-- Overture import
-- DATEX-II import
-- photo import
-- photo moderation
-- EXIF/image processing
-- thumbnails/helpful photo votes
-- owner-verification workflows
-- XP
-- badges
-- achievements
-- complex review-photo/report systems
-- camping-specific e-mail flows
-- camping-specific legal/help content
-- Camperwolf branding/assets
-- Camperwolf-specific statistics dimensions
-- any copied test suite for features that are removed
-
-Do not simply hide these systems in navigation.
-
-Delete unused code, routes, controllers, models, migrations, services, jobs, commands, views, translations, tests and configuration when it is safe to do so.
-
-The end goal is a genuinely smaller codebase.
-
----
-
-# 20. Planned core domain objects
-
-The exact schema is not yet finalized.
-
-Current likely core objects:
-
-- users
-- places
-- place_types
-- stable place attributes
-- stable attribute votes / confirmations
-- variable features
-- variable feature votes / confirmations
-- check_ins
-- structured ratings
-- favorites
-- reports
-- moderation actions / bans
-
-Avoid adding extra entities unless a real product requirement exists.
-
----
-
-# 21. V1 target scope
-
-Favon V1 should remain intentionally small.
-
-Target:
-
-- authenticated map
-- authenticated search
-- near-me discovery
-- simple place-type filters
-- place profile
-- minimal place creation
-- Telegram login
-- pseudonymous internal accounts
-- favorites
-- stable-data confirmation/correction voting
-- proximity-validated check-in
-- short-lived current activity signal
-- check-in health check
-- structured ratings
-- place reports
-- admin moderation / bans
-- privacy/legal pages
-
-Out of V1:
-
-- chat
-- DMs
-- dating/matching
-- public profiles
-- follower/friend systems
-- free-text reviews
-- photos/media uploads
-- pornographic content
-- XP/gamification
-- broad adult-business catalogue
-- large external-data imports
-- owner verification unless a concrete later need appears
-
----
-
-# 22. Server and deployment
-
-Favon runs on the **same physical/Plesk server** as Camperwolf but must remain operationally separate.
-
-Expected structure conceptually:
-
-```
-/var/www/vhosts/camperwolf.de/...
-/var/www/vhosts/favon.de/...
-```
-
-Favon needs its own:
-
-- Laravel application path
-- document root
-- .env
-- APP_KEY
-- database
-- database user
-- storage
-- logs
-- TLS certificate
-- queue configuration
-- scheduler configuration
-- cache namespace
-- session cookie name
-- session/cache prefixes when shared backing services are used
-
-Important collision prevention if shared Redis/cache/session infrastructure is ever used:
-
-- unique `SESSION_COOKIE`
-- unique `CACHE_PREFIX`
-- distinct queue names/configuration where useful
-
-Favon is expected to be materially lighter than Camperwolf because there are no photos and no large import pipelines.
-
----
-
-# 23. Development environment / working method
-
-Current preferred collaboration style:
-
-- assistant may make code changes directly in GitHub
-- user pulls/merges locally
-- user clears/builds/tests locally
-- user reports runtime/test results back
-- changes should be incremental and testable
-
-Command formatting preference:
-
-- **PowerShell:** no multiline commands
-- **SSH/Linux:** multiline commands are fine when useful
-
-Do not dump large command batches unless necessary.
-
-Prefer a short sequence where each result can be checked before the next destructive/structural action.
-
----
-
-# 24. Git / repository working rules
-
-Primary repository:
-
-```
-WulfieWolf/favon
-```
-
-Primary branch:
-
-```
-main
-```
-
-Use branches/PRs for meaningful development work once the initial cleanup baseline is established.
-
-During the first slimming phase, take care that removed Camperwolf systems do not leave:
-
-- dead routes
-- broken service-provider registrations
-- orphaned migrations
-- missing foreign-key dependencies
-- stale Blade references
-- stale translation keys
-- failing GitHub Actions
-- test factories that depend on removed models
-- scheduler entries pointing at deleted commands
-- queue workers expecting removed jobs
-
-Keep commits logically grouped.
-
----
-
-# 25. Local setup / current status – 2026-10-06
-
-Verified:
-
-- Independent Favon repo, active branch `cleanup/remove-camperwolf-subsystems`; Camperwolf repo was **not modified**.
-- Project folder: `D:\Dropbox\Eigene Dateien\Dokumente\Server\favon`.
-- `composer install` succeeded (143 packages); Laravel package discovery succeeded. Composer warned about `composer.lock` vs. `composer.json` consistency.
-- `npm.cmd ci` succeeded (132 packages). npm reported 1 high + 3 critical vulnerabilities, not yet fixed or assessed.
-- Favon-local `.env` copied from example; new `APP_KEY` generated.
-- Windows MySQL 8.0 service `MySQL80` running and client `mysql.exe` 8.0.46 available from PATH.
-- Root/MySQL admin access recovered locally; **separate MySQL database `favon`** and **separate user `favon`**, granted only `favon.*`; user login verified in Workbench.
-- Favon `.env` configured for MySQL `favon` database / user. No credentials stored in GitHub.
-- Initial `migrate:status` correctly reported missing migration table on new blank database.
-- After Favon-only migration repairs, **`php artisan migrate:fresh --seed` succeeded on 2026-10-06**. Current database can be built fresh from this branch.
-
-Additional local validation completed on 2026-10-06:
-
-- Laravel Herd linked Favon independently as `http://favon.test` using PHP 8.4. Existing Camperwolf Herd configuration was not modified.
-- `npm.cmd run build` completed successfully and generated the Vite manifest/assets.
-- Public Favon dashboard renders in the browser; Leaflet map initializes and OSM tiles load.
-- Help pages render after the inherited Camperwolf help seeder/content was removed from active Favon behavior.
-- Login and registration pages render successfully.
-- Runtime cleanup fixed stale Blade/controller references including DevLog, public community profiles, legacy locale namespace usage and removed data-score tools.
-- `php artisan test` is now fully green after removing/adapting obsolete Camperwolf tests and repairing Favon-relevant tests. Latest local run: **148 passed, 0 failed**.
-- Test repairs intentionally did not restore removed Camperwolf subsystems merely to satisfy old expectations.
-- Transitional mail tests explicitly enable the guarded mail circuit breaker inside the tests; production mail remains fail-closed unless configured.
-- Statistics date grouping was made compatible with both MySQL and the SQLite in-memory test database.
-- Emergency site access command is now `php artisan favon:mode normal`, replacing the obsolete Camperwolf command name.
-
-Still not finalized:
-
-- Final Favon place-type catalogue or demo/place seed data.
-- Clean Favon-first schema/migration baseline.
-- Favon production deployment on Plesk; local readiness does not mean the site is live.
-- Final privacy treatment for OSM tiles, place-level analytics references and retained transitional account/history code.
-
-Database isolation is crucial: never run destructive commands on Camperwolf or production. Favon has independent `.env`, `APP_KEY`, database and DB credentials.
-
-# 26. Cleanup phase: completed work and remaining roadmap
-
-The copied application was systematically inventoried and slimmed; the active code shell and static permissions/statistics/test workflow leftovers were audited. Multiple blocks of incompatible historical migrations were removed or rewritten after local fresh-install errors. The **local migration chain now succeeds**, but final domain cleanup is not finished.
-
-Do not repeat the initial import/photo/devlog subsystem deletion pass: it has already been done. Do not treat the old Camperwolf schema as Favon's future data model.
-
-Proceed with local boot/build/browser/testing first; then replace the inherited schema and build native features in this order: minimal pseudonymous user model and Telegram authentication; Favon place-type catalogue; stable attribute voting; variable feature freshness and check-in health-check; proximity-validated short-lived check-ins; structured rating; moderation and privacy-safe reporting; refactor merges/statistics/account workflows.
-
-Key rule: `docs/PROJECT_CONTEXT.md` must distinguish implemented from planned behavior. Keep this file Favon-only.
-
-# 27. Documentation policy
-
-`docs/PROJECT_CONTEXT.md` is the authoritative living context for Favon.
-
-When significant decisions are made:
-
-- update this file
-- remove obsolete concepts rather than endlessly appending contradictions
-- preserve unresolved decisions explicitly as TBD
-- distinguish implemented behavior from planned behavior
-- keep operational notes that will be useful in later sessions
-
-Do not copy unrelated Camperwolf history back into this file.
-
-Other copied documents under `docs/` should later be reviewed individually.
-
-If a document is purely Camperwolf-specific and no longer useful to Favon, remove it.
-
-If it contains reusable technical knowledge, rewrite it as Favon documentation rather than preserving misleading Camperwolf wording.
-
----
-
-# 28. Open decisions
-
-Still intentionally undecided:
-
-- exact target-audience schema/wording
-- check-in radius
-- check-in expiry duration
-- variable-feature TTLs
-- vote thresholds
-- when consensus may auto-update vs. require moderation
-- exact rating dimensions
-- whether aggregate activity should be exact counts or coarse categories
-- final operator/legal structure
-- final youth-protection implementation
-- final privacy-retention schedule
-
-Do not silently treat these as settled.
-
----
-
-# 29. Core non-negotiables
-
-Unless explicitly reconsidered later:
-
-1. **Places, not people.**
-2. Favon content is login-gated; guests only see the access gateway and required public legal/support entry points.
-3. Community authentication is Telegram-only; classic password login is reserved for admins/system owner.
-4. No public contributor identity.
-5. No “who is here”.
-6. No public visit histories.
-7. No photos.
-8. No free-text reviews.
-9. No chat/DM/dating/contact ads.
-10. Raw GPS is not retained after proximity validation.
-11. Variable information ages out.
-12. Stable facts and live health-check data are separate.
-13. Favon remains technically separate from Camperwolf.
-14. Favon development never writes to the Camperwolf repository.
-15. Prefer simplicity over inherited Camperwolf complexity.
-
-
----
-
-# 30. Repository inventory result – 2026-10-05
-
-A full Favon-only repository inventory was performed against `WulfieWolf/favon`.
-
-The inventory confirmed that the copied repository was still largely Camperwolf product code on top of a useful Laravel/infrastructure foundation.
-
-## KEEP / ADAPT
-
-Retained as useful Favon foundations:
-
-- Laravel application foundation
-- Livewire / Flux / Tailwind / Vite stack
-- Leaflet/map foundation
-- public place browse/search foundation
-- basic place profile shell
-- favorites
-- localization infrastructure
-- admin foundation
-- roles / permissions
-- account suspension and abuse protection
-- security headers / public browse hardening
-- account deletion concepts
-- audit logging
-- support/takedown infrastructure
-- legal-page infrastructure
-- sitemap
-- queue/scheduler foundation
-- usage statistics / internal analytics
-
-### Statistics decision
-
-The internal statistics system is explicitly **KEEP / ADAPT**, not REMOVE.
-
-The current `usage_events` tracking does not store a concrete user ID. It records event/category information such as:
-
-- event type
-- area / route context
-- optional content reference
-- coarse audience category
-- traffic type
-- optional metadata
-- timestamp
-
-This provides useful operator insight without building per-user usage histories.
-
-For Favon, statistics must still be reviewed before launch because a content reference may identify which sensitive place page was viewed. The desired direction is therefore:
-
-- keep operator insights
-- do not add per-user analytics
-- avoid persistent individual behavior profiles
-- review whether place-level content references should be coarsened or retained
-- document retention and privacy treatment before production launch
-
-## REBUILD
-
-Inherited code may provide ideas, but these areas should be redesigned for Favon:
-
-- authentication -> Telegram-based account model
-- user/account schema -> minimal pseudonymous internal identity
-- place types
-- stable place attributes and voting
-- variable health-check features and freshness/TTL
-- check-ins and proximity validation
-- structured ratings
-- Favon moderation/content rules
-- place merge behavior after the new Favon schema exists
-- statistics dimensions for the final Favon UI
-
-## REMOVE
-
-The following inherited product areas were classified as Camperwolf-specific and unnecessary:
-
-- Open Data import center and source pipelines
-- Niedersachsen / NRW TFIS / Bayern ATKIS / RVR / Overture / DATEX-II tooling
-- research/import scripts
-- photo upload / processing / moderation / helpful votes
-- review-photo system
-- public user profiles
-- profile photos
-- XP / levels / badges / achievements
-- Camperwolf development log
-- Camperwolf demo/performance seed/report helpers
-- Camperwolf feature catalogue UI/workflows
-- Camperwolf place suggestion workflow
-- Camperwolf free-text/current review implementation
-- camping prices
-- camping opening-hours editing
-- vehicle/camping-specific feature editing
-- related obsolete routes, views, services, jobs, tests and seeders
-
----
-
-# 31. Cleanup branch and verified implementation status
-
-Repository: `WulfieWolf/favon`  
-Cleanup PR #2 was validated and squash-merged into `main` on 2026-10-06.  
-Merge commit: `2ff79304a3d3203e5e7bf736cd17a539e8365398`.
-
-Current feature branch:
-
-`feature/telegram-auth-gateway`
-
-All writes remain Favon-only; Camperwolf is untouched.
-
-## Initial slimming commits
-
-- `6ff65a40` – copied Open Data importer removed
-- `d5e62553` – DevLog/performance helpers removed
-- `816ff330` – public profiles and gamification removed
-- `29a756bb` – simplified directory shell; old active review/photo/price/opening/feature workflows removed
-- `8148996c` – global Favon transition UI
-- `1d68a3a7` – stale photo/contact hooks removed
-- `653a6485` – initial context/local validation plan
-- `ed03900b` – stale data-score history hook removed
-
-## Follow-up code/static audit
-
-- `c9bbfb51` – import permissions removed
-- `13a24aea` – photo/badge permissions and obsolete translation files removed
-- `50189436` – admin photo/profile references removed
-- `dbef15e2` – old review/feature/suggestion/price permissions, translation and rule leftovers removed
-- `ed2b3da3` – old moderation notification and public-profile hooks removed
-- `f2666a72` – statistics and page-view tracking tailored to Favon; old Camperwolf review/photo/import metrics removed
-- `9b255c2d` – stale tests and GitHub Actions references cleaned
-- `aea6f7c1` – obsolete rate limiters and locale-test expectations cleaned
-
-Stats now focus on place, user, support, favorites, moderation/merge/audit and usage events. They do not store a user ID per `usage_events` record, but page-level content references and retention still require privacy review.
-
-## Local migration troubleshooting and fixes – 2026-10-06
-
-Fresh `favon` MySQL DB originally exposed removed-seeder dependencies and orphaned schema references. Repairs were committed only to Favon:
-
-- `91b5754f` – removed 5 obsolete DevRelease migrations referencing deleted `DevReleaseSeeder`
-- `8f773e75` – removed 7 obsolete Camperwolf rest-area/place-type/feature/help migrations
-- `069cd6bc` – removed 9 dependent feature filter/data-score/legacy beta-devlog migrations after missing `feature_place_types`
-- `066b9401` – removed 7 external import follow-up migrations; reduced former import schema migration to independent `place_history`; adapted service/presenter to remove external-source FK/join
-- `ae7d61bc` – removed 4 DATEX/vehicle/camping-specific migrations
-- `fd192ebd` – kept the generic drop of `place_details.operating_mode` while removing obsolete DATEX and suggestion-field data updates
-
-**Result:** `php artisan migrate:fresh --seed` completed successfully on the isolated local Favon DB.
-
-## Current size / transitional debt
-
-The active app is a minimal **transitional** place directory/map with browse, place profiles, favorites, admin, notifications/support, legal/help and analytics/security foundations.
-
-The cleanup branch has now passed the local runtime/build/test validation milestone. The exact repository/test file counts are no longer treated as durable context because cleanup continues to remove obsolete files.
-
-Remaining issues:
-
-- The **68 successful migrations still create many obsolete Camperwolf tables** (photos, reviews, prices, features, XP, etc.). They need a deliberate clean Favon schema replacement; migration success alone is not final cleanup.
-- `PlaceMergeService`, `PlaceDeletionService`, account deletion/export still assume older tables.
-- Fortify/email/password/passkey remain transitional for administrative access only; normal community authentication is now Telegram-only on the feature branch. `UserProfile`/`PublicHandleService` still require later schema cleanup.
-- Place-history presenter still contains inherited public handle/author logic: must honor **no public contributor identity** before public history is exposed.
-- `TouchLastSeen` and other inherited infrastructure remain under review; active application config namespaces have been renamed from `camperwolf.*` / `CAMPERWOLF_*` to `favon.*` / `FAVON_*`; some permissions and branding/docs need review.
-- Map currently uses external OSM tiles; privacy-safe final approach TBD.
-- Pulse/Telescope and other dependencies need final need/security audit.
-- Actual Favon place types/seeder, voting, check-ins, structured ratings and reporting are **not yet implemented**.
-- Browser smoke checks completed successfully for the public dashboard/map, help and authentication entry pages.
-- Frontend build is successful.
-- Laravel/PHPUnit suite is fully green locally: **148 passed, 0 failed** at the end of this cleanup validation pass.
-- Remaining transitional debt is architectural/domain debt, not a currently known failing-test baseline.
-
-Avoid restoring removed Camperwolf subsystems merely to make tests pass. Address surviving dependencies and tests deliberately.
-
-# 32. Exact continuation point – 2026-10-15
-
-**Current production state:** Favon is live as a separate application on `favon.de`. Telegram OIDC works in production, the separate owner/admin login works, and the active Camperwolf branding/config leftovers have been removed. Cleanup PRs #5, #6 and #8 are merged. Production was deployed through merge commit `de1db624ff0d44ef7f677eda1bc59d03d55d7368` and browser smoke tests passed.
-
-**Current feature branch:** `feature/place-submission-foundation`.
-
-## Current authentication/access model
-
-- community login uses Telegram OIDC authorization-code flow with PKCE;
-- Favon stores the stable Telegram numeric ID needed for account mapping, not Telegram display identity;
-- normal community accounts use generated internal names such as `User-0000001`;
+# 5. Authentication / account model
+
+## Implemented
+
+Production uses Telegram OIDC for normal community users.
+
+Flow:
+
+- unauthenticated visitors land on the Favon access gateway;
+- gateway offers Telegram login plus a separate Admin Login;
+- Telegram uses authorization-code flow with PKCE;
+- Favon validates state, nonce, issuer, audience, expiry, RS256 signature and Telegram JWKS;
+- authorization code exchange happens server-side;
+- only the stable Telegram numeric subject ID needed for account mapping is persisted from Telegram identity data;
+- Telegram display name, username, phone number and profile photo are not stored;
+- unknown Telegram ID creates a minimal Favon account;
+- known Telegram ID reuses the existing account;
 - public registration is disabled;
-- classic e-mail/password login remains reserved for the system owner/admin;
-- place/map content is login-gated;
-- required legal/support entry points remain public.
+- normal community users do not use password login.
 
-## First native place workflow – settled V1 scope
+Minimal community identity:
 
-Favon starts deliberately small. The first product workflow is moderated place creation plus existing place search.
+- internal Favon user ID;
+- Telegram numeric ID in `community_accounts`;
+- generated internal name such as `User-0000001`;
+- role/permissions;
+- abuse/ban state;
+- timestamps/locale/consent state as technically required.
 
-Required on submission:
+The system owner/admin remains a separate classic account and may log in through the admin route using `FAVON_OWNER_EMAIL`.
 
-- exactly one place type in the V1 UI;
-- name;
-- map position / coordinates.
+Favon is therefore pseudonymous, not mathematically anonymous.
 
-Optional/basic structured data:
+---
 
-- description: short factual description of the place and/or how visitors find the exact area;
-- environment: `indoor`, `outdoor` or `both`;
-- gloryhole: yes/no;
-- postal address components where available; map coordinates remain authoritative for places without a normal address.
+# 6. Privacy direction
 
-Submission rules shown globally on the form must make clear that only legally accessible places may be submitted, no private addresses/private property, no personal data/contact details, no contact ads and no descriptions of identifiable people. Non-compliant entries are not published.
+Favon handles potentially sensitive location/use context and should be privacy-by-design.
 
-New community submissions are stored as `places.publication_status = pending`. They are not visible in normal browse/profile queries until approved. The admin may correct obvious mistakes before approval.
+Current rules:
 
-Approval:
+- no public user attribution on place creation/editing/voting/favorites/check-ins;
+- no public visit history;
+- no “who is here” feature;
+- no follower/friend/user-discovery model;
+- no unnecessary Telegram profile data;
+- no third-party behavioral tracking by default;
+- no long-term raw location history.
 
-- saves any admin corrections;
-- changes the place to `published`;
-- records approver/time;
-- sends the creator a notification containing the place name.
+Important implementation caveat discovered in the current nearby/create-here flow:
 
-Rejection:
+- `near_lat` / `near_lng` are currently sent in the URL for “In meiner Umgebung”;
+- create-from-current-position currently passes `lat` / `lng` in the create URL;
+- URLs may appear in browser history, referrers or web-server access logs.
 
-- requires a short rejection reason;
-- creates a notification containing place name + reason;
-- then permanently deletes the pending place;
-- no rejected-place archive or resubmit workflow is planned for V1;
-- the rejection reason survives only as long as the normal notification retention.
+Before broader/public rollout, refactor this so transient user GPS does not need to travel in URLs. Preferred direction: client-side nearby sorting/focus and session/local transient handoff for create-here, while the actual submitted place coordinates remain normal place data.
 
-Existing published-place editing by community users is out of scope for V1. Later it should use a separate change-suggestion workflow.
+Do not claim operationally that raw GPS is never retained until this is fixed.
 
-## Initial Favon place-type catalogue
+Before public launch, reassess DPIA/GDPR requirements and retention.
 
-V1 uses exactly one selected type, but the schema is intentionally prepared for multiple type relations later.
+---
 
-Initial catalogue:
+# 7. Current place catalogue
+
+Initial Favon place types:
 
 1. Gay-Sauna
 2. Darkroom / Sexclub
@@ -1293,65 +165,530 @@ Initial catalogue:
 8. FKK-Strand / Badesee
 9. Parkhaus / Einkaufszentrum
 
-Gloryhole is **not** a place type; it is a separate structured yes/no property.
+Slugs:
 
-## Implementation split
+- `gay-sauna`
+- `darkroom-sexclub`
+- `sex-cinema-video-booth`
+- `fetish-leather-bar`
+- `park-forest`
+- `rest-area`
+- `public-toilet`
+- `nudist-beach-lake`
+- `parking-garage-shopping-center`
 
-PR 1 – place-submission foundation:
+V1 exposes exactly one primary type in the UI. The `place_place_types` relation exists so multiple type relations can be added later if product feedback justifies it.
 
-- Favon place-type catalogue;
-- `place_place_types` relation with one primary type for now;
-- direct Favon fields for description, environment and gloryhole;
-- moderated submission backend;
-- `places.submit` permission;
-- submission rate limit;
-- tests.
-
-PR 2 – UI and moderation:
-
-- mobile-friendly add-place form with type tiles;
-- map/address selection;
-- general submission-rules notice;
-- admin pending queue and editable review;
-- approve/reject actions;
-- approval/rejection notifications.
-
-## Safety / working style
-
-- **PowerShell commands must always be one line each.** Multiline SSH/Linux commands are acceptable.
-- Assistant commits to **Favon GitHub only**; user pulls/tests locally. Camperwolf is read-only.
-- `migrate:fresh` is destructive: use **only** when the active project and `.env` are positively verified to target the isolated local `favon` DB. Never use it against Camperwolf or production.
-- Production Git runs as Plesk user `favon.de_nbbcdda00f9` using the Favon read-only deploy key.
-- Update this living context at important milestones; do not copy back obsolete Camperwolf concepts.
+Gloryhole is not a place type; it is a separate structured property.
 
 ---
 
-## 2026-10-07 – Camperwolf content cleanup
+# 8. Place submission – implemented V1
 
-The active Favon repository has been cleaned up further after the authentication/config migration:
+Community users can submit new places. Submissions are moderated before becoming public.
 
-- README rewritten for Favon;
-- active UI, mail, notification, export and admin copy rebranded to Favon;
-- social metadata no longer uses the Camperwolf site name or Camperwolf placeholder image;
-- inherited automatic public-handle prefix changed from `CW-` to `FV-` for any remaining transitional use;
-- public legal copy rewritten around Favon's actual login-gated, Telegram-OIDC, “Places, not people” model instead of Camperwolf's camping/review/photo model;
-- obsolete Camperwolf-era project documentation removed; this file remains the authoritative project context;
-- historical already-applied migration files are intentionally not rewritten merely to remove old wording, because migration history should remain stable.
+Required:
 
-The legal copy is technically aligned with the current Favon product model, but this cleanup is not a substitute for a dedicated legal review before a broader public launch.
+- place type;
+- name;
+- precise map position;
+- at least one target audience selection: MM and/or MF.
 
-## 2026-10-15 – First Favon-native place workflow
+Optional structured/basic information:
 
-Product decisions for the first useful Favon release were deliberately reduced to moderated place creation and search.
+- description;
+- environment: indoor / outdoor / both;
+- gloryhole: yes / no;
+- postal address.
 
-- Start with the smallest useful workflow and add further features only from real feedback.
-- Community users may submit unlimited legitimate places; an abuse-oriented technical rate limit is acceptable but must not act as a normal product quota.
-- Name, one place type and map location are mandatory.
-- Description, environment (indoor/outdoor/both) and gloryhole yes/no are the only additional V1 place properties.
-- Address is optional where a map position is sufficient.
-- Multiple place types are not exposed in V1, but the schema should support them later.
-- No user editing of published places yet; later use change suggestions.
-- Admin may correct obvious submission mistakes before approval.
-- Rejected pending places are deleted after the creator notification is created.
-- No moderator-only note field is needed because moderation is currently performed by the owner alone.
+The map coordinate is authoritative; address is optional.
 
+Submission form rules explicitly prohibit:
+
+- private homes/private property;
+- personal data;
+- contact details/contact ads;
+- descriptions of identifiable people;
+- places that are not legally accessible.
+
+A submission is stored as `publication_status = pending` and is excluded from normal browse/profile results until approved.
+
+There is no normal product quota for legitimate submissions; technical rate limiting exists for abuse prevention.
+
+---
+
+# 9. Target audience model – current
+
+The initial single-choice `target_audience = mm|mf` implementation was replaced on 2026-10-15 because a place can serve both patterns.
+
+Current model uses independent flags:
+
+- `target_mm`
+- `target_mf`
+
+UI behavior:
+
+- MM only;
+- MF only;
+- MM + MF;
+- at least one must be selected;
+- selection uses checkbox-style tiles in the same visual family as the other compact place properties;
+- the form explicitly notes that multiple selection is possible.
+
+Published profiles display e.g.:
+
+- `Zielgruppe: MM`
+- `Zielgruppe: MF`
+- `Zielgruppe: MM + MF`
+
+The old `target_audience` column is intentionally retained temporarily for migration compatibility but new submissions write the two new flags. The migration backfills existing single-choice data.
+
+**Still open:** MM/MF must be added as a browse/search filter. This is explicitly planned and not yet implemented.
+
+---
+
+# 10. Submission moderation – implemented
+
+Owner/admin moderation queue supports:
+
+- reviewing pending place data;
+- correcting obvious mistakes;
+- changing place type;
+- changing description/location/address/basic properties;
+- independently selecting MM and/or MF;
+- approving;
+- rejecting with mandatory reason.
+
+Approval:
+
+- applies corrections;
+- marks the place `published`;
+- records approver/time;
+- notifies the creator in-app with the place name.
+
+Rejection:
+
+- requires a reason;
+- notifies the creator with place name + reason;
+- then permanently deletes the pending place;
+- there is no rejected-place archive or resubmit workflow in V1.
+
+Published-place community editing is not yet implemented. Later it should use a separate change-suggestion workflow rather than direct editing.
+
+---
+
+# 11. Browse / home UI – current
+
+Favon is intentionally compact and map-first.
+
+Current header/home behavior:
+
+- Favon branding in header;
+- language selector;
+- notification bell with unread count, capped visually as `99+`;
+- compact round user icon;
+- normal-user menu effectively contains logout only; owner/admin-specific actions remain permission-based;
+- no redundant large Favon title/intro on dashboard;
+- search stays visible;
+- filters are inside a collapsible filter area;
+- map is the main visual focus;
+- add-place `+` menu remains available;
+- “In meiner Umgebung” button is at lower-right of the map and does not overlap Leaflet controls/attribution.
+
+Current filters include:
+
+- text search;
+- favorites;
+- place type.
+
+**Not yet implemented:** MM/MF target-audience filter.
+
+## Default map focus
+
+As of PR #15, the normal dashboard map no longer auto-fits to the currently loaded markers.
+
+Without nearby mode it stays focused on Germany, so a single existing place does not visually imply that the entire service exists only for that location.
+
+Nearby mode still focuses on the user's current position.
+
+---
+
+# 12. Location / nearby / create-here – implemented
+
+“In meiner Umgebung”:
+
+- browser requests geolocation;
+- current implementation sends coordinates as `near_lat` / `near_lng`;
+- server validates coordinate ranges;
+- MySQL `ST_Distance_Sphere` calculates distance;
+- results are ordered by distance;
+- dashboard focuses user position and marks it as “Meine Position”.
+
+“Platz an meiner Position eintragen”:
+
+- browser obtains current position;
+- create form receives coordinates;
+- marker is prefilled;
+- reverse geocoding attempts to fill address fields.
+
+Browser geolocation works correctly on production HTTPS and passed practical testing.
+
+The privacy caveat regarding URL coordinates is documented in section 6 and should be addressed before wider/public rollout.
+
+---
+
+# 13. Address / map entry – implemented
+
+Place creation includes:
+
+- address/place search above the map;
+- Photon / OpenStreetMap-backed autocomplete;
+- minimum query length and debounce;
+- localized search bias/context;
+- suggestion selection moves the authoritative marker;
+- clicking the map or dragging the marker updates coordinates;
+- reverse geocoding fills address components where possible;
+- manual edits of address fields do not silently move the marker.
+
+The exact map position remains the authoritative location.
+
+---
+
+# 14. Place profiles – current
+
+Published place profiles currently provide a deliberately small V1 shell:
+
+- place name;
+- localized place type;
+- target audience MM/MF/MM+MF when known;
+- address when available;
+- map;
+- favorite toggle;
+- Google Maps navigation button;
+- Apple Maps navigation button.
+
+More place attributes should only be added when the product model is settled.
+
+---
+
+# 15. Favorites and notifications
+
+Favorites are retained as private user state.
+
+Never publicly expose who favorited a place or a user's favorite list.
+
+In-app notifications are active for submission approval/rejection.
+
+Notification bell is visible in the header and shows unread count.
+
+No e-mail notifications are required for the current V1 submission workflow.
+
+---
+
+# 16. Ratings, check-ins and live conditions – planned, not implemented
+
+These remain product direction, not current functionality.
+
+## Check-ins
+
+Goal:
+
+> Is something currently happening here?
+
+Never:
+
+> Who is here?
+
+Expected properties:
+
+- proximity validation;
+- short-lived check-ins;
+- no public visitor identity;
+- no long-term movement history;
+- public aggregate activity only.
+
+Exact radius and expiry remain TBD.
+
+## Live/variable conditions
+
+Potential short-lived fields:
+
+- accessible/open now;
+- toilet currently available;
+- washing facility currently available;
+- waste disposal currently available;
+- lighting operational.
+
+Current-state confirmations should decay/expire rather than remain permanently authoritative.
+
+## Stable facts
+
+Stable place properties should be maintained separately from check-ins and should eventually use a consensus/change-suggestion model rather than allowing one user to rewrite important data instantly.
+
+## Ratings
+
+Structured only. No free-text reviews.
+
+Potential dimensions remain undecided; likely short mobile 1–5 ratings such as cleanliness, discretion, lighting, public traffic, accessibility/safety.
+
+---
+
+# 17. Photos and free text
+
+Current product decision:
+
+- no place photos;
+- no review photos;
+- no user-uploaded media;
+- no free-text reviews;
+- no explicit sexual experience reports.
+
+This is intentional, not merely deferred.
+
+Short factual place descriptions are allowed because they are necessary to identify/find a location; they must not become personal ads or explicit encounter reports.
+
+---
+
+# 18. Moderation/content scope
+
+Favon controls its catalogue.
+
+Reject/avoid:
+
+- private residences;
+- trespass-dependent locations;
+- personal ads;
+- doxxing;
+- identifiable visitor descriptions;
+- pornographic user content;
+- explicit instructions for sexual activity;
+- schools/playgrounds and clearly inappropriate family/child-sensitive locations;
+- entries outside Favon's place-focused scope.
+
+A robust report/takedown path should remain available for affected parties, operators and legal complaints.
+
+---
+
+# 19. Legal / private beta status
+
+Favon is currently in a small test/beta phase.
+
+The user does not want private operator/imprint information unnecessarily exposed during this limited testing phase.
+
+Current UI intentionally hides persistent legal-footer links in the ordinary authenticated experience/gateway, while legal routes remain available where required.
+
+Before an actual public launch:
+
+- restore/verify appropriately visible legal links;
+- review Impressum, Datenschutz and Nutzungsbedingungen;
+- review adult/youth-protection requirements;
+- review privacy retention and location handling;
+- assess whether a DPIA is needed.
+
+Possible future service for a ladungsfähige Impressumsadresse:
+
+`flexdienst.de`
+
+This is only noted, not selected/booked.
+
+---
+
+# 20. Technical cleanup / inherited debt
+
+Favon began as a one-time copy of the Camperwolf Laravel application. The active product surface has been aggressively reduced.
+
+Removed/retired from active Favon behavior include major Camperwolf-specific systems such as:
+
+- Open Data import pipelines;
+- photo upload/processing/moderation;
+- public profiles;
+- XP/levels/badges/achievements;
+- Camperwolf devlog/demo helpers;
+- camping price/opening-hours/vehicle-feature workflows;
+- old camping review/photo flows;
+- Camperwolf branding/config namespaces;
+- inherited import permissions/metrics/routes/tests that no longer apply.
+
+Do not reintroduce them unless Favon independently needs an equivalent capability.
+
+Some old schema/migration/account/statistics infrastructure still exists as transitional technical debt. Clean it only deliberately; do not rewrite already-applied production migrations casually.
+
+---
+
+# 21. Current repository / PR history
+
+Important merged milestones:
+
+- PR #2 cleanup -> `2ff79304a3d3203e5e7bf736cd17a539e8365398`
+- PR #3 Telegram auth gateway -> `82ca340ed7d2a8568068cc54a2d8509b984a0d33`
+- gateway footer cleanup -> `87ec7343354a508864fe20e17b92b6fd04677760`
+- PR #4 Telegram OIDC -> `645cc86d89ec8867b2f6df9dc518f36989321a2c`
+- PR #5 config cleanup -> `25fb29b133e7711faa8528943847e380cfdcb63e`
+- PR #6 branding/stale cleanup -> `75608a6016afe010ae5a12ae2005c9527df9f461`
+- PR #8 remaining active Camperwolf leftovers -> `de1db624ff0d44ef7f677eda1bc59d03d55d7368`
+- PR #9 place submission foundation -> `d6dc2bd589d3a5ec963f6b10adc4d394f2e71d94`
+- PR #10 place submission UI + moderation -> `9980b19ce68de7776c045f3cac7aa418898cb412`
+- PR #11 browser/location feedback fixes -> `af91f89dfbea731d1ee1aa247f3dcd5e4b82b5de`
+- PR #12 compact map-first browse UI -> `fb49bf22d7c235839300e962abf27517fefda554`
+- PR #13 missing filter icon fix -> `45a2fcc79eefa9960fc8786d67c3ae190a58ffed`
+- PR #14 initial MM/MF target-audience field -> `4d41811e61d8640ec25453f00787ea815688e288`
+- PR #15 keep default map focused on Germany -> `64d2ed75986531a32b5dcea4a5c1df252868746a`
+- PR #16 allow independent MM + MF selection -> `565265736b27e397802dadbb4f9c28de0ba23735`
+
+**Current latest known `main`:**
+
+`565265736b27e397802dadbb4f9c28de0ba23735`
+
+PR #16 was locally tested successfully and practical target-audience testing passed before merge.
+
+Latest full local test report immediately before PR #16 merge:
+
+**158 passed, 0 failed** after the final test fixes.
+
+---
+
+# 22. Current production/deployment setup
+
+Server:
+
+- Plesk vhost: `/var/www/vhosts/favon.de`
+- application checkout: `/var/www/vhosts/favon.de/laravel/current`
+- document root: `current/public`
+- PHP: Plesk PHP 8.4
+- Plesk user: `favon.de_nbbcdda00f9`
+- production DB: `favon_app`
+- SSL active
+- DNS A: `85.215.77.212`
+
+Git deployment uses a Favon-only read-only ED25519 deploy key:
+
+`/var/www/vhosts/favon.de/.ssh/id_ed25519_favon`
+
+Do not use this key for Camperwolf.
+
+Standard production Git update:
+
+```bash
+cd /var/www/vhosts/favon.de/laravel/current
+sudo -u favon.de_nbbcdda00f9 git fetch origin
+sudo -u favon.de_nbbcdda00f9 git switch main
+sudo -u favon.de_nbbcdda00f9 git pull --ff-only
+```
+
+When a normal forward migration is part of the release:
+
+```bash
+sudo -u favon.de_nbbcdda00f9 /opt/plesk/php/8.4/bin/php artisan migrate --force
+```
+
+Cache/worker refresh:
+
+```bash
+sudo -u favon.de_nbbcdda00f9 /opt/plesk/php/8.4/bin/php artisan optimize:clear
+sudo -u favon.de_nbbcdda00f9 /opt/plesk/php/8.4/bin/php artisan optimize
+sudo -u favon.de_nbbcdda00f9 /opt/plesk/php/8.4/bin/php artisan queue:restart
+```
+
+For frontend/Tailwind/JS changes, also run Node 22 `npm ci` and `npm run build`.
+
+PR #14 introduced the first target-audience migration.  
+PR #16 introduced a second non-destructive migration adding `target_mm` / `target_mf` and backfilling the old single-choice values.
+
+Do not run `migrate:fresh` in production.
+
+---
+
+# 23. Current local setup
+
+Typical local project path:
+
+`D:\Dropbox\Eigene Dateien\Dokumente\Server\favon`
+
+Favon has its own local MySQL database/user and its own `.env`.
+
+Laravel Herd exposes:
+
+`http://favon.test`
+
+Local environment is independent from Camperwolf.
+
+Telegram OIDC is primarily tested on production HTTPS; the owner/admin account remains useful for local development.
+
+---
+
+# 24. Current UI decisions from 2026-10-15 testing
+
+Real practical browser/mobile testing drove these changes:
+
+- remove redundant large dashboard title/intro;
+- make map the visual center;
+- keep search immediately available;
+- collapse advanced filters;
+- move nearby button away from Leaflet zoom/attribution controls;
+- make submission-success modal mobile-safe;
+- use a compact circular user icon;
+- remove normal-user menu clutter;
+- remove duplicate language option from user menu;
+- keep owner/admin entries permission-based;
+- add missing local Tabler icon definitions (`user-circle`, `adjustments-horizontal`);
+- default map view stays on Germany instead of auto-zooming to a single result.
+
+User confirmed the resulting UI works and looks good.
+
+---
+
+# 25. Immediate next work
+
+High-priority continuation items:
+
+1. Add **MM / MF** to the collapsible browse filters. Multiple selection should make sense there as well.
+2. Let first test users/colleagues use the product with as little explanation as possible; collect where they hesitate or misunderstand the interface.
+3. Fix the transient GPS-in-URL privacy issue before broader/public rollout.
+4. Only then expand the place model/features based on actual feedback.
+
+When observing testers, useful questions are behavioral rather than leading:
+
+- Can they find nearby places without help?
+- Do they understand the `+` menu?
+- Can they submit a place without explanation?
+- Do they understand MM/MF and multi-selection?
+- Can they find favorites/notifications?
+- Where do they backtrack, hesitate or ask what to do next?
+
+Do not add speculative complexity merely because it was planned earlier.
+
+---
+
+# 26. Open decisions
+
+Still intentionally unresolved:
+
+- check-in radius;
+- check-in expiry;
+- variable-feature TTLs;
+- vote/consensus thresholds;
+- stable-fact change workflow;
+- exact structured rating dimensions;
+- exact public aggregate activity presentation;
+- final operator/legal structure;
+- final youth-protection implementation;
+- final privacy retention schedule;
+- whether the old `target_audience` compatibility column should be removed in a later cleanup migration;
+- whether multiple place types will ever be exposed in the UI.
+
+---
+
+# 27. Documentation policy
+
+`docs/PROJECT_CONTEXT.md` is the authoritative living context.
+
+At meaningful milestones:
+
+- update it;
+- replace obsolete statements rather than appending contradictions;
+- clearly distinguish implemented from planned;
+- keep operational details needed for future sessions;
+- remove stale branch names/test counts/production assumptions when they stop being useful;
+- keep it Favon-only.
+
+The next session should read this file first before planning or changing Favon.
