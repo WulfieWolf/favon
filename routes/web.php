@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\PlaceDeletionController;
 use App\Http\Controllers\Admin\PlaceMergeController;
+use App\Http\Controllers\Admin\PlaceSubmissionModerationController;
 use App\Http\Controllers\Admin\StatisticsController;
 use App\Http\Controllers\Admin\SupportContentController;
 use App\Http\Controllers\Admin\SupportController;
@@ -60,6 +61,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', PlaceBrowseController::class)
         ->middleware(['harden-browse', 'limit-filtered-browse'])
         ->name('dashboard');
+    Route::get('places/create', [PlaceSubmissionController::class, 'create'])
+        ->middleware('permission:places.submit')
+        ->name('places.create');
     Route::post('places', [PlaceSubmissionController::class, 'store'])
         ->middleware(['permission:places.submit', 'throttle:place-submit'])
         ->name('places.store');
@@ -126,6 +130,13 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/places/{place}/permanent', [PlaceDeletionController::class, 'destroy'])
                 ->middleware('permission:places.delete_permanently')
                 ->name('places.delete-permanently');
+
+            Route::middleware('permission:places.change_publication_status')->group(function () {
+                Route::get('/place-submissions', [PlaceSubmissionModerationController::class, 'index'])->name('place-submissions.index');
+                Route::get('/place-submissions/{place}', [PlaceSubmissionModerationController::class, 'show'])->name('place-submissions.show');
+                Route::post('/place-submissions/{place}/approve', [PlaceSubmissionModerationController::class, 'approve'])->name('place-submissions.approve');
+                Route::post('/place-submissions/{place}/reject', [PlaceSubmissionModerationController::class, 'reject'])->name('place-submissions.reject');
+            });
 
             Route::middleware('permission:places.merge')->group(function () {
                 Route::get('/place-merges', [PlaceMergeController::class, 'index'])->name('place-merges.index');
