@@ -105,6 +105,19 @@ class AppServiceProvider extends ServiceProvider
             ];
         });
 
+        RateLimiter::for('place-submit', function (Request $request) use ($actorKey, $isPrivileged): array|Limit {
+            if ($isPrivileged($request)) {
+                return Limit::none();
+            }
+
+            $key = $actorKey($request);
+
+            return [
+                Limit::perMinute(10)->by('place-submit-minute:'.$key),
+                Limit::perHour(100)->by('place-submit-hour:'.$key),
+            ];
+        });
+
         RateLimiter::for('public-read', function (Request $request): Limit {
             if (! config('favon.security.public_read_limit_enabled', false)) {
                 return Limit::none();

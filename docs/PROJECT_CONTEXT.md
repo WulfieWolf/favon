@@ -1,6 +1,6 @@
 # Favon – Project Context
 
-_Last updated: 2026-10-07 – Telegram OIDC and owner/admin access live; Favon config namespace cleanup completed_
+_Last updated: 2026-10-15 – cleanup deployed; first native Favon place-submission workflow in implementation_
 
 This file is the authoritative working context for **Favon**.
 
@@ -1020,7 +1020,6 @@ If it contains reusable technical knowledge, rewrite it as Favon documentation r
 
 Still intentionally undecided:
 
-- exact final place-type catalogue
 - exact target-audience schema/wording
 - check-in radius
 - check-in expiry duration
@@ -1224,66 +1223,106 @@ Remaining issues:
 
 Avoid restoring removed Camperwolf subsystems merely to make tests pass. Address surviving dependencies and tests deliberately.
 
-# 32. Exact continuation point – 2026-10-06
+# 32. Exact continuation point – 2026-10-15
 
-**Current state:** Cleanup PR #2 is merged into `main`. Active development continues on `feature/telegram-auth-gateway`. The Telegram auth migration was applied locally with normal `php artisan migrate`, and after the final 2FA test adaptation the complete local Laravel/PHPUnit suite is green again. Herd continues to serve Favon independently at `favon.test`.
+**Current production state:** Favon is live as a separate application on `favon.de`. Telegram OIDC works in production, the separate owner/admin login works, and the active Camperwolf branding/config leftovers have been removed. Cleanup PRs #5, #6 and #8 are merged. Production was deployed through merge commit `de1db624ff0d44ef7f677eda1bc59d03d55d7368` and browser smoke tests passed.
 
-Important cleanup/runtime fixes made during this validation pass include:
+**Current feature branch:** `feature/place-submission-foundation`.
 
-- fixed Favon dashboard map JSON rendering
-- fixed locale configuration namespace in the app header
-- removed inherited XP/achievement help content and converted the old help seeder into legacy-help cleanup only
-- removed stale DevLog links from auth/error layouts
-- removed stale public community-profile links
-- removed obsolete data-score admin tooling
-- removed obsolete Camperwolf-only tests for review/photo/import/deletion behaviors
-- localized the transitional Favon browse/admin UI
-- added `favon:mode` emergency access command
-- made statistics grouping SQLite-compatible for tests
-- aligned registration welcome flow with Favon's non-public-profile direction
-- kept guarded mail behavior while explicitly enabling it inside delivery tests only
+## Current authentication/access model
 
-## Current Telegram-auth implementation
+- community login uses Telegram OIDC authorization-code flow with PKCE;
+- Favon stores the stable Telegram numeric ID needed for account mapping, not Telegram display identity;
+- normal community accounts use generated internal names such as `User-0000001`;
+- public registration is disabled;
+- classic e-mail/password login remains reserved for the system owner/admin;
+- place/map content is login-gated;
+- required legal/support entry points remain public.
 
-- new branch `feature/telegram-auth-gateway`
-- Telegram bot/domain configured externally through BotFather; local secret is stored only in Favon `.env` as `TELEGRAM_BOT_TOKEN`
-- `config/telegram.php` defines bot username, token and authentication payload max age
-- `community_accounts` maps one internal Favon user to one unique Telegram ID
-- normal Telegram users have nullable `email` and `password`
-- automatically generated internal names use a readable sequential format: `User-0000001`, `User-0000002`, ...
-- the sequence is based on the community-account row, independent of admin user IDs
-- Telegram first/last name, username, profile photo and phone number are not persisted
-- signed payload verification rejects invalid or stale login data
-- public Fortify registration is disabled
-- classic e-mail/password login is allowed only for administrator/system-owner accounts
-- `registration_closed` mode blocks creation of new Telegram accounts while allowing the gateway itself to remain available
-- Favon directory/map/help/place routes are authentication-gated
-- legal pages and selected public support/legal entry points remain public
-- robots policy now disallows authenticated directory content
-- full local test suite is green after the auth changes
+## First native place workflow – settled V1 scope
 
-## Next concrete steps
+Favon starts deliberately small. The first product workflow is moderated place creation plus existing place search.
 
-1. Browser-smoke-test the new gateway locally: guest landing page, Admin-Login, redirects from dashboard/place/help, public legal pages.
-2. Real Telegram widget round-trip must be tested on the configured `https://favon.de` domain; `favon.test` is not registered with BotFather.
-3. Review account deletion/ban semantics for Telegram IDs: ordinary voluntary deletion versus abuse-ban retention.
-4. Review whether admin password reset, passkeys, e-mail verification and 2FA should all remain for administrators or be reduced further.
-5. Review `composer.lock` consistency and the reported npm vulnerabilities (1 high, 3 critical); do **not** blindly run `npm audit fix --force`.
-6. Design the clean Favon-first schema/migration baseline. The inherited migration set is still only a transitional bootable baseline.
-7. Define and seed the Favon place-type catalogue.
-8. Implement Favon-native stable attribute voting and variable feature freshness/health checks.
-9. Implement proximity-validated short-lived check-ins without retaining raw GPS.
-10. Implement structured ratings and privacy-safe moderation/reporting.
-11. Refactor merge, statistics, account deletion/export and place history against the new Favon schema; ensure no public contributor identity is exposed.
-12. Review final privacy treatment for OSM tiles, analytics content references and retention before broader public rollout. Active application config namespaces have already been migrated to Favon names.
+Required on submission:
+
+- exactly one place type in the V1 UI;
+- name;
+- map position / coordinates.
+
+Optional/basic structured data:
+
+- description: short factual description of the place and/or how visitors find the exact area;
+- environment: `indoor`, `outdoor` or `both`;
+- gloryhole: yes/no;
+- postal address components where available; map coordinates remain authoritative for places without a normal address.
+
+Submission rules shown globally on the form must make clear that only legally accessible places may be submitted, no private addresses/private property, no personal data/contact details, no contact ads and no descriptions of identifiable people. Non-compliant entries are not published.
+
+New community submissions are stored as `places.publication_status = pending`. They are not visible in normal browse/profile queries until approved. The admin may correct obvious mistakes before approval.
+
+Approval:
+
+- saves any admin corrections;
+- changes the place to `published`;
+- records approver/time;
+- sends the creator a notification containing the place name.
+
+Rejection:
+
+- requires a short rejection reason;
+- creates a notification containing place name + reason;
+- then permanently deletes the pending place;
+- no rejected-place archive or resubmit workflow is planned for V1;
+- the rejection reason survives only as long as the normal notification retention.
+
+Existing published-place editing by community users is out of scope for V1. Later it should use a separate change-suggestion workflow.
+
+## Initial Favon place-type catalogue
+
+V1 uses exactly one selected type, but the schema is intentionally prepared for multiple type relations later.
+
+Initial catalogue:
+
+1. Gay-Sauna
+2. Darkroom / Sexclub
+3. Sexkino / Videokabine
+4. Fetisch- / Lederbar
+5. Park / Wald
+6. Rastplatz
+7. Öffentliche Toilette / Klappe
+8. FKK-Strand / Badesee
+9. Parkhaus / Einkaufszentrum
+
+Gloryhole is **not** a place type; it is a separate structured yes/no property.
+
+## Implementation split
+
+PR 1 – place-submission foundation:
+
+- Favon place-type catalogue;
+- `place_place_types` relation with one primary type for now;
+- direct Favon fields for description, environment and gloryhole;
+- moderated submission backend;
+- `places.submit` permission;
+- submission rate limit;
+- tests.
+
+PR 2 – UI and moderation:
+
+- mobile-friendly add-place form with type tiles;
+- map/address selection;
+- general submission-rules notice;
+- admin pending queue and editable review;
+- approve/reject actions;
+- approval/rejection notifications.
 
 ## Safety / working style
 
 - **PowerShell commands must always be one line each.** Multiline SSH/Linux commands are acceptable.
 - Assistant commits to **Favon GitHub only**; user pulls/tests locally. Camperwolf is read-only.
 - `migrate:fresh` is destructive: use **only** when the active project and `.env` are positively verified to target the isolated local `favon` DB. Never use it against Camperwolf or production.
+- Production Git runs as Plesk user `favon.de_nbbcdda00f9` using the Favon read-only deploy key.
 - Update this living context at important milestones; do not copy back obsolete Camperwolf concepts.
-
 
 ---
 
@@ -1300,3 +1339,19 @@ The active Favon repository has been cleaned up further after the authentication
 - historical already-applied migration files are intentionally not rewritten merely to remove old wording, because migration history should remain stable.
 
 The legal copy is technically aligned with the current Favon product model, but this cleanup is not a substitute for a dedicated legal review before a broader public launch.
+
+## 2026-10-15 – First Favon-native place workflow
+
+Product decisions for the first useful Favon release were deliberately reduced to moderated place creation and search.
+
+- Start with the smallest useful workflow and add further features only from real feedback.
+- Community users may submit unlimited legitimate places; an abuse-oriented technical rate limit is acceptable but must not act as a normal product quota.
+- Name, one place type and map location are mandatory.
+- Description, environment (indoor/outdoor/both) and gloryhole yes/no are the only additional V1 place properties.
+- Address is optional where a map position is sufficient.
+- Multiple place types are not exposed in V1, but the schema should support them later.
+- No user editing of published places yet; later use change suggestions.
+- Admin may correct obvious submission mistakes before approval.
+- Rejected pending places are deleted after the creator notification is created.
+- No moderator-only note field is needed because moderation is currently performed by the owner alone.
+

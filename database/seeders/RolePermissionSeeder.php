@@ -27,6 +27,7 @@ class RolePermissionSeeder extends Seeder
 
         $permissions = [
             ['places', 'places.view', 'Plätze ansehen', 'Öffentlich sichtbare Plätze ansehen.'],
+            ['places', 'places.submit', 'Plätze vorschlagen', 'Neue Plätze zur redaktionellen Freigabe einreichen.'],
             ['places', 'places.view_unpublished', 'Unveröffentlichte Plätze ansehen', 'Noch nicht veröffentlichte Plätze sehen.'],
             ['places', 'places.edit', 'Plätze direkt bearbeiten', 'Bestehende Plätze ohne Vorschlagsworkflow direkt ändern.'],
             ['places', 'places.create_direct', 'Plätze direkt anlegen', 'Plätze ohne Freigabeworkflow anlegen.'],
@@ -158,7 +159,7 @@ class RolePermissionSeeder extends Seeder
         ];
 
         $user = array_merge($guest, [
-            'users.view', 'reports.view_own',
+            'users.view', 'places.submit', 'reports.view_own',
             'audit.view_own',
             'owners.request_verification', 'owners.view_own_requests',
             'favorites.manage_own',

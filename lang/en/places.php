@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'submission_received' => 'Your place suggestion was submitted and is awaiting review.',
     'photo_alt' => 'Photo of the place',
     'suggest_help' => 'How do I suggest a place?',
     'common' => [
