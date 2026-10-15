@@ -88,7 +88,7 @@ class PlaceSubmissionTest extends TestCase
             ->assertDontSee('Noch nicht freigegeben');
     }
 
-    public function test_submission_requires_an_active_place_type_and_required_favon_fields(): void
+    public function test_submission_requires_only_type_name_and_location_as_core_fields(): void
     {
         $this->seed(RolePermissionSeeder::class);
 
@@ -113,10 +113,34 @@ class PlaceSubmissionTest extends TestCase
                 'latitude',
                 'longitude',
                 'environment',
-                'has_gloryhole',
             ]);
 
         $this->assertDatabaseCount('places', 0);
+    }
+
+    public function test_optional_description_environment_gloryhole_and_address_may_be_omitted(): void
+    {
+        $this->seed(RolePermissionSeeder::class);
+
+        $user = User::factory()->create();
+        $placeTypeId = (int) DB::table('place_types')->where('slug', 'public-toilet')->value('id');
+
+        $this->actingAs($user)
+            ->post(route('places.store'), [
+                'place_type_id' => $placeTypeId,
+                'name' => 'Testplatz',
+                'latitude' => 51.1,
+                'longitude' => 7.1,
+            ])
+            ->assertRedirect(route('dashboard'));
+
+        $place = DB::table('places')->where('name', 'Testplatz')->first();
+
+        $this->assertNotNull($place);
+        $this->assertNull($place->description);
+        $this->assertNull($place->environment);
+        $this->assertNull($place->has_gloryhole);
+        $this->assertDatabaseMissing('place_addresses', ['place_id' => $place->id]);
     }
 
     public function test_user_without_submission_permission_cannot_submit(): void
