@@ -42,14 +42,26 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div>
-                            <label class="text-sm font-medium" for="target_audience">{{ __('places.suggest.target_audience') }}</label>
-                            <select id="target_audience" name="target_audience" required class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
+                        <fieldset>
+                            <legend class="text-sm font-medium">{{ __('places.suggest.target_audience') }}</legend>
+                            @php
+                                $selectedAudiences = old('target_audience', array_values(array_filter([
+                                    $place->target_mm ? 'mm' : null,
+                                    $place->target_mf ? 'mf' : null,
+                                ])));
+                            @endphp
+                            <div class="mt-2 grid grid-cols-2 gap-2">
                                 @foreach (['mm', 'mf'] as $value)
-                                    <option value="{{ $value }}" @selected(old('target_audience', $place->target_audience) === $value)>{{ __("places.suggest.target_audience_{$value}") }}</option>
+                                    <label class="cursor-pointer">
+                                        <div class="flex items-center justify-center gap-2 rounded-lg border border-zinc-300 px-3 py-2 text-sm has-[:checked]:border-zinc-950 has-[:checked]:bg-zinc-100 has-[:checked]:font-semibold dark:border-zinc-700 dark:has-[:checked]:border-white dark:has-[:checked]:bg-zinc-800">
+                                            <input type="checkbox" name="target_audience[]" value="{{ $value }}" class="size-4 accent-zinc-950 dark:accent-white" @checked(in_array($value, $selectedAudiences, true))>
+                                            <span>{{ __("places.suggest.target_audience_{$value}") }}</span>
+                                        </div>
+                                    </label>
                                 @endforeach
-                            </select>
-                        </div>
+                            </div>
+                            @error('target_audience') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </fieldset>
                         <div>
                             <label class="text-sm font-medium" for="has_gloryhole">{{ __('places.suggest.gloryhole') }}</label>
                             <select id="has_gloryhole" name="has_gloryhole" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950">
