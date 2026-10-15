@@ -313,6 +313,46 @@ class PlaceSubmissionModerationTest extends TestCase
             ->assertOk()->assertDontSee('Mit Gloryhole');
     }
 
+
+    public function test_moderation_form_preselects_existing_gloryhole_yes_and_no_correctly(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+        config(['favon.owner_email' => 'owner@example.test']);
+        $owner = User::factory()->create(['email' => 'owner@example.test']);
+        $creator = User::factory()->create();
+        $typeId = (int) DB::table('place_types')->where('slug', 'park-forest')->value('id');
+
+        foreach ([true, false] as $hasGloryhole) {
+            $placeId = DB::table('places')->insertGetId([
+                'place_type_id' => $typeId,
+                'name' => $hasGloryhole ? 'Ja Platz' : 'Nein Platz',
+                'slug' => $hasGloryhole ? 'ja-platz' : 'nein-platz',
+                'latitude' => 51.2,
+                'longitude' => 7.2,
+                'target_mm' => true,
+                'has_gloryhole' => $hasGloryhole,
+                'publication_status' => 'pending',
+                'legal_status' => 'unclear',
+                'opening_status' => 'unclear',
+                'is_active' => true,
+                'created_by' => $creator->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $response = $this->actingAs($owner)->get(route('admin.place-submissions.show', $placeId))->assertOk();
+            $html = $response->getContent();
+            $this->assertMatchesRegularExpression(
+                '/<option value="'.($hasGloryhole ? '1' : '0').'"\\s+selected(?:="selected")?>/i',
+                $html,
+            );
+            $this->assertDoesNotMatchRegularExpression(
+                '/<option value="'.($hasGloryhole ? '0' : '1').'"\\s+selected(?:="selected")?>/i',
+                $html,
+            );
+        }
+    }
+
     public function test_regular_user_cannot_open_admin_submission_queue(): void
     {
         $this->seed(DatabaseSeeder::class);
