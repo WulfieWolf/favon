@@ -1,4 +1,16 @@
 <x-layouts::app title="Favon">
+    @if (session('place_submission_success'))
+        <div class="fixed inset-0 z-[1000] grid place-items-center bg-black/70 px-4" role="dialog" aria-modal="true" aria-labelledby="place-submission-success-title">
+            <div class="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
+                <h2 id="place-submission-success-title" class="text-xl font-semibold">{{ __('places.submission_success_title') }}</h2>
+                <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-300">{{ __('places.submission_success_message', ['place' => session('place_submission_success.name')]) }}</p>
+                <div class="mt-6 flex justify-end">
+                    <a href="{{ route('dashboard') }}" class="rounded-lg bg-zinc-950 px-5 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">{{ __('ui.feedback.ok') }}</a>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="mx-auto w-full max-w-7xl space-y-5 px-4 py-6">
         <div>
             <h1 class="text-2xl font-semibold">Favon</h1>
@@ -20,7 +32,7 @@
                     @foreach ($placeTypes as $type)
                         <label class="flex items-center gap-1.5 rounded-full border border-zinc-300 px-3 py-1.5 text-xs dark:border-zinc-700">
                             <input type="checkbox" name="place_types[]" value="{{ $type->slug }}" @checked(in_array($type->slug, $selectedTypes, true))>
-                            {{ str($type->slug)->replace('-', ' ')->headline() }}
+                            {{ __("place_types.{$type->slug}.name") }}
                         </label>
                     @endforeach
                 </div>
@@ -35,7 +47,7 @@
                     <div class="flex items-start justify-between gap-3">
                         <div>
                             <a href="{{ route('places.show', $place->slug) }}" class="font-semibold hover:underline">{{ $place->name }}</a>
-                            <div class="mt-1 text-xs text-zinc-500">{{ str($place->place_type_slug)->replace('-', ' ')->headline() }}</div>
+                            <div class="mt-1 text-xs text-zinc-500">{{ __("place_types.{$place->place_type_slug}.name") }}</div>
                         </div>
                         @auth
                             <form method="POST" action="{{ in_array((int) $place->id, $favoriteIds, true) ? route('favorites.destroy', $place->slug) : route('favorites.store', $place->slug) }}">
