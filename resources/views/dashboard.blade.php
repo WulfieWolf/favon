@@ -148,11 +148,9 @@
                         attribution: '&copy; OpenStreetMap contributors',
                     }).addTo(map);
 
-                    const bounds = [];
                     points.forEach((point) => {
                         const marker = window.L.marker([point.lat, point.lng]).addTo(map);
                         marker.bindPopup('<a href="' + point.url + '">' + point.name.replaceAll('<', '&lt;').replaceAll('>', '&gt;') + '</a>');
-                        bounds.push([point.lat, point.lng]);
                     });
                     if (userPosition) {
                         window.L.circleMarker([userPosition.lat, userPosition.lng], {
@@ -160,8 +158,6 @@
                             weight: 3,
                             fillOpacity: 0.8,
                         }).addTo(map).bindPopup(@json(__('ui.transition.my_position')));
-                    } else if (bounds.length) {
-                        map.fitBounds(bounds, { padding: [24, 24], maxZoom: 14 });
                     }
                 };
 
