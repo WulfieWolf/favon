@@ -91,6 +91,11 @@ return [
         'submit_now' => 'Submit for review now',
         'continue_quick_features' => 'Continue: add features',
     ],
+    'admin_edit' => [
+        'title' => 'Edit place',
+        'save' => 'Save changes',
+        'saved' => 'Place updated.',
+    ],
     'profile' => [
         'target_audience' => 'Target audience: :audience',
     ],

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\PlaceDeletionController;
+use App\Http\Controllers\Admin\PublishedPlaceEditController;
 use App\Http\Controllers\Admin\PlaceMergeController;
 use App\Http\Controllers\Admin\PlaceSubmissionModerationController;
 use App\Http\Controllers\Admin\StatisticsController;
@@ -126,6 +127,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/users/{user}/roles', [AdminController::class, 'assignRole'])->middleware('permission:users.assign_roles')->name('users.roles.assign');
             Route::delete('/users/{user}/roles', [AdminController::class, 'removeRole'])->middleware('permission:users.assign_roles')->name('users.roles.remove');
             Route::put('/users/{user}/permission-overrides', [AdminController::class, 'setOverride'])->middleware('permission:users.override_permissions')->name('users.permissions.override');
+
+            Route::get('/places/{place}/edit', [PublishedPlaceEditController::class, 'edit'])->name('places.edit');
+            Route::put('/places/{place}', [PublishedPlaceEditController::class, 'update'])->name('places.update');
 
             Route::delete('/places/{place}/permanent', [PlaceDeletionController::class, 'destroy'])
                 ->middleware('permission:places.delete_permanently')

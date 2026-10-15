@@ -91,6 +91,11 @@ return [
         'submit_now' => 'Direkt zur Prüfung einreichen',
         'continue_quick_features' => 'Weiter: Merkmale ergänzen',
     ],
+    'admin_edit' => [
+        'title' => 'Platz bearbeiten',
+        'save' => 'Änderungen speichern',
+        'saved' => 'Platz aktualisiert.',
+    ],
     'profile' => [
         'target_audience' => 'Zielgruppe: :audience',
     ],

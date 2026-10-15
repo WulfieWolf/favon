@@ -19,6 +19,9 @@
                         </div>
                     @endif
                 </div>
+                @if (app(\App\Services\PermissionService::class)->isOwner(auth()->user()) && app(\App\Services\PermissionService::class)->activeRolePreview(auth()->user()) === null)
+                    <a href="{{ route('admin.places.edit', $place->id) }}" class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium dark:border-zinc-700">{{ __('places.admin_edit.title') }}</a>
+                @endif
                 @auth
                     <form method="POST" action="{{ $isFavorite ? route('favorites.destroy', $place->slug) : route('favorites.store', $place->slug) }}">
                         @csrf
