@@ -14,7 +14,7 @@ class SupportContentSeeder extends Seeder
             return;
         }
 
-        $legacyCamperwolfArticleSlugs = [
+        $legacyArticleSlugs = [
             'platz-details-bearbeiten',
             'merkmale-eines-platzes-eintragen',
             'platzvorschlag-pruefen-und-einreichen',
@@ -39,7 +39,7 @@ class SupportContentSeeder extends Seeder
         ];
 
         $articleIds = DB::table('support_articles')
-            ->whereIn('slug', $legacyCamperwolfArticleSlugs)
+            ->whereIn('slug', $legacyArticleSlugs)
             ->pluck('id');
 
         if ($articleIds->isEmpty()) {

@@ -32,7 +32,7 @@
 
 @if ($toastData && ! $hasValidationErrors && ! $hasDialog)
     <div
-        data-cw-toast
+        data-fv-toast
         data-timeout="{{ (int) ($toastData['timeout'] ?? 4500) }}"
         class="fixed bottom-4 left-1/2 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-start gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-800 shadow-2xl sm:left-auto sm:right-4 sm:w-auto sm:min-w-80 sm:translate-x-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
         style="z-index:2147483646"
@@ -51,17 +51,17 @@
             <x-tabler-icon :name="($toastData['variant'] ?? 'success') === 'error' ? 'x' : (($toastData['variant'] ?? 'success') === 'success' ? 'circle-check' : 'info-circle')" class="size-4" />
         </div>
         <div class="min-w-0 flex-1 leading-6">{{ $toastData['message'] ?? '' }}</div>
-        <button type="button" data-cw-toast-close class="grid size-7 shrink-0 place-items-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200" aria-label="{{ __('ui.feedback.close') }}">×</button>
+        <button type="button" data-fv-toast-close class="grid size-7 shrink-0 place-items-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200" aria-label="{{ __('ui.feedback.close') }}">×</button>
     </div>
 
     <script>
         (() => {
-            const toast = document.querySelector('[data-cw-toast]');
+            const toast = document.querySelector('[data-fv-toast]');
             if (!toast || toast.dataset.bound) return;
             toast.dataset.bound = '1';
 
             const close = () => toast.remove();
-            toast.querySelector('[data-cw-toast-close]')?.addEventListener('click', close);
+            toast.querySelector('[data-fv-toast-close]')?.addEventListener('click', close);
             window.setTimeout(close, Number.parseInt(toast.dataset.timeout || '4500', 10));
         })();
     </script>
@@ -69,15 +69,15 @@
 
 @if ($hasValidationErrors || $hasDialog)
     <div
-        data-cw-feedback
+        data-fv-feedback
         data-variant="{{ $variant }}"
         data-error-fields='@json($hasValidationErrors ? $validationFields : [])'
         class="fixed inset-0 flex items-center justify-center bg-black/60 p-4 backdrop-blur-[1px]"
         style="z-index:2147483647"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="cw-feedback-title"
-        aria-describedby="cw-feedback-message"
+        aria-labelledby="fv-feedback-title"
+        aria-describedby="fv-feedback-message"
     >
         <div class="w-full max-w-lg rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
             <div class="flex items-start gap-4 p-5 sm:p-6">
@@ -94,8 +94,8 @@
                 </div>
 
                 <div class="min-w-0 flex-1">
-                    <h2 id="cw-feedback-title" class="text-lg font-semibold text-zinc-950 dark:text-white">{{ $title }}</h2>
-                    <p id="cw-feedback-message" class="mt-1.5 text-sm leading-6 text-zinc-600 dark:text-zinc-300">{{ $message }}</p>
+                    <h2 id="fv-feedback-title" class="text-lg font-semibold text-zinc-950 dark:text-white">{{ $title }}</h2>
+                    <p id="fv-feedback-message" class="mt-1.5 text-sm leading-6 text-zinc-600 dark:text-zinc-300">{{ $message }}</p>
 
                     @if ($details !== [])
                         <ul class="mt-4 max-h-56 space-y-2 overflow-y-auto border-t border-zinc-200 pt-3 text-sm leading-6 text-zinc-700 dark:border-zinc-700 dark:text-zinc-200">
@@ -117,7 +117,7 @@
             <div class="flex justify-end border-t border-zinc-200 px-5 py-4 dark:border-zinc-800">
                 <button
                     type="button"
-                    data-cw-feedback-close
+                    data-fv-feedback-close
                     class="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
                 >
                     {{ __('ui.feedback.ok') }}
@@ -129,7 +129,7 @@
     <script>
         (() => {
             const initFeedback = () => {
-                const dialog = document.querySelector('[data-cw-feedback]');
+                const dialog = document.querySelector('[data-fv-feedback]');
                 if (!dialog || dialog.dataset.bound) return;
                 dialog.dataset.bound = '1';
 
@@ -203,7 +203,7 @@
                     }
                 };
 
-                dialog.querySelector('[data-cw-feedback-close]')?.addEventListener('click', close);
+                dialog.querySelector('[data-fv-feedback-close]')?.addEventListener('click', close);
 
                 const escapeHandler = (event) => {
                     if (event.key !== 'Escape' || ! document.body.contains(dialog)) return;
@@ -212,7 +212,7 @@
                 };
                 document.addEventListener('keydown', escapeHandler);
 
-                window.requestAnimationFrame(() => dialog.querySelector('[data-cw-feedback-close]')?.focus());
+                window.requestAnimationFrame(() => dialog.querySelector('[data-fv-feedback-close]')?.focus());
             };
 
             document.addEventListener('DOMContentLoaded', initFeedback, { once: true });
@@ -223,7 +223,7 @@
 @endif
 
 
-<script data-cw-global-form-validation>
+<script data-fv-global-form-validation>
     (() => {
         const enableServerValidation = () => {
             document.querySelectorAll('form[method="POST"], form[method="post"]').forEach((form) => {

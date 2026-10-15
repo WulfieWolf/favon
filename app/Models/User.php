@@ -90,7 +90,7 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
 
     /**
      * Name used to address the user in account and security emails.
-     * The automatic CW-ID is deliberately not used as a greeting.
+     * The automatic Favon ID is deliberately not used as a greeting.
      */
     public function mailGreetingName(): string
     {
