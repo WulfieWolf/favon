@@ -84,6 +84,11 @@ class PlaceSubmissionTest extends TestCase
         $this->actingAs($user)
             ->get(route('dashboard'))
             ->assertOk()
+            ->assertSee('Noch nicht freigegeben');
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
             ->assertDontSee('Noch nicht freigegeben');
     }
 
