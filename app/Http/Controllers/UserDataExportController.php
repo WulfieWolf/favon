@@ -53,7 +53,7 @@ class UserDataExportController extends Controller
 
         return response()->download(
             Storage::disk('local')->path($export->storage_path),
-            'camperwolf-data-export-'.now()->format('Y-m-d').'.zip',
+            'favon-data-export-'.now()->format('Y-m-d').'.zip',
             [
                 'Content-Type' => 'application/zip',
                 'Cache-Control' => 'private, no-store, max-age=0',
