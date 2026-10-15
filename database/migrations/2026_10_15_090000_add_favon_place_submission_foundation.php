@@ -29,6 +29,7 @@ return new class extends Migration
         DB::table('places')
             ->select(['id', 'place_type_id', 'created_at', 'updated_at'])
             ->orderBy('id')
+            ->get()
             ->each(function ($place): void {
                 DB::table('place_place_types')->updateOrInsert(
                     [
