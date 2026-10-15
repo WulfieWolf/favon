@@ -5,7 +5,7 @@
             <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ __('places.suggest.intro') }}</p>
         </div>
 
-        <div class="rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100">
+        <div class="rounded-xl border border-zinc-300 bg-zinc-100 p-4 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
             <div class="font-semibold">{{ __('places.suggest.rules_title') }}</div>
             <ul class="mt-2 list-disc space-y-1 pl-5">
                 <li>{{ __('places.suggest.rules_legal') }}</li>
@@ -25,10 +25,12 @@
                     @foreach ($placeTypes as $type)
                         @php($checked = (string) old('place_type_id') === (string) $type->id)
                         <label class="cursor-pointer">
-                            <input type="radio" name="place_type_id" value="{{ $type->id }}" class="peer sr-only" @checked($checked) required>
-                            <div class="h-full rounded-xl border border-zinc-300 p-4 transition peer-checked:border-zinc-950 peer-checked:ring-2 peer-checked:ring-zinc-950/20 dark:border-zinc-700 dark:peer-checked:border-white dark:peer-checked:ring-white/20">
-                                <div class="font-semibold">{{ __("place_types.{$type->slug}.name") }}</div>
-                                <div class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ __("place_types.{$type->slug}.description") }}</div>
+                            <div class="flex h-full items-start gap-3 rounded-xl border border-zinc-300 p-4 transition has-[:checked]:border-zinc-950 has-[:checked]:bg-zinc-100 has-[:checked]:ring-2 has-[:checked]:ring-zinc-950/20 dark:border-zinc-700 dark:has-[:checked]:border-white dark:has-[:checked]:bg-zinc-800 dark:has-[:checked]:ring-white/20">
+                                <input type="radio" name="place_type_id" value="{{ $type->id }}" class="mt-1 size-4 shrink-0 accent-zinc-950 dark:accent-white" @checked($checked) required>
+                                <div>
+                                    <div class="font-semibold">{{ __("place_types.{$type->slug}.name") }}</div>
+                                    <div class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ __("place_types.{$type->slug}.description") }}</div>
+                                </div>
                             </div>
                         </label>
                     @endforeach
@@ -57,9 +59,9 @@
                             <div class="mt-2 grid grid-cols-3 gap-2">
                                 @foreach (['outdoor', 'indoor', 'both'] as $value)
                                     <label class="cursor-pointer">
-                                        <input type="radio" name="environment" value="{{ $value }}" class="peer sr-only" @checked(old('environment') === $value)>
-                                        <div class="rounded-lg border border-zinc-300 px-3 py-2 text-center text-sm peer-checked:border-zinc-950 peer-checked:bg-zinc-950 peer-checked:text-white dark:border-zinc-700 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-zinc-950">
-                                            {{ __("places.suggest.environment_{$value}") }}
+                                        <div class="flex items-center justify-center gap-2 rounded-lg border border-zinc-300 px-3 py-2 text-sm has-[:checked]:border-zinc-950 has-[:checked]:bg-zinc-100 has-[:checked]:font-semibold dark:border-zinc-700 dark:has-[:checked]:border-white dark:has-[:checked]:bg-zinc-800">
+                                            <input type="radio" name="environment" value="{{ $value }}" class="size-4 accent-zinc-950 dark:accent-white" @checked(old('environment') === $value)>
+                                            <span>{{ __("places.suggest.environment_{$value}") }}</span>
                                         </div>
                                     </label>
                                 @endforeach
@@ -71,8 +73,10 @@
                             <div class="mt-2 grid grid-cols-2 gap-2">
                                 @foreach (['1' => __('places.suggest.yes'), '0' => __('places.suggest.no')] as $value => $label)
                                     <label class="cursor-pointer">
-                                        <input type="radio" name="has_gloryhole" value="{{ $value }}" class="peer sr-only" @checked((string) old('has_gloryhole') === (string) $value)>
-                                        <div class="rounded-lg border border-zinc-300 px-3 py-2 text-center text-sm peer-checked:border-zinc-950 peer-checked:bg-zinc-950 peer-checked:text-white dark:border-zinc-700 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-zinc-950">{{ $label }}</div>
+                                        <div class="flex items-center justify-center gap-2 rounded-lg border border-zinc-300 px-3 py-2 text-sm has-[:checked]:border-zinc-950 has-[:checked]:bg-zinc-100 has-[:checked]:font-semibold dark:border-zinc-700 dark:has-[:checked]:border-white dark:has-[:checked]:bg-zinc-800">
+                                            <input type="radio" name="has_gloryhole" value="{{ $value }}" class="size-4 accent-zinc-950 dark:accent-white" @checked((string) old('has_gloryhole') === (string) $value)>
+                                            <span>{{ $label }}</span>
+                                        </div>
                                     </label>
                                 @endforeach
                             </div>
@@ -85,7 +89,11 @@
                 <h2 class="text-lg font-semibold">{{ __('places.suggest.position') }}</h2>
                 <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ __('places.suggest.position_help_simple') }}</p>
 
-                <div id="favon-place-create-map" class="mt-4 h-80 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800"></div>
+                <div id="favon-place-create-map"
+                    data-favon-place-picker
+                    data-lat-input="latitude"
+                    data-lng-input="longitude"
+                    class="mt-4 h-80 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800"></div>
 
                 <div class="mt-4 grid gap-3 md:grid-cols-2">
                     <div>
@@ -102,11 +110,14 @@
                     <div class="text-sm font-medium">{{ __('places.suggest.address') }}</div>
                     <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{{ __('places.suggest.address_help') }}</p>
                     <div class="mt-3 grid gap-3 md:grid-cols-6">
-                        <input name="street" value="{{ old('street') }}" placeholder="{{ __('places.suggest.street') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-4 dark:border-zinc-700 dark:bg-zinc-950">
-                        <input name="house_number" value="{{ old('house_number') }}" placeholder="{{ __('places.suggest.house_number') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-2 dark:border-zinc-700 dark:bg-zinc-950">
+                        <input name="street_address" value="{{ old('street_address') }}" placeholder="{{ __('places.suggest.street_address') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-6 dark:border-zinc-700 dark:bg-zinc-950">
                         <input name="postal_code" value="{{ old('postal_code') }}" placeholder="{{ __('places.suggest.postal_code') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-2 dark:border-zinc-700 dark:bg-zinc-950">
-                        <input name="city" value="{{ old('city') }}" placeholder="{{ __('places.suggest.city') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-3 dark:border-zinc-700 dark:bg-zinc-950">
-                        <input name="country_code" value="{{ old('country_code', 'DE') }}" placeholder="DE" maxlength="2" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 uppercase md:col-span-1 dark:border-zinc-700 dark:bg-zinc-950">
+                        <input name="city" value="{{ old('city') }}" placeholder="{{ __('places.suggest.city') }}" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-2 dark:border-zinc-700 dark:bg-zinc-950">
+                        <select name="country_code" class="rounded-lg border border-zinc-300 bg-white px-3 py-2 md:col-span-2 dark:border-zinc-700 dark:bg-zinc-950">
+                            @foreach ($countries as $country)
+                                <option value="{{ $country->code }}" @selected(old('country_code', 'DE') === $country->code)>{{ $country->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </section>
@@ -118,48 +129,4 @@
         </form>
     </div>
 
-    @push('scripts')
-        <script>
-            (() => {
-                const init = () => {
-                    const el = document.getElementById('favon-place-create-map');
-                    if (!el || el.dataset.ready || !window.L) return;
-                    el.dataset.ready = '1';
-
-                    const latInput = document.getElementById('latitude');
-                    const lngInput = document.getElementById('longitude');
-                    const existingLat = Number.parseFloat(latInput.value);
-                    const existingLng = Number.parseFloat(lngInput.value);
-                    const hasExisting = Number.isFinite(existingLat) && Number.isFinite(existingLng);
-                    const start = hasExisting ? [existingLat, existingLng] : [51.1657, 10.4515];
-
-                    const map = window.L.map(el).setView(start, hasExisting ? 15 : 6);
-                    window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                        attribution: '&copy; OpenStreetMap contributors',
-                    }).addTo(map);
-
-                    let marker = hasExisting ? window.L.marker(start, { draggable: true }).addTo(map) : null;
-
-                    const setPoint = (latlng) => {
-                        if (!marker) {
-                            marker = window.L.marker(latlng, { draggable: true }).addTo(map);
-                            marker.on('dragend', () => setPoint(marker.getLatLng()));
-                        } else {
-                            marker.setLatLng(latlng);
-                        }
-                        latInput.value = Number(latlng.lat).toFixed(7);
-                        lngInput.value = Number(latlng.lng).toFixed(7);
-                    };
-
-                    map.on('click', (event) => setPoint(event.latlng));
-                    if (marker) marker.on('dragend', () => setPoint(marker.getLatLng()));
-                };
-
-                document.addEventListener('DOMContentLoaded', init, { once: true });
-                window.addEventListener('favon:leaflet-ready', init, { once: true });
-                init();
-            })();
-        </script>
-    @endpush
 </x-layouts::app>
