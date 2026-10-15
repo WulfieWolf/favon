@@ -15,8 +15,8 @@ class PlaceSubmissionService
      *   latitude:float|int|string,
      *   longitude:float|int|string,
      *   description?:string|null,
-     *   environment:string,
-     *   has_gloryhole:bool|int|string,
+     *   environment?:string|null,
+     *   has_gloryhole?:bool|int|string|null,
      *   street?:string|null,
      *   house_number?:string|null,
      *   postal_code?:string|null,
@@ -39,8 +39,10 @@ class PlaceSubmissionService
                 'name' => $name,
                 'slug' => $this->uniqueSlug($name),
                 'description' => $description !== '' ? $description : null,
-                'environment' => $data['environment'],
-                'has_gloryhole' => (bool) $data['has_gloryhole'],
+                'environment' => $data['environment'] ?? null,
+                'has_gloryhole' => array_key_exists('has_gloryhole', $data) && $data['has_gloryhole'] !== null
+                    ? (bool) $data['has_gloryhole']
+                    : null,
                 'latitude' => $data['latitude'],
                 'longitude' => $data['longitude'],
                 'publication_status' => 'pending',
