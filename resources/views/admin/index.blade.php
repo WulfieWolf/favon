@@ -10,6 +10,9 @@
             @if ($canViewUsers)
                 <a href="{{ route('admin.users.index') }}" class="{{ $card }}"><div class="font-semibold">{{ __('admin.overview.users_rights') }}</div><div class="mt-1 text-sm text-neutral-500">{{ $userCount }} {{ __('admin.overview.users') }}</div></a>
             @endif
+            @if ($canModeratePlaceSubmissions)
+                <a href="{{ route('admin.place-submissions.index') }}" class="{{ $card }}"><div class="font-semibold">{{ __('admin.overview.place_submissions') }}</div><div class="mt-1 text-sm text-neutral-500">{{ trans_choice('admin.overview.place_submissions_count', $pendingPlaceSubmissionCount, ['count' => $pendingPlaceSubmissionCount]) }}</div></a>
+            @endif
             @if ($canMergePlaces)
                 <a href="{{ route('admin.place-merges.index') }}" class="{{ $card }}"><div class="font-semibold">{{ __('admin.overview.merge_places') }}</div><div class="mt-1 text-sm text-neutral-500">{{ __('admin.overview.merge_places_help') }}</div></a>
             @endif
