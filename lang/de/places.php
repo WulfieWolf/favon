@@ -47,6 +47,7 @@ return [
         'environment_indoor' => 'Indoor',
         'environment_both' => 'Beides',
         'target_audience' => 'Zielgruppe',
+        'target_audience_help' => 'Mehrfachauswahl möglich.',
         'target_audience_mm' => 'MM',
         'target_audience_mf' => 'MF',
         'gloryhole' => 'Gloryhole?',
