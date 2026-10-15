@@ -69,7 +69,7 @@
                         <fieldset>
                             <legend class="text-sm font-medium">{{ __('places.suggest.gloryhole') }}</legend>
                             <div class="mt-2 grid grid-cols-2 gap-2">
-                                @foreach (['1' => __('global.yes'), '0' => __('global.no')] as $value => $label)
+                                @foreach (['1' => __('places.suggest.yes'), '0' => __('places.suggest.no')] as $value => $label)
                                     <label class="cursor-pointer">
                                         <input type="radio" name="has_gloryhole" value="{{ $value }}" class="peer sr-only" @checked((string) old('has_gloryhole') === (string) $value)>
                                         <div class="rounded-lg border border-zinc-300 px-3 py-2 text-center text-sm peer-checked:border-zinc-950 peer-checked:bg-zinc-950 peer-checked:text-white dark:border-zinc-700 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-zinc-950">{{ $label }}</div>
