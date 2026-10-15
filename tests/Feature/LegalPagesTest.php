@@ -25,18 +25,17 @@ class LegalPagesTest extends TestCase
             ->assertOk()
             ->assertSee('Datenschutzerklärung')
             ->assertSee('OpenStreetMap')
-            ->assertSee('Mein Standort')
-            ->assertSee('Plätze in der Umgebung')
-            ->assertSee('passende gefilterte Plätze nach ihrer Entfernung')
-            ->assertSee('nicht an den Camperwolf-Server übertragen')
-            ->assertSee('Photon');
+            ->assertSee('Telegram')
+            ->assertSee('Places, not people')
+            ->assertSee('OpenStreetMap')
+            ->assertSee('keine Werbe-, Marketing- oder externen Analyse-Tracker');
 
         $this->withSession(['locale' => 'de'])
             ->get(route('legal.terms'))
             ->assertOk()
             ->assertSee('Nutzungsbedingungen')
-            ->assertSee('Rezensionen')
-            ->assertSee('Fotos');
+            ->assertSee('Places, not people')
+            ->assertSee('Strukturierte Bewertungen');
     }
 
     public function test_english_legal_pages_are_available(): void
@@ -50,10 +49,9 @@ class LegalPagesTest extends TestCase
             ->get(route('legal.privacy'))
             ->assertOk()
             ->assertSee('Privacy policy')
-            ->assertSee('My location')
-            ->assertSee('Places nearby')
-            ->assertSee('matching filtered places by their distance')
-            ->assertSee('is not sent to the Camperwolf server');
+            ->assertSee('Telegram')
+            ->assertSee('Places, not people')
+            ->assertSee('OpenStreetMap');
 
         $this->withSession(['locale' => 'en'])
             ->get(route('legal.terms'))

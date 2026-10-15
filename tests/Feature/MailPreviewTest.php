@@ -44,7 +44,7 @@ class MailPreviewTest extends TestCase
             ->assertSee('Recipient')
             ->assertSee('Reason')
             ->assertSee('Registration')
-            ->assertSee('Verify your email address - Camperwolf.de')
+            ->assertSee('Verify your email address - Favon')
             ->assertSee('sascha@example.test');
     }
 

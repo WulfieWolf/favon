@@ -2,7 +2,7 @@
 
 return [
     'title' => 'Was ist neu?',
-    'intro' => 'Neue Funktionen, Verbesserungen und behobene Fehler in Camperwolf.',
+    'intro' => 'Neue Funktionen, Verbesserungen und behobene Fehler in Favon.',
     'empty' => 'Noch keine öffentlichen Versionen vorhanden.',
     'feature' => 'Neu',
     'improvement' => 'Verbessert',

@@ -13,7 +13,7 @@ class VerifyEmailMail extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * @param  array{user_id:int,locale:string,greeting_name:string,account_name:string,email:string,cw_id:?string,verification_url:string,expires_in:int,reason:string}  $context
+     * @param  array{user_id:int,locale:string,greeting_name:string,account_name:string,email:string,favon_id:?string,verification_url:string,expires_in:int,reason:string}  $context
      */
     public function __construct(
         public array $context,

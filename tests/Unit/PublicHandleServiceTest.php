@@ -15,7 +15,7 @@ class PublicHandleServiceTest extends TestCase
         for ($id = 1; $id <= 10000; $id++) {
             $handle = $service->automaticForUserId($id);
 
-            $this->assertMatchesRegularExpression('/^CW-[0-9A-Z]{5}$/', $handle);
+            $this->assertMatchesRegularExpression('/^FV-[0-9A-Z]{5}$/', $handle);
             $this->assertSame($handle, $service->automaticForUserId($id));
             $this->assertArrayNotHasKey($handle, $seen);
 
@@ -23,12 +23,12 @@ class PublicHandleServiceTest extends TestCase
         }
     }
 
-    public function test_cw_prefix_is_reserved_for_automatic_handles(): void
+    public function test_fv_prefix_is_reserved_for_automatic_handles(): void
     {
         $service = app(PublicHandleService::class);
 
-        $this->assertTrue($service->isReservedAutomaticNamespace('CW-ABCDE'));
-        $this->assertTrue($service->isReservedAutomaticNamespace('cw-test'));
-        $this->assertFalse($service->isReservedAutomaticNamespace('camperwolf'));
+        $this->assertTrue($service->isReservedAutomaticNamespace('FV-ABCDE'));
+        $this->assertTrue($service->isReservedAutomaticNamespace('fv-test'));
+        $this->assertFalse($service->isReservedAutomaticNamespace('favon'));
     }
 }

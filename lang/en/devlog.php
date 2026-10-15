@@ -2,7 +2,7 @@
 
 return [
     'title' => 'What\'s new?',
-    'intro' => 'New features, improvements and fixes in Camperwolf.',
+    'intro' => 'New features, improvements and fixes in Favon.',
     'empty' => 'No public releases available yet.',
     'feature' => 'New',
     'improvement' => 'Improved',

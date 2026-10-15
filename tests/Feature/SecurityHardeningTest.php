@@ -71,7 +71,7 @@ class SecurityHardeningTest extends TestCase
 
         $this->assertStringContainsString('Disallow: /dashboard', $robots);
         $this->assertStringContainsString('Disallow: /places/', $robots);
-        $this->assertStringNotContainsString('camperwolf.de/sitemap.xml', $robots);
+        $this->assertStringNotContainsString('Sitemap:', $robots);
     }
 
     public function test_filtered_dashboard_requests_are_rate_limited_but_plain_dashboard_is_not(): void

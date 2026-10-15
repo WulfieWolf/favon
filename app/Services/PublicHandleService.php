@@ -6,7 +6,7 @@ use InvalidArgumentException;
 
 class PublicHandleService
 {
-    private const PREFIX = 'CW-';
+    private const PREFIX = 'FV-';
     private const SPACE = 60466176; // 36^5
     private const MULTIPLIER = 15485863;
     private const OFFSET = 27182818;

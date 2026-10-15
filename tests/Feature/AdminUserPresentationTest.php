@@ -62,14 +62,14 @@ class AdminUserPresentationTest extends TestCase
         DB::table('user_profiles')->insert([
             [
                 'user_id' => $withAlias->id,
-                'public_handle' => 'CW-10001',
+                'public_handle' => 'FV-10001',
                 'public_alias' => 'Wolfie',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'user_id' => $withoutAlias->id,
-                'public_handle' => 'CW-10002',
+                'public_handle' => 'FV-10002',
                 'public_alias' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -80,6 +80,6 @@ class AdminUserPresentationTest extends TestCase
             ->get(route('admin.users.index'))
             ->assertOk()
             ->assertSee('Wolfie')
-            ->assertSee('CW-10002');
+            ->assertSee('FV-10002');
     }
 }

@@ -14,7 +14,7 @@ use App\Models\UserProfile;
 class MailContextService
 {
     /**
-     * @return array{user_id:int, locale:string, greeting_name:string, account_name:string, email:string, cw_id:?string}
+     * @return array{user_id:int, locale:string, greeting_name:string, account_name:string, email:string, favon_id:?string}
      */
     public function forUser(User $user): array
     {
@@ -29,7 +29,7 @@ class MailContextService
             'greeting_name' => $user->mailGreetingName(),
             'account_name' => $user->name,
             'email' => $user->email,
-            'cw_id' => $profile?->public_handle,
+            'favon_id' => $profile?->public_handle,
         ];
     }
 }

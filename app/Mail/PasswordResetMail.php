@@ -13,7 +13,7 @@ class PasswordResetMail extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * @param  array{user_id:int,locale:string,greeting_name:string,account_name:string,email:string,cw_id:?string,reset_url:string,expires_in:int}  $context
+     * @param  array{user_id:int,locale:string,greeting_name:string,account_name:string,email:string,favon_id:?string,reset_url:string,expires_in:int}  $context
      */
     public function __construct(
         public array $context,

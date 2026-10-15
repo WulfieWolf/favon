@@ -22,14 +22,14 @@ class MailContextServiceTest extends TestCase
 
         UserProfile::create([
             'user_id' => $user->id,
-            'public_handle' => 'CW-12378',
+            'public_handle' => 'FV-12378',
         ]);
 
         $context = app(MailContextService::class)->forUser($user->fresh());
 
         $this->assertSame('de', $context['locale']);
         $this->assertSame('Sascha Schwarz', $context['greeting_name']);
-        $this->assertSame('CW-12378', $context['cw_id']);
+        $this->assertSame('FV-12378', $context['favon_id']);
         $this->assertSame('sascha@example.test', $context['email']);
     }
 
@@ -54,7 +54,7 @@ class MailContextServiceTest extends TestCase
 
         UserProfile::create([
             'user_id' => $user->id,
-            'public_handle' => 'CW-12378',
+            'public_handle' => 'FV-12378',
             'public_alias' => 'Wulfie',
         ]);
 

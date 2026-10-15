@@ -12,8 +12,8 @@
 {{ __('mail.verify.account_heading', [], $locale) }}
 {{ __('mail.verify.account_name', ['name' => $context['account_name']], $locale) }}
 {{ __('mail.verify.account_email', ['email' => $context['email']], $locale) }}
-@if ($context['cw_id'])
-{{ __('mail.verify.account_id', ['cw_id' => $context['cw_id']], $locale) }}
+@if ($context['favon_id'])
+{{ __('mail.verify.account_id', ['favon_id' => $context['favon_id']], $locale) }}
 @endif
 
 {{ __('mail.verify.'.($context['reason'] === 'email_change' ? 'change_ignore' : 'registration_ignore'), [], $locale) }}

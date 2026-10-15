@@ -18,8 +18,8 @@
         <strong>{{ __('mail.verify.account_heading', [], $locale) }}</strong><br>
         {{ __('mail.verify.account_name', ['name' => $context['account_name']], $locale) }}<br>
         {{ __('mail.verify.account_email', ['email' => $context['email']], $locale) }}
-        @if ($context['cw_id'])
-            <br>{{ __('mail.verify.account_id', ['cw_id' => $context['cw_id']], $locale) }}
+        @if ($context['favon_id'])
+            <br>{{ __('mail.verify.account_id', ['favon_id' => $context['favon_id']], $locale) }}
         @endif
     </p>
 
