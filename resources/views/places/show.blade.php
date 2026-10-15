@@ -6,7 +6,7 @@
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <h1 class="text-2xl font-semibold">{{ $place->name }}</h1>
-                    <div class="mt-1 text-sm text-zinc-500">{{ str($place->place_type_slug)->replace('-', ' ')->headline() }}</div>
+                    <div class="mt-1 text-sm text-zinc-500">{{ __("place_types.{$place->place_type_slug}.name") }}</div>
                 </div>
                 @auth
                     <form method="POST" action="{{ $isFavorite ? route('favorites.destroy', $place->slug) : route('favorites.store', $place->slug) }}">
