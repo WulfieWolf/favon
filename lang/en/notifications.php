@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'place_submission_approved_title' => 'Place approved',
+    'place_submission_approved_message' => 'Your suggested place “:place” was approved and is now available on Favon.',
+    'place_submission_rejected_title' => 'Place not published',
+    'place_submission_rejected_message' => 'Your suggested place “:place” was not published. Reason: :reason',
     'title' => 'Notifications',
     'history_intro' => 'Here you can find current and previously read notifications.',
     'mark_all_read' => 'Mark all as read',
