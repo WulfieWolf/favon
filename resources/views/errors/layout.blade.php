@@ -6,7 +6,7 @@
 </head>
 <body class="min-h-screen bg-zinc-100 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
     <main class="mx-auto flex min-h-screen w-full max-w-5xl items-center px-5 py-12 pb-20 xl:px-7">
-        <div class="grid w-full items-center gap-10 md:grid-cols-[minmax(0,1fr)_minmax(280px,420px)]">
+        <div class="w-full">
             <section>
                 <div class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                     {{ __('errors.eyebrow', ['status' => $status]) }}
@@ -41,19 +41,6 @@
                 </div>
             </section>
 
-            <figure class="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-                <div class="aspect-[4/3] bg-zinc-200 dark:bg-zinc-800">
-                    <img
-                        src="{{ asset('images/merlin.png') }}"
-                        alt=""
-                        class="h-full w-full object-cover"
-                        onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');"
-                    >
-                    <div class="hidden h-full w-full place-items-center p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
-                        {{ __('errors.photo_placeholder') }}
-                    </div>
-                </div>
-            </figure>
         </div>
     </main>
 
