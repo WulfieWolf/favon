@@ -38,6 +38,9 @@
                     @if ($city)<div>{{ $city }}</div>@endif
                 </div>
             @endif
+            @if (filled($place->description))
+                <p class="mt-4 whitespace-pre-line break-words text-sm text-zinc-700 dark:text-zinc-300">{{ $place->description }}</p>
+            @endif
         </div>
 
         <div id="favon-place-map" class="h-[48vh] min-h-80 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800"></div>
