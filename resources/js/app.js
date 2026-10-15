@@ -152,6 +152,10 @@ function initFavonPlacePickers() {
             marker.on('dragend', () => setPoint(marker.getLatLng(), { reverse: true }));
         }
 
+        if (hasExisting && element.dataset.reverseOnInit === '1') {
+            setPoint(L.latLng(existingLat, existingLng), { reverse: true, zoom: false });
+        }
+
         requestAnimationFrame(() => map.invalidateSize());
     });
 }
@@ -289,15 +293,84 @@ function initFavonAddressSearch() {
     });
 }
 
+
+function currentPosition(errorMessage) {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            reject(new Error(errorMessage));
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => resolve({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+            }),
+            () => reject(new Error(errorMessage)),
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000,
+            },
+        );
+    });
+}
+
+function initFavonLocationActions() {
+    document.querySelectorAll('[data-favon-nearby]').forEach((button) => {
+        if (button.dataset.ready === '1') return;
+        button.dataset.ready = '1';
+
+        button.addEventListener('click', async () => {
+            button.disabled = true;
+
+            try {
+                const position = await currentPosition(button.dataset.error || 'Location unavailable');
+                const url = new URL(window.location.href);
+                url.searchParams.set('near_lat', position.lat.toFixed(7));
+                url.searchParams.set('near_lng', position.lng.toFixed(7));
+                url.searchParams.delete('page');
+                window.location.assign(url.toString());
+            } catch (error) {
+                window.alert(error.message);
+                button.disabled = false;
+            }
+        });
+    });
+
+    document.querySelectorAll('[data-favon-create-here]').forEach((button) => {
+        if (button.dataset.ready === '1') return;
+        button.dataset.ready = '1';
+
+        button.addEventListener('click', async () => {
+            button.disabled = true;
+
+            try {
+                const position = await currentPosition(button.dataset.error || 'Location unavailable');
+                const url = new URL(button.dataset.url, window.location.origin);
+                url.searchParams.set('lat', position.lat.toFixed(7));
+                url.searchParams.set('lng', position.lng.toFixed(7));
+                window.location.assign(url.toString());
+            } catch (error) {
+                window.alert(error.message);
+                button.disabled = false;
+            }
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initFavonPlacePickers();
     initFavonAddressSearch();
+    initFavonLocationActions();
 }, { once: true });
 
 document.addEventListener('livewire:navigated', () => {
     initFavonPlacePickers();
     initFavonAddressSearch();
+    initFavonLocationActions();
 });
 
 initFavonPlacePickers();
 initFavonAddressSearch();
+initFavonLocationActions();
