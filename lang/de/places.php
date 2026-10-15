@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'submission_received' => 'Dein Platzvorschlag wurde eingereicht und wartet auf Freigabe.',
     'photo_alt' => 'Foto des Platzes',
     'suggest_help' => 'Wie schlage ich einen Platz vor?',
     'common' => [
