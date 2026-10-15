@@ -82,7 +82,7 @@ class PlaceSubmissionTest extends TestCase
             'latitude' => 51.0,
             'longitude' => 7.0,
             'environment' => 'outdoor',
-            'target_audience' => 'mm',
+            'target_audience' => ['mm'],
             'has_gloryhole' => '1',
         ])->assertRedirect(route('dashboard'));
 
@@ -123,7 +123,7 @@ class PlaceSubmissionTest extends TestCase
                 'latitude',
                 'longitude',
                 'environment',
-                'target_audience',
+                'target_audience.0',
             ]);
 
         $this->assertDatabaseCount('places', 0);
